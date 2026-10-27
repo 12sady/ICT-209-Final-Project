@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Compare plans — Registration Planner{% endblock %}
+{% block content %}
+  <header class="page-header">
+    <div>
+      <h1>Compare plans</h1>
+      <p class="program">Pin up to three schedules from the <a href="{{ url_for('plan_page') }}">Plan</a> page and see them side by side. The best value in each row is highlighted, with the reason.</p>
+    </div>
+  </header>
+
+  <section class="card" id="compare-empty" hidden>
+    <div class="empty-state">
+      <p id="compare-empty-title"></p>
+      <p id="compare-empty-body"></p>
+    </div>
+  </section>
+
+  <p class="hint" id="compare-status" role="status"></p>
+  <div id="compare-main" hidden>
+    <div class="table-wrap"><table class="compare-table" id="compare-table"></table></div>
+    <p class="hint" id="compare-note"></p>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='compare.js') }}"></script>
+{% endblock %}

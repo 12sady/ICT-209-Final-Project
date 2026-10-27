@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{% block title %}Registration Planner{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+<link rel="icon" href="data:," />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <nav class="topnav" aria-label="Main">
+    <a class="brand" href="{{ url_for('index') }}">Registration Planner<span class="brand-sub">plan your term before you register</span></a>
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <div class="nav-links" id="nav-links">
+      <a href="{{ url_for('index') }}" {% if active=='dashboard' %}aria-current="page"{% endif %}>Dashboard</a>
+      <a href="{{ url_for('curriculum') }}" {% if active=='curriculum' %}aria-current="page"{% endif %}>Curriculum</a>
+      <a href="{{ url_for('browse') }}" {% if active=='browse' %}aria-current="page"{% endif %}>Courses</a>
+      <a href="{{ url_for('plan_page') }}" {% if active=='plan' %}aria-current="page"{% endif %}>Plan</a>
+      <a href="{{ url_for('compare_page') }}" {% if active=='compare' %}aria-current="page"{% endif %}>Compare</a>
+      <a href="{{ url_for('roadmap_page') }}" {% if active=='roadmap' %}aria-current="page"{% endif %}>Roadmap</a>
+      <a href="{{ url_for('gpa_page') }}" {% if active=='gpa' %}aria-current="page"{% endif %}>GPA</a>
+      <a href="{{ url_for('import_page') }}" {% if active=='import' %}aria-current="page"{% endif %}>Import</a>
+      <span class="nav-divider"></span>
+      {% if current_username %}<span class="nav-user">{{ current_username }}</span>{% endif %}
+      <a href="{{ url_for('logout') }}" title="Log out">Log out</a>
+    </div>
+  </nav>
+
+  <div class="status-strip" id="status-strip">Loading your data…</div>
+
+  <main class="page" id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if current_username %}
+  <button id="advisor-fab" class="advisor-fab" type="button" aria-controls="advisor-panel" aria-expanded="false">Ask AI</button>
+  <aside id="advisor-panel" class="advisor-panel" hidden aria-label="AI advisor">
+    <header class="advisor-head">
+      <div><strong>AI advisor</strong><span class="advisor-sub">Knows your curriculum and this term's courses</span></div>
+      <div>
+        <button id="advisor-clear" class="advisor-link" type="button">Clear</button>
+        <button id="advisor-close" class="advisor-link" type="button" aria-label="Close">Close</button>
+      </div>
+    </header>
+    <div id="advisor-setup" class="advisor-setup" hidden></div>
+    <div id="advisor-log" class="advisor-log" aria-live="polite"></div>
+    <div id="advisor-suggest" class="advisor-suggest"></div>
+    <form id="advisor-form" class="advisor-form">
+      <textarea id="advisor-input" rows="2" maxlength="2000" placeholder="e.g. No classes before 10, Fridays free, I want ITM 360"></textarea>
+      <button id="advisor-send" type="submit">Send</button>
+    </form>
+    <p class="advisor-note">AI can make mistakes. It plans only; you register in AUPP's own system. Confirm requirements with your advisor.</p>
+  </aside>
+  {% endif %}
+
+  <script src="{{ url_for('static', filename='common.js') }}"></script>
+  {% if current_username %}<script src="{{ url_for('static', filename='advisor.js') }}"></script>{% endif %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}GPA — Registration Planner{% endblock %}
+{% block content %}
+  <header class="page-header">
+    <div>
+      <h1>GPA</h1>
+      <p class="program">Enter a grade for each course you've completed, then try "what if" grades for this term's plan or see what you need to reach a target GPA.</p>
+    </div>
+  </header>
+
+  <section class="card" id="gpa-empty" hidden>
+    <div class="empty-state">
+      <p id="gpa-empty-title"></p>
+      <p id="gpa-empty-body"></p>
+    </div>
+  </section>
+
+  <div id="gpa-main" hidden>
+    <section class="stat-row" aria-label="GPA summary" id="gpa-stats"></section>
+
+    <section class="card">
+      <h2>Your grades</h2>
+      <p class="hint" id="grades-hint">Pick a grade for each completed course — it saves as you go. Pass/fail, withdrawn, incomplete and audit grades are kept out of the GPA.</p>
+      <div id="grades-by-semester"></div>
+      <p class="hint" id="unknown-note" hidden></p>
+      <p class="hint" id="grade-status" role="status"></p>
+    </section>
+
+    <section class="card">
+      <h2>GPA by semester</h2>
+      <p class="hint" id="semester-note" hidden>None of your completed courses has a semester yet. Pick one in the "Semester taken" column on the <a href="{{ url_for('curriculum') }}">Curriculum</a> page to see GPA term by term.</p>
+      <div class="table-wrap"><table class="course-table" id="semester-table"></table></div>
+    </section>
+
+    <div class="two-col">
+      <section class="card">
+        <h2>If I get these grades this term</h2>
+        <p class="hint">Uses the courses in your current best plan (<a href="{{ url_for('plan_page') }}">Plan</a>). Nothing here is saved.</p>
+        <div id="whatif-planned"></div>
+        <div id="whatif-result" class="math-box" aria-live="polite"></div>
+      </section>
+
+      <section class="card">
+        <h2>What do I need to reach a target?</h2>
+        <div class="inline-fields">
+          <label>Target cumulative GPA<input type="number" id="target-gpa" min="0" max="4" step="0.01" value="3.8" /></label>
+          <label>Credits this term<input type="number" id="target-credits" min="1" max="30" step="1" value="15" /></label>
+        </div>
+        <div id="target-result" class="math-box" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <details class="advanced-section card">
+      <summary>Grade scale used (an assumption — check it against AUPP's)</summary>
+      <div class="advanced-body"><div id="scale-box" class="scale-grid"></div>
+        <p class="hint">Edit <code>GRADE_SCALE</code> in <code>gpa.py</code> if AUPP's scale is different.</p></div>
+    </details>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='gpa.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Set up — Registration Planner</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+<link rel="icon" href="data:," />
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="card auth-card">
+      <div class="brand" style="margin-bottom: var(--sp-4);">Registration Planner</div>
+      <h1 style="font-size:1.15rem; margin: 0 0 6px;">Set up this app</h1>
+      <p class="hint">First time here — choose a username and password to keep this app to just you. There's no sensitive student data stored here; this is just a light lock in case this machine is shared.</p>
+      {% if error %}<div class="banner danger">{{ error }}</div>{% endif %}
+      <form method="POST">
+        <label>Username<input type="text" name="username" autocomplete="username" required autofocus></label>
+        <label>Password<input type="password" name="password" autocomplete="new-password" required></label>
+        <label>Confirm password<input type="password" name="confirm" autocomplete="new-password" required></label>
+        <button type="submit" class="save-btn">Set up &amp; continue</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

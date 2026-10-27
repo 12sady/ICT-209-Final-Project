@@ -1,0 +1,13 @@
+{
+  "term": "Fall 2026",
+  "start": "2026-08-17",
+  "end": "2026-12-04",
+  "breaks": [
+    {"name": "Constitutional Day", "start": "2026-09-24", "end": "2026-09-24"},
+    {"name": "Pchum Ben", "start": "2026-10-10", "end": "2026-10-12"},
+    {"name": "Commemoration Day of Former King Norodom Sihanouk", "start": "2026-10-15", "end": "2026-10-15"},
+    {"name": "Coronation Day of King Norodom Sihamoni", "start": "2026-10-29", "end": "2026-10-29"},
+    {"name": "Independence Day", "start": "2026-11-09", "end": "2026-11-09"},
+    {"name": "Water Festival", "start": "2026-11-23", "end": "2026-11-25"}
+  ]
+}

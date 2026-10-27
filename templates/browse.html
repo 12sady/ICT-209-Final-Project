@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Browse — Registration Planner{% endblock %}
+{% block content %}
+  <header class="page-header">
+    <div>
+      <h1>Courses &amp; Wishlist</h1>
+      <p class="program">Filter this term's offerings and add the ones you want to take — the Plan page builds your schedule from your wishlist. Courses outside your curriculum are hidden by default.</p>
+    </div>
+  </header>
+
+  <section class="filters card">
+    <div class="field">
+      <label for="f-search">Search</label>
+      <input type="text" id="f-search" placeholder="Course code or title…" />
+    </div>
+    <div class="field">
+      <label for="f-day">Day</label>
+      <select id="f-day">
+        <option value="">Any day</option>
+        <option value="Mon">Mon</option>
+        <option value="Tue">Tue</option>
+        <option value="Wed">Wed</option>
+        <option value="Thu">Thu</option>
+        <option value="Fri">Fri</option>
+        <option value="Sat">Sat</option>
+        <option value="Sun">Sun</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-time">Time of day</label>
+      <select id="f-time">
+        <option value="">Any time</option>
+        <option value="morning">Morning (before 12:00)</option>
+        <option value="afternoon">Afternoon (12:00–17:00)</option>
+        <option value="evening">Evening (after 17:00)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-instructor">Instructor</label>
+      <select id="f-instructor">
+        <option value="">Any instructor</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-department">Faculty</label>
+      <select id="f-department">
+        <option value="">Any faculty</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-risk">Seat status</label>
+      <select id="f-risk">
+        <option value="">Any seat status</option>
+        <option value="low">Plenty of seats</option>
+        <option value="medium">Medium</option>
+        <option value="fills fast">Fills fast</option>
+        <option value="full">Full</option>
+        <option value="unknown">Unknown</option>
+      </select>
+    </div>
+    <div class="field field-checkbox">
+      <label for="f-in-curriculum"><input type="checkbox" id="f-in-curriculum" checked /> Only courses in my curriculum</label>
+      <label for="f-hide-completed"><input type="checkbox" id="f-hide-completed" checked /> Hide completed courses</label>
+    </div>
+  </section>
+
+  <section class="layout">
+    <div class="calendar-panel">
+      <p class="hint" id="course-count"></p>
+      <div id="course-empty" class="empty-state" hidden>
+        <p>No courses loaded yet.</p>
+        <p>Head to <a href="/import">Import</a> to bring in this term's offerings.</p>
+      </div>
+      <div class="table-wrap"><table class="course-table" id="course-table">
+        <thead>
+          <tr>
+            <th>Code</th><th>Sec</th><th>Dept</th><th>Title</th><th>Days</th><th>Time</th>
+            <th>Credits</th><th>Instructor</th><th>Seats</th><th>Wishlisted by</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="course-table-body"></tbody>
+      </table></div>
+      <div id="course-pagination" class="pagination"></div>
+    </div>
+
+    <aside class="side-panel">
+      <div class="card">
+        <h2>Your wishlist</h2>
+        <div id="wishlist-items"></div>
+      </div>
+    </aside>
+  </section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='browse.js') }}"></script>
+{% endblock %}

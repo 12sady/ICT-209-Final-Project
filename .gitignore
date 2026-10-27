@@ -1,0 +1,9 @@
+data/users/
+data/.flask_secret
+data/_pending_import.xlsx
+__pycache__/
+.DS_Store
+.idea/
+*.pyc
+data/users.json
+data/auth.json

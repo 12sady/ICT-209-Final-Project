@@ -1,0 +1,4 @@
+flask
+pandas
+openpyxl
+# optional, only for the paid Claude option: anthropic

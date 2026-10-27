@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Log in — Registration Planner</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+<link rel="icon" href="data:," />
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="card auth-card">
+      <div class="brand" style="margin-bottom: var(--sp-4);">Registration Planner</div>
+      <h1 style="font-size:1.15rem; margin: 0 0 6px;">Log in</h1>
+      {% if error %}<div class="banner danger">{{ error }}</div>{% endif %}
+      <form method="POST">
+        <label>Username<input type="text" name="username" value="{{ username }}" autocomplete="username" required autofocus></label>
+        <label>Password<span class="pw-wrap"><input type="password" class="pw-field" name="password" autocomplete="current-password" required><button type="button" class="pw-toggle" aria-label="Show password" aria-pressed="false">Show</button></span></label>
+        <button type="submit" class="save-btn">Log in</button>
+      </form>
+      <p class="auth-switch">New here? <a href="{{ url_for('signup') }}">Create an account</a></p>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='auth.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Plan — Registration Planner{% endblock %}
+{% block content %}
+  <header class="page-header">
+    <div>
+      <h1>Registration Plans</h1>
+      <p class="program" id="program-name">Loading…</p>
+    </div>
+    <div class="plan-tabs" id="plan-tabs"></div>
+  </header>
+
+  <section id="banners"></section>
+
+  <section class="layout">
+    <div class="calendar-panel">
+      <div class="print-only" id="print-title"></div>
+      <div class="plan-view-bar">
+        <div class="calendar-legend" id="calendar-legend"></div>
+        <div class="view-toggle" role="group" aria-label="Plan view">
+          <button type="button" id="view-week" aria-pressed="true">Week</button>
+          <button type="button" id="view-list" aria-pressed="false">List</button>
+        </div>
+      </div>
+      <div id="calendar"></div>
+      <div id="plan-list" class="table-wrap" hidden></div>
+
+      <div class="plan-export-bar" id="plan-export-bar" hidden>
+        <button id="pin-btn" class="secondary" type="button">Pin to compare</button>
+        <button id="active-btn" class="secondary" type="button">Make this my active plan</button>
+        <a href="{{ url_for('compare_page') }}" id="compare-link" class="compare-link" hidden></a>
+      </div>
+      <div class="plan-export-bar" id="plan-export-bar2" hidden>
+        <button id="export-pdf-btn" class="secondary">Export as PDF</button>
+        <button id="export-ics-btn" class="secondary">Add to calendar (.ics)</button>
+      </div>
+      <p id="export-status" class="hint" style="margin-top: var(--sp-2);"></p>
+      <p id="calendar-note" class="hint"></p>
+    </div>
+
+    <aside class="side-panel">
+      <div class="card">
+        <h2>Plan summary</h2>
+        <dl id="plan-summary"></dl>
+      </div>
+
+      <div class="card">
+        <h2>Your wishlist</h2>
+        <p class="hint">Your plan is built from this list. Remove a course to see how the plan changes.</p>
+        <div id="plan-wishlist-items"></div>
+      </div>
+
+      <div class="card">
+        <h2>Backups if a seat fills</h2>
+        <div id="alternates-list" class="alternates-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>Plan options</h2>
+        <label for="p-avoid-before" class="opt-label">
+          Skip sections that start before
+          <select id="p-avoid-before">
+            <option value="">No limit</option>
+            <option value="08:30">8:30</option>
+            <option value="09:00">9:00</option>
+            <option value="10:00">10:00</option>
+            <option value="11:00">11:00</option>
+            <option value="12:00">12:00</option>
+            <option value="13:00">13:00</option>
+          </select>
+        </label>
+        <label class="opt-check">
+          <input type="checkbox" id="p-ignore-prereqs" /> Ignore prerequisites (plan ahead for future terms)
+        </label>
+        <p id="p-save-status" class="hint" style="margin:var(--sp-2) 0 0;"></p>
+      </div>
+    </aside>
+  </section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='plan.js') }}"></script>
+{% endblock %}

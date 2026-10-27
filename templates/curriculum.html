@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Curriculum — Registration Planner{% endblock %}
+{% block content %}
+  <header class="page-header">
+    <div>
+      <h1>Curriculum</h1>
+      <p class="program">Your program's full course list, with what you've completed and what's available this term. Start from a sample plan for your major, or paste your own on the <a href="{{ url_for('import_page') }}">Import</a> page, then edit anything.</p>
+    </div>
+  </header>
+
+  <details class="card" id="plan-card">
+    <summary class="card-summary"><h2>Sample course plan <span class="hint-inline" id="plan-summary-note"></span></h2></summary>
+    <p class="hint" id="plan-hint">Pick your major and the app loads AUPP's sample course plan as your curriculum, with prerequisites. It keeps the courses you've already completed. After that, it's your own copy: edit, add or remove anything below.</p>
+    <div class="plan-pick">
+      <select id="plan-select" aria-label="Program"><option value="">Choose your program…</option></select>
+      <button id="plan-use-btn" disabled>Use this plan</button>
+      <span id="plan-status" class="hint"></span>
+    </div>
+    <div id="plan-preview"></div>
+  </details>
+
+  <section class="card">
+    <div class="profile-grid">
+      <div class="field">
+        <label for="c-program">Program</label>
+        <input type="text" id="c-program" placeholder="e.g. Bachelor of Science in Artificial Intelligence" />
+      </div>
+      <div class="field">
+        <label for="c-year">Year</label>
+        <input type="text" id="c-year" placeholder="e.g. 2nd year" />
+      </div>
+      <div class="field">
+        <label for="c-semester">Semester</label>
+        <input type="text" id="c-semester" placeholder="e.g. Fall 2026" />
+      </div>
+      <div class="field">
+        <label for="c-min-credits">Min credits / term</label>
+        <input type="number" id="c-min-credits" min="0" />
+      </div>
+      <div class="field">
+        <label for="c-max-credits">Max credits / term</label>
+        <input type="number" id="c-max-credits" min="0" />
+      </div>
+    </div>
+  </section>
+
+  <details class="card" id="completed-by-semester-card">
+    <summary class="card-summary"><h2>Completed, by semester</h2></summary>
+    <p class="hint">Set a course to Completed in the table below and pick the semester you took it — it shows up here grouped by semester.</p>
+    <div id="completed-by-semester"></div>
+  </details>
+
+  <section class="card">
+    <h2>Your curriculum</h2>
+    <p class="hint">Grouped the way your program groups it — General Education, Major, Core/Major, Electives, and so on. Set a course's status once you've completed it — required courses you haven't taken yet are flagged with why they can't be scheduled yet (missing a prereq, or not offered this term).</p>
+    <div id="curriculum-empty" class="empty-state" hidden>
+      <p>No curriculum loaded yet.</p>
+      <p>Choose a sample plan for your major above, or head to <a href="{{ url_for('import_page') }}">Import</a> to paste in your program's curriculum.</p>
+    </div>
+    <div class="stat-line" id="curr-summary"></div>
+    <div class="curr-toolbar" id="curr-toolbar" hidden>
+      <div class="curr-filters">
+        <input type="search" id="curr-search" placeholder="Search code or title…" aria-label="Search courses" />
+        <select id="curr-status" aria-label="Show">
+          <option value="all">All courses</option>
+          <option value="todo">Not completed</option>
+          <option value="available">Available now</option>
+          <option value="done">Completed</option>
+        </select>
+      </div>
+      <label class="opt-check">Group by
+        <select id="group-by">
+          <option value="category">Category</option>
+          <option value="plan">Semester in the sample plan</option>
+        </select>
+      </label>
+      <button id="add-course-btn" class="secondary" type="button">+ Add a course</button>
+    </div>
+    <p class="hint" id="slots-note" hidden></p>
+    <div id="curriculum-groups"></div>
+  </section>
+
+  <section class="card" id="course-editor" hidden>
+    <h2 id="ce-heading">Add a course</h2>
+    <div class="manual-grid">
+      <label>Code<input type="text" id="ce-code" placeholder="COSC 121" /></label>
+      <label class="wide">Course name<input type="text" id="ce-name" /></label>
+      <label>Category<input type="text" id="ce-category" list="ce-category-list" /></label>
+      <datalist id="ce-category-list"></datalist>
+      <label>Credits<input type="number" id="ce-credits" value="3" min="0" step="0.5" /></label>
+      <label class="wide">Prerequisites (comma-separated codes)<input type="text" id="ce-prereqs" placeholder="COSC 111, MATH 177" /></label>
+      <label>Plan year<select id="ce-year"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+      <label>Plan term<select id="ce-term"><option value="">—</option><option>Fall</option><option>Spring</option><option>Summer</option></select></label>
+      <label class="opt-check"><input type="checkbox" id="ce-required" /> Required for my degree</label>
+    </div>
+    <button id="ce-apply-btn" type="button">Apply</button>
+    <button id="ce-cancel-btn" class="secondary" type="button">Cancel</button>
+    <span id="ce-status" class="hint"></span>
+    <p class="hint">Changes here stay on this page until you press "Save curriculum" at the bottom.</p>
+  </section>
+
+  <div class="save-bar">
+    <button id="save-btn" class="save-btn">Save curriculum</button>
+    <p id="save-status" class="hint" style="margin: var(--sp-2) 0 0;"></p>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='curriculum.js') }}"></script>
+{% endblock %}

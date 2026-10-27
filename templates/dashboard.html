@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Registration Planner{% endblock %}
+{% block content %}
+  <header class="page-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="program" id="dash-program">Loading…</p>
+    </div>
+  </header>
+
+  <section class="card" id="dash-start" hidden>
+    <h2>Let's get you set up</h2>
+    <p class="hint">A few minutes, once. After that this page shows your progress toward graduation.</p>
+    <ol class="checklist" id="dash-steps"></ol>
+  </section>
+
+  <div id="dash-main" hidden>
+    <section class="dash-hero">
+      <div class="card dash-ring-card">
+        <div id="dash-ring" class="ring"></div>
+        <div>
+          <div class="stat-label">Degree progress</div>
+          <div class="dash-big" id="dash-credits"></div>
+          <div class="stat-sub" id="dash-credits-sub"></div>
+          <div class="stat-sub" id="dash-extra"></div>
+        </div>
+      </div>
+      <div class="stat-col" id="dash-stats"></div>
+    </section>
+
+    <div id="dash-risks"></div>
+
+    <div class="two-col">
+      <section class="card">
+        <h2>Progress by category</h2>
+        <div id="dash-cats"></div>
+      </section>
+      <section class="card">
+        <h2>Courses you can take now</h2>
+        <p class="hint" id="dash-available-hint">Required courses whose prerequisites you've finished, in sample-plan order.</p>
+        <div id="dash-available"></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Bottlenecks: take these early</h2>
+      <p class="hint">Courses that other required courses are waiting on, directly or through a chain. Finishing them first keeps more options open.</p>
+      <div class="table-wrap"><table class="course-table" id="dash-bottlenecks"></table></div>
+    </section>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,164 @@
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+const START_HOUR = 8;
+const END_HOUR = 18;
+const ROWS_PER_HOUR = 4; // 15-minute resolution
+const PALETTE = ["c1", "c2", "c3", "c4", "c5", "c6"];
+
+let planData = null;
+let activeIndex = 0;
+
+function timeToRowOffset(hhmm) {
+  const [h, m] = hhmm.split(":").map(Number);
+  return (h - START_HOUR) * ROWS_PER_HOUR + Math.round(m / 15);
+}
+
+function colorForCode(code, codeList) {
+  const idx = codeList.indexOf(code) % PALETTE.length;
+  return PALETTE[idx];
+}
+
+async function loadPlans() {
+  const res = await fetch("/api/plans");
+  planData = await res.json();
+
+  document.getElementById("program-name").textContent = planData.program;
+
+  if (planData.blocked && planData.blocked.length) {
+    const banner = document.getElementById("blocked-banner");
+    const text = planData.blocked
+      .map((b) => `${b.code} (needs ${b.missing_prereqs.join(", ") || "a prereq"})`)
+      .join("; ");
+    document.getElementById("blocked-text").textContent =
+      ` Not scheduled anywhere — prerequisite not yet met: ${text}`;
+    banner.hidden = false;
+  }
+
+  renderTabs();
+  renderPlan(0);
+}
+
+function renderTabs() {
+  const tabsEl = document.getElementById("plan-tabs");
+  tabsEl.innerHTML = "";
+  planData.plans.forEach((plan, i) => {
+    const btn = document.createElement("button");
+    btn.className = "plan-tab" + (i === activeIndex ? " active" : "");
+    btn.textContent = `Plan ${plan.label} (${plan.total_credits}cr)`;
+    btn.onclick = () => {
+      activeIndex = i;
+      renderTabs();
+      renderPlan(i);
+    };
+    tabsEl.appendChild(btn);
+  });
+}
+
+function buildCalendarSkeleton() {
+  const cal = document.getElementById("calendar");
+  cal.innerHTML = "";
+  const totalRows = (END_HOUR - START_HOUR) * ROWS_PER_HOUR;
+  cal.style.gridTemplateRows = `30px repeat(${totalRows}, 22px)`;
+
+  // corner
+  const corner = document.createElement("div");
+  corner.style.gridColumn = "1";
+  corner.style.gridRow = "1";
+  cal.appendChild(corner);
+
+  DAYS.forEach((day, i) => {
+    const head = document.createElement("div");
+    head.className = "cal-head";
+    head.textContent = day;
+    head.style.gridColumn = i + 2;
+    head.style.gridRow = 1;
+    cal.appendChild(head);
+  });
+
+  for (let h = START_HOUR; h < END_HOUR; h++) {
+    const label = document.createElement("div");
+    label.className = "cal-time";
+    label.textContent = `${h}:00`;
+    const rowStart = 2 + (h - START_HOUR) * ROWS_PER_HOUR;
+    label.style.gridColumn = 1;
+    label.style.gridRow = `${rowStart} / span ${ROWS_PER_HOUR}`;
+    cal.appendChild(label);
+  }
+
+  return cal;
+}
+
+function renderPlan(index) {
+  const plan = planData.plans[index];
+  const cal = buildCalendarSkeleton();
+  const codeList = [...new Set(plan.sections.map((s) => s.code))];
+
+  plan.sections.forEach((sec) => {
+    const startOffset = timeToRowOffset(sec.start);
+    const endOffset = timeToRowOffset(sec.end);
+    sec.days.forEach((day) => {
+      const dayIdx = DAYS.indexOf(day);
+      if (dayIdx === -1) return;
+      const block = document.createElement("div");
+      block.className = `cal-block ${colorForCode(sec.code, codeList)}`;
+      block.style.gridColumn = dayIdx + 2;
+      block.style.gridRow = `${2 + startOffset} / ${2 + endOffset}`;
+      block.innerHTML = `<span class="code">${sec.code}-${sec.section}</span><span class="time">${sec.start}-${sec.end}</span>`;
+      block.style.background = cssVarFor(colorForCode(sec.code, codeList));
+      cal.appendChild(block);
+    });
+  });
+
+  renderSummary(plan);
+  renderAlternates(plan);
+}
+
+function cssVarFor(varName) {
+  return getComputedStyle(document.documentElement).getPropertyValue(`--${varName}`);
+}
+
+function renderSummary(plan) {
+  const dl = document.getElementById("plan-summary");
+  dl.innerHTML = `
+    <dt>Total credits</dt><dd>${plan.total_credits}</dd>
+    <dt>Meets minimum load</dt><dd>${plan.meets_min_credits ? "Yes" : "No"}</dd>
+    <dt>Courses scheduled</dt><dd>${plan.sections.length}</dd>
+  `;
+  const note = document.getElementById("unmet-note");
+  if (plan.unmet_slots && plan.unmet_slots.length) {
+    note.hidden = false;
+    note.textContent = `Couldn't fit in this plan: ${plan.unmet_slots.join(", ")}`;
+  } else {
+    note.hidden = true;
+  }
+}
+
+function renderAlternates(plan) {
+  const list = document.getElementById("alternates-list");
+  list.innerHTML = "";
+  const entries = Object.entries(plan.alternates || {});
+  if (!entries.length) {
+    list.innerHTML = `<p class="hint">No flagged backups for this plan.</p>`;
+    return;
+  }
+  entries.forEach(([from, backups]) => {
+    if (!backups.length) return;
+    const row = document.createElement("div");
+    row.className = "alt-row";
+    const backupText = backups.map((b) => `${b.code}-${b.section}`).join(" or ");
+    row.innerHTML = `<span class="from">${from}</span> full? try <span class="to">${backupText}</span>`;
+    list.appendChild(row);
+  });
+}
+
+document.getElementById("parse-btn").addEventListener("click", async () => {
+  const text = document.getElementById("paste-input").value;
+  const res = await fetch("/api/parse", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+  const data = await res.json();
+  document.getElementById("parse-output").textContent = JSON.stringify(data, null, 2);
+});
+
+loadPlans();

@@ -1,0 +1,7799 @@
+{
+ "programs": [
+  {
+   "id": "ai",
+   "name": "Artificial Intelligence",
+   "degree": "Single",
+   "credit_total": 120,
+   "source": "AI.pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL 2026",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "ITEC 101",
+       "title": "Introduction to Information Technology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "ENVS 131C",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring 2027",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communication",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "HUMN 101",
+       "title": "Introduction to Humanities",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "HIST 131",
+       "title": "Behavioral and Social Sciences",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "POLS 110",
+       "title": "Introduction to Political Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 2027",
+     "courses": [
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL 2027",
+     "courses": [
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "COSC 111",
+       "title": "Computer Science Survey",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 121",
+       "title": "Computer Science A",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 241",
+       "title": "Computer Science Fundamentals",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 201",
+       "title": "Java Programming I",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring 2028",
+     "courses": [
+      {
+       "code": "COSC 221",
+       "title": "Computer Science B",
+       "credits": 3,
+       "prereqs": [
+        "COSC 121"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "INFO 250",
+       "title": "Web Development I",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 331",
+       "title": "Operating Systems",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 320",
+       "title": "Cybersecurity Technician",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101",
+        "MATH 177"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 340",
+       "title": "Maths for Computing",
+       "credits": 3,
+       "prereqs": [
+        "MATH 177"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL 2028",
+     "courses": [
+      {
+       "code": "COSC 251",
+       "title": "Data Structure",
+       "credits": 3,
+       "prereqs": [
+        "ITM 201"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 301",
+       "title": "Software Requirements, Analysis & Design",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "INFO 652",
+       "title": "Programming and Database Design",
+       "credits": 3,
+       "prereqs": [
+        "INFO 250"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 380",
+       "title": "Cloud Computing",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamental of Artificial Intelligence (Compulsory)",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Elective"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring 2029",
+     "courses": [
+      {
+       "code": "ITM 360",
+       "title": "Artificial Intelligence",
+       "credits": 3,
+       "prereqs": [
+        "ICT 209"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 390",
+       "title": "Machine Learning",
+       "credits": 3,
+       "prereqs": [
+        "ICT 209"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 340",
+       "title": "Vibe Coding (Exploring Conversational Software Development with AI)",
+       "credits": 3,
+       "prereqs": [
+        "ITM 340"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 340",
+       "title": "Networking Essentials",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 2029",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL 2029",
+     "courses": [
+      {
+       "code": "AIN 320",
+       "title": "Computer Vision",
+       "credits": 3,
+       "prereqs": [
+        "COSC 221"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 454",
+       "title": "Natural Learning Processing",
+       "credits": 3,
+       "prereqs": [
+        "COSC 221"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "AIN 330",
+       "title": "Generative AI",
+       "credits": 3,
+       "prereqs": [
+        "ITM 360"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "MATH 234A",
+       "title": "Analytic Geometry and Calculus I",
+       "credits": 5,
+       "prereqs": [
+        "MATH 177"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship (Compulsory)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring 2030",
+     "courses": [
+      {
+       "code": "FYP 401",
+       "title": "Final Year Project- I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "AIN 360",
+       "title": "Deep Learning",
+       "credits": 3,
+       "prereqs": [
+        "ITM 360"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "slot": true
+      }
+     ]
+    }
+   ],
+   "electives": [
+    {
+     "code": "CLD 371",
+     "title": "Cloud Operations",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 372",
+     "title": "Cloud Solutions Architect",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 374",
+     "title": "Cloud Developing with CI/CD",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 376",
+     "title": "Cloud Native Development",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "ENTR 110",
+     "title": "Introduction to Entrepreneurship Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 209",
+     "title": "Fundamentals of Artificial Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 360",
+     "title": "Introduction to Internet of Things",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "ICT 361",
+     "title": "Introduction to Robotics",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "INF 330",
+     "title": "Business Intelligence",
+     "prereqs": []
+    },
+    {
+     "code": "INF 604",
+     "title": "Data Analysis I",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 350",
+     "title": "Project Management",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 370",
+     "title": "Data Analytics",
+     "prereqs": []
+    },
+    {
+     "code": "INS 407",
+     "title": "Time Series Analysis",
+     "prereqs": []
+    },
+    {
+     "code": "INS 409",
+     "title": "Data Governance",
+     "prereqs": []
+    }
+   ]
+  },
+  {
+   "id": "business-dual",
+   "name": "Business",
+   "degree": "Dual",
+   "credit_total": 125,
+   "source": "BUS (Dual).pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL (Semester 1)",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENVS 131",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring (Semester 2)",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ITEC 101",
+       "title": "Intro. to Technology",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Comm",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 110",
+       "title": "Arts and Culture",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 1",
+     "courses": [
+      {
+       "code": "HUMN 101",
+       "title": "Intro. to the Humanities",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 200",
+       "title": "Business Calculus",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL (Semester 3)",
+     "courses": [
+      {
+       "code": "ACCT 201",
+       "title": "Financial Accounting",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ECON 200",
+       "title": "Economics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 200",
+       "title": "Intro. Business for Communication",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 370",
+       "title": "(also BUSN 370L) (Management Info. System/Lab)",
+       "credits": 4,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamentals of of AI",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring (Semester 4)",
+     "courses": [
+      {
+       "code": "ACCT 202",
+       "title": "Managerial Acc",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ECON 306",
+       "title": "Applied Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MKTG 301",
+       "title": "Principles of Marketing",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ECON 101",
+       "title": "",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Summer",
+     "label": "Summer 2",
+     "courses": [
+      {
+       "code": "HIST 131",
+       "title": "World History from 1500 CE",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL (Semester 5)",
+     "courses": [
+      {
+       "code": "ECON 400",
+       "title": "Economic Strategy for Biz",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MGMT 301",
+       "title": "Principles of Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BCOM 314R",
+       "title": "Business Communication",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "MKTG 376",
+       "title": "Marketing Analytics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "BUSN 360",
+       "title": "Business Ethics & Social..",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring (Semester 6)",
+     "courses": [
+      {
+       "code": "MIS 304",
+       "title": "Using and Managing Infor. Systems",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "ECON 330",
+       "title": "Macroenocmics and Global Instit. Policy",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "MIS 478",
+       "title": "Project Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "ENTR 420R",
+       "title": "Innovation Principles & Environments",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "MGMT 320",
+       "title": "Operations Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 3",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL (Semester 7)",
+     "courses": [
+      {
+       "code": "MGMT 330",
+       "title": "Human Resource Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "FINC 460",
+       "title": "Real Estate Finance & Investment",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "FINC 311",
+       "title": "Intro. to Finance",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": null,
+       "title": "Elective 1",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring (Semester 8)",
+     "courses": [
+      {
+       "code": "ACCT 400E",
+       "title": "Intermediate Acc",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ECON 441",
+       "title": "Microeconomics II",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MGMT 402",
+       "title": "Integrate Business Fundamentals with Ethics and Law in Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": null,
+       "title": "Elective 2",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    }
+   ],
+   "electives": []
+  },
+  {
+   "id": "business-single",
+   "name": "Business Administration",
+   "degree": "Single",
+   "credit_total": 125,
+   "source": "BUS (Single).pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL (Semester 1)",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENVS 131",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring (Semester 1)",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ITEC 101",
+       "title": "Intro. to Technology",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 101",
+       "title": "Intro. to the Humanities",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HIST 131",
+       "title": "World History from 1500 CE",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 1",
+     "courses": [
+      {
+       "code": "COMM 103",
+       "title": "Oral Comm",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 200",
+       "title": "Business Calculus",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL (Semester 3)",
+     "courses": [
+      {
+       "code": "ACCT 201",
+       "title": "Financial Accounting",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ECON 200",
+       "title": "Economics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 200",
+       "title": "Intro. Business for Communication",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 370",
+       "title": "(also BUSN 370L) (Management Info. System/Lab)",
+       "credits": 4,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring (Semester 4)",
+     "courses": [
+      {
+       "code": "ACCT 202",
+       "title": "Managerial Acc",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ECON 306",
+       "title": "Applied Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MGMT 301",
+       "title": "Principles of Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MKTG 301",
+       "title": "Principles of Marketing",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamentals of of AI",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Summer",
+     "label": "Summer 2",
+     "courses": [
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 110",
+       "title": "Arts and Culture",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL (Semester 5)",
+     "courses": [
+      {
+       "code": "BUSN 300",
+       "title": "Legal Environment for Business",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "FINC 301",
+       "title": "Intro. to Finance",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BCOM 314",
+       "title": "Business Communication",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Major Elective 1/Concentration 1",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Econ 1/ENTR1/ITHM1/Law1",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring (Semester 6)",
+     "courses": [
+      {
+       "code": "BUSN 360",
+       "title": "Business Ethics & Social..",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MGMT 320",
+       "title": "Operations Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Major Elective 2/Concentration 2",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Major Elective 3/Concentration 3",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Econ 2/ENTR2/ITHM2/Law2",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 3",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL (Semester 7)",
+     "courses": [
+      {
+       "code": "MGMT 460",
+       "title": "Strategic Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 478",
+       "title": "Project Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 440",
+       "title": "Intro. to HR",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Major Elective 4/Concentration 4",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring (Semester 8)",
+     "courses": [
+      {
+       "code": "MGMT 450",
+       "title": "Leadership",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 479",
+       "title": "Practical Entrepreneur",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Major Elective 5/Concentration 5",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Econ 3/ENTR3/ITHM3/Law3",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    }
+   ],
+   "electives": []
+  },
+  {
+   "id": "communication-dual",
+   "name": "Business & Communication (AUPP BS + UA BA)",
+   "degree": "Dual",
+   "credit_total": 127,
+   "source": "Communication.pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL (Semester 1)",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 101",
+       "title": "Introduction to the Humanities",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENVS 131C",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamentals of AI",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring (Semester 2)",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HIST 131",
+       "title": "World History 1500 C.E. to the present",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 110",
+       "title": "Arts and Culture",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 102",
+       "title": "Introduction to Communication",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 1",
+     "courses": [
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL (Semester 1)",
+     "courses": [
+      {
+       "code": "ACCT 201",
+       "title": "Financial Accounting",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communication",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 200",
+       "title": "Introduction to Business Communication",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ECON 101",
+       "title": "",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 200",
+       "title": "Business Calculus",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring (Semester 2)",
+     "courses": [
+      {
+       "code": "ECON 200",
+       "title": "Economics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 300",
+       "title": "Legal Environment for Business",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MKTG 301",
+       "title": "Principles of Marketing",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ACCT 202",
+       "title": "Managerial Accounting",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PR 201",
+       "title": "Introduction to Public Relations",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Summer",
+     "label": "Summer 2",
+     "courses": [
+      {
+       "code": "PSYC 101",
+       "title": "Introductory to Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL (Semester 1)",
+     "courses": [
+      {
+       "code": "PR 320",
+       "title": "Persuasion",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 479",
+       "title": "Practical Entrepreneur",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MGMT 320",
+       "title": "Operations Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HED 102B",
+       "title": "Succeeding as a Global Wildcat",
+       "credits": 0,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "PR 204",
+       "title": "Strategic Public Relations",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "COMM 300",
+       "title": "Communication Theory",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring (Semester 2)",
+     "courses": [
+      {
+       "code": "FINC 301",
+       "title": "Introduction to Finance",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MGMT 301",
+       "title": "Principles of Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 360",
+       "title": "Business Ethics & Social Responsibility",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 311",
+       "title": "Communication Technology Theory",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "PR 317",
+       "title": "Strategic Writing for Public Relations",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 3",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL (Semester 1)",
+     "courses": [
+      {
+       "code": "IR 207",
+       "title": "Research Method and Design",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 478",
+       "title": "Project Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 309",
+       "title": "Introduction to Mass Media Effects",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "COMM 411",
+       "title": "Communication and Conflict Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "PR 423",
+       "title": "Crisis Communication and Public Relations",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring (Semester 2)",
+     "courses": [
+      {
+       "code": "MGMT 460",
+       "title": "Strategic Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 440",
+       "title": "Human Resource Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PR 205",
+       "title": "Public Relations Ethics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "PR 421",
+       "title": "Public Relations Campaigns",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      }
+     ]
+    }
+   ],
+   "electives": []
+  },
+  {
+   "id": "computer-science-dual",
+   "name": "Computer Science",
+   "degree": "Dual",
+   "credit_total": 121,
+   "source": "Computer Science.pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL 2026",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ITEC 101",
+       "title": "Introduction to Information Technology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENVS 131C",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring 2027",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communication",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 110",
+       "title": "Arts and Culture",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HIST 131",
+       "title": "Behavioral and Social Sciences",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 2027",
+     "courses": [
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENVS 131A",
+       "title": "Applied Environmental Science",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL 2027",
+     "courses": [
+      {
+       "code": "POLS 110",
+       "title": "Introduction to Political Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "CSCI 111",
+       "title": "Survey of Computer Science",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ITM 201",
+       "title": "Java Programming I",
+       "credits": 3,
+       "prereqs": [
+        "CSCI 111"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 122",
+       "title": "Trigonometry",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "CSCI 241",
+       "title": "Foundation of Computing",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring 2028",
+     "courses": [
+      {
+       "code": "CSCI 121",
+       "title": "Computer Science I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 250",
+       "title": "Introduct to Web Development",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "MATH 234A",
+       "title": "Analytic Geometry & Calculus I",
+       "credits": 5,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ITM 340",
+       "title": "Maths for Computing",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL 2028",
+     "courses": [
+      {
+       "code": "CSCI 221",
+       "title": "Computer Science II",
+       "credits": 3,
+       "prereqs": [
+        "CSCI 121"
+       ],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "CSCI 251",
+       "title": "Data Structures",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 651",
+       "title": "Front -end Web Development",
+       "credits": 3,
+       "prereqs": [
+        "INF 250"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamental of Artificial Intelligence (Compulsory)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring 2029",
+     "courses": [
+      {
+       "code": "CSCI 321",
+       "title": "Assembly Language",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "CSCI 331",
+       "title": "Operating Systems",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 653",
+       "title": "Back-end Web Development",
+       "credits": 3,
+       "prereqs": [
+        "INF 651"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 2029",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL 2029",
+     "courses": [
+      {
+       "code": "CSCI 421",
+       "title": "Programming Languages",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "CSCI 431",
+       "title": "Computer Graphics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship (Compulsory)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring 2030",
+     "courses": [
+      {
+       "code": "CSCI 441",
+       "title": "Software Engineering",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 652",
+       "title": "Database Design and Programming",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    }
+   ],
+   "electives": [
+    {
+     "code": "AIN 320",
+     "title": "Computer Vision",
+     "prereqs": []
+    },
+    {
+     "code": "ENTR 110",
+     "title": "Introduction to Entrepreneurship Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 209",
+     "title": "Fundamentals of Artificial Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 320",
+     "title": "Cybersecurity Technician",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 360",
+     "title": "Introduction to Internet of Things",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 361",
+     "title": "Introduction to Robotics",
+     "prereqs": []
+    },
+    {
+     "code": "BUSN 370M",
+     "title": "anagement of Information Systems",
+     "prereqs": []
+    },
+    {
+     "code": "CLD 374",
+     "title": "Cloud Developing with CI/CD",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 376",
+     "title": "Cloud Native Development",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "FYP 401",
+     "title": "Final Year Project - I",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 375",
+     "title": "Digital Linguistics and Discourse",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 405",
+     "title": "Ethical Hacking",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 452",
+     "title": "Software Testing",
+     "prereqs": [
+      "ITM 201"
+     ]
+    },
+    {
+     "code": "INF 330",
+     "title": "Business Intelligence",
+     "prereqs": []
+    },
+    {
+     "code": "INF 604",
+     "title": "Data Analysis I",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 301",
+     "title": "Java Programming II",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 320",
+     "title": "Computer Networking",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 350",
+     "title": "Project Management",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 360",
+     "title": "Artificial Intelligence",
+     "prereqs": [
+      "ICT 209"
+     ]
+    },
+    {
+     "code": "ITM 370",
+     "title": "Data Analytics",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 380",
+     "title": "Cloud Computing",
+     "prereqs": [
+      "ITEC 101"
+     ]
+    },
+    {
+     "code": "ITM 390",
+     "title": "Machine Learning",
+     "prereqs": [
+      "ICT 209"
+     ]
+    },
+    {
+     "code": "ITM 454",
+     "title": "Natural Language Processing",
+     "prereqs": []
+    },
+    {
+     "code": "AIN 330",
+     "title": "Generative AI",
+     "prereqs": [
+      "ITM 360"
+     ]
+    },
+    {
+     "code": "ICT 340",
+     "title": "Vibe Coding (Exploring Conversational Software Development with AI)",
+     "prereqs": [
+      "ITM 340"
+     ]
+    },
+    {
+     "code": "INS 407",
+     "title": "Time Series Analysis",
+     "prereqs": [
+      "MATH 177"
+     ]
+    },
+    {
+     "code": "INS 409",
+     "title": "Data Governance",
+     "prereqs": [
+      "ITM 340"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cybersecurity",
+   "name": "Cybersecurity",
+   "degree": "Single",
+   "credit_total": 120,
+   "source": "Cyber.pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL 2026",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "ITEC 101",
+       "title": "Introduction to Information Technology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "ENVS 131C",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring 2027",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communication",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "HUMN 101",
+       "title": "Introduction to Humanities",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "HIST 131",
+       "title": "Behavioral and Social Sciences",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "POLS 110",
+       "title": "Introduction to Political Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 2027",
+     "courses": [
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL 2027",
+     "courses": [
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "COSC 111",
+       "title": "Computer Science Survey",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 121",
+       "title": "Computer Science A",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 241",
+       "title": "Computer Science Fundamentals",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 201",
+       "title": "Java Programming I",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring 2028",
+     "courses": [
+      {
+       "code": "COSC 221",
+       "title": "Computer Science B",
+       "credits": 3,
+       "prereqs": [
+        "COSC 121"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "INFO 250",
+       "title": "Web Development I",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 331",
+       "title": "Operating Systems",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 320",
+       "title": "Cybersecurity Technician",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101",
+        "MATH 177"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 340",
+       "title": "Maths for Computing",
+       "credits": 3,
+       "prereqs": [
+        "MATH 177"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL 2028",
+     "courses": [
+      {
+       "code": "COSC 251",
+       "title": "Data Structure",
+       "credits": 3,
+       "prereqs": [
+        "ITM 201"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 340",
+       "title": "Networking Essentials",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 301",
+       "title": "Software Requirements, Analysis & Design",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "INFO 652",
+       "title": "Programming and Database Design",
+       "credits": 3,
+       "prereqs": [
+        "INFO 250"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamental of Artificial Intelligence (Compulsory)",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Elective"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring 2029",
+     "courses": [
+      {
+       "code": "CYBR 352",
+       "title": "Linux Fundamentals",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CYBR 351",
+       "title": "Introduction to Cyber",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CYBR 354",
+       "title": "Network Research",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CYBR 353",
+       "title": "Python Fundamentals",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 2029",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL 2029",
+     "courses": [
+      {
+       "code": "MATH 234A",
+       "title": "Analytic Geometry and Calculus I",
+       "credits": 5,
+       "prereqs": [
+        "MATH 177"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CYBR 355",
+       "title": "Penetration Testing",
+       "credits": 3,
+       "prereqs": [
+        "CYBR 351"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CYBR 356",
+       "title": "SOC Analyst",
+       "credits": 3,
+       "prereqs": [
+        "CYBR 351"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CYBR 358",
+       "title": "Governance, Risk. Compliance",
+       "credits": 3,
+       "prereqs": [
+        "CYBR 351"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship (Compulsory)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring 2030",
+     "courses": [
+      {
+       "code": "FYP 401",
+       "title": "Final Year Project- I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "CYBR 357",
+       "title": "Digital Forensics",
+       "credits": 3,
+       "prereqs": [
+        "CYBR 351"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "slot": true
+      }
+     ]
+    }
+   ],
+   "electives": [
+    {
+     "code": "AIN 320",
+     "title": "Computer Vision",
+     "prereqs": []
+    },
+    {
+     "code": "CLD 374",
+     "title": "Cloud Developing with CI/CD",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 376",
+     "title": "Cloud Native Development",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "ENTR 110",
+     "title": "Introduction to Entrepreneurship Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 209",
+     "title": "Fundamentals of Artificial Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 360",
+     "title": "Introduction to Internet of Things",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "ICT 361",
+     "title": "Introduction to Robotics",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "INF 330",
+     "title": "Business Intelligence",
+     "prereqs": []
+    },
+    {
+     "code": "INF 604",
+     "title": "Data Analysis I",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 350",
+     "title": "Project Management",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 360",
+     "title": "Artificial Intelligence",
+     "prereqs": [
+      "ICT 209"
+     ]
+    },
+    {
+     "code": "ITM 370",
+     "title": "Data Analytics",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 380",
+     "title": "Cloud Computing",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 390",
+     "title": "Machine Learning",
+     "prereqs": [
+      "ICT 209"
+     ]
+    },
+    {
+     "code": "ITM 454",
+     "title": "Natural Language Processing",
+     "prereqs": []
+    },
+    {
+     "code": "AIN 330",
+     "title": "Generative AI",
+     "prereqs": [
+      "ITM 360"
+     ]
+    },
+    {
+     "code": "ICT 340",
+     "title": "Vibe Coding (Exploring Conversational Software Development with AI)",
+     "prereqs": []
+    },
+    {
+     "code": "INS 407",
+     "title": "Time Series Analysis",
+     "prereqs": []
+    },
+    {
+     "code": "INS 409",
+     "title": "Data Governance",
+     "prereqs": []
+    }
+   ]
+  },
+  {
+   "id": "digital-infrastructure",
+   "name": "Digital Infrastructure",
+   "degree": "Single",
+   "credit_total": 120,
+   "source": "Digital.pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL 2026",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "ITEC 101",
+       "title": "Introduction to Information Technology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "ENVS 131C",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring 2027",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communication",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "HUMN 101",
+       "title": "Introduction to Humanities",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "HIST 131",
+       "title": "Behavioral and Social Sciences",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "POLS 110",
+       "title": "Introduction to Political Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 2027",
+     "courses": [
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL 2027",
+     "courses": [
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "COSC 111",
+       "title": "Computer Science Survey",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 121",
+       "title": "Computer Science A",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 241",
+       "title": "Computer Science Fundamentals",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 201",
+       "title": "Java Programming I",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring 2028",
+     "courses": [
+      {
+       "code": "COSC 221",
+       "title": "Computer Science B",
+       "credits": 3,
+       "prereqs": [
+        "COSC 121"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "INFO 250",
+       "title": "Web Development I",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 331",
+       "title": "Operating Systems",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 320",
+       "title": "Cybersecurity Technician",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101",
+        "MATH 177"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 340",
+       "title": "Maths for Computing",
+       "credits": 3,
+       "prereqs": [
+        "MATH 177"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL 2028",
+     "courses": [
+      {
+       "code": "COSC 251",
+       "title": "Data Structure",
+       "credits": 3,
+       "prereqs": [
+        "ITM 201"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 340",
+       "title": "Networking Essentials",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 301",
+       "title": "Software Requirements, Analysis & Design",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 380",
+       "title": "Cloud Computing",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamental of Artificial Intelligence (Compulsory)",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Elective"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring 2029",
+     "courses": [
+      {
+       "code": "INFO 652",
+       "title": "Programming and Database Design",
+       "credits": 3,
+       "prereqs": [
+        "INFO 250"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CLD 371",
+       "title": "Cloud Operations",
+       "credits": 3,
+       "prereqs": [
+        "ITM 380"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CLD 374",
+       "title": "Cloud Developing with CI/CD",
+       "credits": 3,
+       "prereqs": [
+        "ITM 380"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CLD 377",
+       "title": "Cloud Security",
+       "credits": 3,
+       "prereqs": [
+        "ITM 380"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 2029",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL 2029",
+     "courses": [
+      {
+       "code": "CLD 375",
+       "title": "Cloud Machine Learning Foundation and Data Engineering",
+       "credits": 3,
+       "prereqs": [
+        "ITM 380"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CLD 373",
+       "title": "Cloud Automation using Devops",
+       "credits": 3,
+       "prereqs": [
+        "ITM 380"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CLD 372",
+       "title": "Cloud Solutions Architect",
+       "credits": 3,
+       "prereqs": [
+        "ITM 380"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "MATH 234A",
+       "title": "Analytic Geometry and Calculus I",
+       "credits": 5,
+       "prereqs": [
+        "MATH 177"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship (Compulsory)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring 2030",
+     "courses": [
+      {
+       "code": "FYP 401",
+       "title": "Final Year Project- I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "CLD 376",
+       "title": "Cloud Native Development",
+       "credits": 3,
+       "prereqs": [
+        "ITM 380"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "slot": true
+      }
+     ]
+    }
+   ],
+   "electives": [
+    {
+     "code": "AIN 320",
+     "title": "Computer Vision",
+     "prereqs": []
+    },
+    {
+     "code": "ENTR 110",
+     "title": "Introduction to Entrepreneurship Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 209",
+     "title": "Fundamentals of Artificial Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 303",
+     "title": "UI/UX Design",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 360",
+     "title": "Introduction to Internet of Things",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "ICT 361",
+     "title": "Introduction to Robotics",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "ICT 401",
+     "title": "Innovation and Design Thinking",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 405",
+     "title": "Ethical Hacking",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 406",
+     "title": "Advanced Ethical Hacking",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 452",
+     "title": "Software Testing",
+     "prereqs": []
+    },
+    {
+     "code": "INF 330",
+     "title": "Business Intelligence",
+     "prereqs": []
+    },
+    {
+     "code": "INF 604",
+     "title": "Data Analysis I",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 350",
+     "title": "Project Management",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 360",
+     "title": "Artificial Intelligence",
+     "prereqs": [
+      "ICT 209"
+     ]
+    },
+    {
+     "code": "ITM 370",
+     "title": "Data Analytics",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 390",
+     "title": "Machine Learning",
+     "prereqs": [
+      "ICT 209"
+     ]
+    },
+    {
+     "code": "ITM 454",
+     "title": "Natural Language Processing",
+     "prereqs": []
+    },
+    {
+     "code": "AIN 330",
+     "title": "Generative AI",
+     "prereqs": [
+      "ITM 360"
+     ]
+    },
+    {
+     "code": "ICT 340",
+     "title": "Vibe Coding (Exploring Conversational Software Development with AI)",
+     "prereqs": []
+    },
+    {
+     "code": "INS 407",
+     "title": "Time Series Analysis",
+     "prereqs": []
+    },
+    {
+     "code": "INS 409",
+     "title": "Data Governance",
+     "prereqs": []
+    }
+   ]
+  },
+  {
+   "id": "esociety-dual",
+   "name": "Information Science & eSociety (UA BA + AUPP BS Business)",
+   "degree": "Dual",
+   "credit_total": 127,
+   "source": "Emerging Techonologies of Society.pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL (Semester 1)",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communications",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamentals of AI",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring (Semester 2)",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENVS 131",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ISEC 100",
+       "title": "The Information Era Development",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HIST 131",
+       "title": "World History 1500 C.E. to the Present",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 1",
+     "courses": [
+      {
+       "code": "PSYC 101",
+       "title": "Introductory to Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": null,
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship",
+       "credits": 3,
+       "prereqs": [],
+       "category": null,
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL (Semester 3)",
+     "courses": [
+      {
+       "code": "MATH 200",
+       "title": "Business Calculus",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 200",
+       "title": "Introduction to Business Communication",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ECON 200",
+       "title": "Economics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ACCT 201",
+       "title": "Financial Accounting",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 101",
+       "title": "Introduction to the Humanities",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring (Semester 4)",
+     "courses": [
+      {
+       "code": "ACCT 202",
+       "title": "Managerial Accounting",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ISEC 214",
+       "title": "Introduction to Data Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ECON 101",
+       "title": "",
+       "credits": 3,
+       "prereqs": [],
+       "category": null,
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 110",
+       "title": "Arts and Culture",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MKTG 301",
+       "title": "Principles of Marketing",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Summer",
+     "label": "Summer 2",
+     "courses": [
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL (Semester 5)",
+     "courses": [
+      {
+       "code": "FINC 301",
+       "title": "Introduction to Finance",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 300",
+       "title": "Legal Environment for Business",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MGMT 301",
+       "title": "Principles of Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ESOC 211",
+       "title": "Collaborating in Online Communities",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "ESOC 317",
+       "title": "Digital Crime & Social Media",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring (Semester 6)",
+     "courses": [
+      {
+       "code": "MGMT 320",
+       "title": "Operations Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 360",
+       "title": "Economic Strategy for Business Decisions",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ESOC 212",
+       "title": "Social Media Strategies Across Professions",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "ESOC 300",
+       "title": "Digital Storytelling and Culture",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "ESOC 314",
+       "title": "Theories of New Media",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 3",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": ": Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL (Semester 7)",
+     "courses": [
+      {
+       "code": "BUSN 478",
+       "title": "Introduction to Entrepreneurship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 440",
+       "title": "Human Resource Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ESOC 340",
+       "title": "Information, Multimedia Design and the Moving Image",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "ESOC 330",
+       "title": "Digital Dilemmas – Privacy, Property, and Access",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "ESOC 301",
+       "title": "Qualitative Internet Research",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring (Semester 8)",
+     "courses": [
+      {
+       "code": "MGMT 460",
+       "title": "Strategic Management",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "BUSN 479",
+       "title": "Practical Entrepreneur",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 207",
+       "title": "Research Method and Design",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ESOC 480",
+       "title": "Digital Engagement",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "ESOC 345",
+       "title": "Decoding Disinformation",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      }
+     ]
+    }
+   ],
+   "electives": []
+  },
+  {
+   "id": "ict",
+   "name": "Information and Communications Technology",
+   "degree": "Single",
+   "credit_total": 123,
+   "source": "ICT.pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL 2026",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "ITEC 101",
+       "title": "Introduction to Information Technology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "ENVS 131C",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring 2027",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communication",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "HUMN 101",
+       "title": "Introduction to Humanities",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "HIST 131",
+       "title": "Behavioral and Social Sciences",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "POLS 110",
+       "title": "Introduction to Political Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 2027",
+     "courses": [
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL 2027",
+     "courses": [
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "COSC 111",
+       "title": "Computer Science Survey",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 121",
+       "title": "Computer Science A",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 241",
+       "title": "Computer Science Fundamentals",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 201",
+       "title": "Java Programming I",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring 2028",
+     "courses": [
+      {
+       "code": "COSC 221",
+       "title": "Computer Science B",
+       "credits": 3,
+       "prereqs": [
+        "COSC 121"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "INFO 250",
+       "title": "Web Development I",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 331",
+       "title": "Operating Systems",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 320",
+       "title": "Cybersecurity Technician",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101",
+        "MATH 177"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 340",
+       "title": "Maths for Computing",
+       "credits": 3,
+       "prereqs": [
+        "MATH 177"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL 2028",
+     "courses": [
+      {
+       "code": "COSC 251",
+       "title": "Data Structure",
+       "credits": 3,
+       "prereqs": [
+        "ITM 201"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 301",
+       "title": "Software Requirements, Analysis & Design",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "INFO 652",
+       "title": "Programming and Database Design",
+       "credits": 3,
+       "prereqs": [
+        "INFO 250"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 340",
+       "title": "Networking Essentials",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamental of Artificial Intelligence (Compulsory)",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Elective"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring 2029",
+     "courses": [
+      {
+       "code": "INFO 251",
+       "title": "Web Development II",
+       "credits": 3,
+       "prereqs": [
+        "INFO 250"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CLD 372",
+       "title": "Cloud Solutions Architect",
+       "credits": 3,
+       "prereqs": [
+        "ITM 380"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 360",
+       "title": "Artificial Intelligence",
+       "credits": 3,
+       "prereqs": [
+        "ICT 209"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 380",
+       "title": "Cloud Computing",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 2029",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL 2029",
+     "courses": [
+      {
+       "code": "INFO 653",
+       "title": "Web Development III",
+       "credits": 3,
+       "prereqs": [
+        "INFO 251"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 390",
+       "title": "Machine Learning",
+       "credits": 3,
+       "prereqs": [
+        "ICT 209"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "MATH 234A",
+       "title": "Analytic Geometry and Calculus I",
+       "credits": 5,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "CLD 374",
+       "title": "Cloud Developing with CI/CD",
+       "credits": 3,
+       "prereqs": [
+        "ITM 380"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship (Compulsory)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring 2030",
+     "courses": [
+      {
+       "code": "FYP 401",
+       "title": "Final Year Project- I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "CLD 376",
+       "title": "Cloud Native Development",
+       "credits": 3,
+       "prereqs": [
+        "ITM 380"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "slot": true
+      }
+     ]
+    }
+   ],
+   "electives": [
+    {
+     "code": "AIN 320",
+     "title": "Computer Vision",
+     "prereqs": []
+    },
+    {
+     "code": "CLD 371",
+     "title": "Cloud Operations",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "ENTR 110",
+     "title": "Introduction to Entrepreneurship Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 209",
+     "title": "Fundamentals of Artificial Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 360",
+     "title": "Introduction to Internet of Things",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "ICT 361",
+     "title": "Introduction to Robotics",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "ICT 405",
+     "title": "Ethical Hacking",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 406",
+     "title": "Advanced Ethical Hacking",
+     "prereqs": []
+    },
+    {
+     "code": "INF 330",
+     "title": "Business Intelligence",
+     "prereqs": []
+    },
+    {
+     "code": "INF 604",
+     "title": "Data Analysis I",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 350",
+     "title": "Project Management",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 370",
+     "title": "Data Analytics",
+     "prereqs": []
+    },
+    {
+     "code": "AIN 330",
+     "title": "Generative AI",
+     "prereqs": [
+      "ITM 360"
+     ]
+    },
+    {
+     "code": "ICT 340",
+     "title": "Vibe Coding (Exploring Conversational Software Development with AI)",
+     "prereqs": []
+    },
+    {
+     "code": "INS 407",
+     "title": "Time Series Analysis",
+     "prereqs": []
+    },
+    {
+     "code": "INS 409",
+     "title": "Data Governance",
+     "prereqs": []
+    }
+   ]
+  },
+  {
+   "id": "political-science-dual",
+   "name": "Political Science",
+   "degree": "Dual",
+   "credit_total": 125,
+   "source": "IR (Dual).pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL (Semester 1)",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "POLS 110",
+       "title": "Introduction to Political Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 103",
+       "title": "(Oral Communication0)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring (Semester 1)",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENVS 131C",
+       "title": "+ ENVS 131A Environmental Science + Lab",
+       "credits": 4,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 101",
+       "title": "Introduction to Humanities",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 1",
+     "courses": [
+      {
+       "code": "HIST 131",
+       "title": "Behavioral and Social Sciences",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL (Semester 3)",
+     "courses": [
+      {
+       "code": "POLS 101",
+       "title": "American Government",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "POLS 230",
+       "title": "Introduction to International Relations",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 101",
+       "title": "Introduction to Law and Legal System",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 207",
+       "title": "Research Methods and Design",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring (Semester 4)",
+     "courses": [
+      {
+       "code": "PHIL 201",
+       "title": "Political Philosophy",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "ECON 200",
+       "title": "Economics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 247",
+       "title": "Principles of Sustainable Development",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "POLS 227",
+       "title": "Introduction to Comparative Politics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "POLS 325",
+       "title": "Introduction to Public Policy",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Summer",
+     "label": "Summer 2",
+     "courses": [
+      {
+       "code": "ITEC 101",
+       "title": "Introduction to Information TechnologyAUPP",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamental of AI",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL (Semester 5)",
+     "courses": [
+      {
+       "code": "POLS 325",
+       "title": "Cambodian Government",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 230",
+       "title": "International Political Economy",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "POLS 630",
+       "title": "International Organizations in World Politics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "POLS 403",
+       "title": "American Presidency",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "IR 315",
+       "title": "ASEAN & International System",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring (Semester 6)",
+     "courses": [
+      {
+       "code": "POLS 632",
+       "title": "Problems and Issues in World Politics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "IR 380",
+       "title": "A (Peace and Conflict Studies)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "POLS 631",
+       "title": "American Foreign Policy",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": null,
+       "title": "Major Elective I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": "HUMN 110",
+       "title": "Arts and Culture",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 3",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL (Semester 7)",
+     "courses": [
+      {
+       "code": "POLS 450",
+       "title": "Research Methods",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "IR 482",
+       "title": "Diplomacy and Foreign Policy",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Major Elective II",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Major Elective III",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "General Elective I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring (Semester 8)",
+     "courses": [
+      {
+       "code": "POLS 490",
+       "title": "Senior Capstone",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": null,
+       "title": "Major Elective IV",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Major Elective V",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "General Elective II",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    }
+   ],
+   "electives": [],
+   "note": "The PDF lists 125 credits but its semester totals add up to 128."
+  },
+  {
+   "id": "international-relations",
+   "name": "International Relations and Diplomacy",
+   "degree": "Single",
+   "credit_total": 124,
+   "source": "IR (Single).pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL (Semester 1)",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "POLS 110",
+       "title": "Introduction to Political Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communication",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring (Semester 1)",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENVS 131C",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 110",
+       "title": "Introduction to Humanities",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamental of AI",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 1",
+     "courses": [
+      {
+       "code": "HUMN 110",
+       "title": "Arts and Culture",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL (Semester 3)",
+     "courses": [
+      {
+       "code": "ITEC 101",
+       "title": "Introduction to Information Technology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 101",
+       "title": "Introduction to International Relations",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 101",
+       "title": "(Introduction to Law and Legal System) pre-requisite",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 207",
+       "title": "Research Methods and Design",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring (Semester 4)",
+     "courses": [
+      {
+       "code": "ECON 200",
+       "title": "Economics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 247",
+       "title": "Principles of Sustainable Development",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "POLS 227",
+       "title": "Introduction to Comparative Politics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "General Elective I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "General Elective II",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Summer",
+     "label": "Summer 2",
+     "courses": [
+      {
+       "code": "HIST 131",
+       "title": "World History from 1500 CE",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PSYC 101",
+       "title": "Introductory to Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL (Semester 5)",
+     "courses": [
+      {
+       "code": "POLS 325",
+       "title": "Cambodian Government",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 380",
+       "title": "A (Peace and Conflict Studies)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 320",
+       "title": "International Political Economy",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "POLS 320",
+       "title": "Southeast Asian Comparative Politics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Major Elective I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring (Semester 6)",
+     "courses": [
+      {
+       "code": "POLS 360",
+       "title": "Comparative Social Movements",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 315",
+       "title": "ASEAN & International System",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 310",
+       "title": "International Organizations",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 333",
+       "title": "Globalization",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Major Elective II",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 3",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL (Semester 7)",
+     "courses": [
+      {
+       "code": "IR 482",
+       "title": "Diplomacy and Foreign Policy",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 415",
+       "title": "(International Politics of the Asia-Pacific) (new)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Major Elective III",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Major Elective IV",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring (Semester 8)",
+     "courses": [
+      {
+       "code": "POLS 400",
+       "title": "Public Policy",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "IR 490",
+       "title": "(Senior Capstone - Optional) or Major Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Major Elective V",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "General Elective III",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    }
+   ],
+   "electives": []
+  },
+  {
+   "id": "information-systems-dual",
+   "name": "Information Systems",
+   "degree": "Dual",
+   "credit_total": 122,
+   "source": "Info System.pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL 2026",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ITEC 101",
+       "title": "Introduction to Information Technology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENVS 131C",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring 2027",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communication",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 110",
+       "title": "Arts and Culture",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HIST 131",
+       "title": "Behavioral and Social Sciences",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 2027",
+     "courses": [
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENVS 131A",
+       "title": "Applied Environmental Science",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL 2027",
+     "courses": [
+      {
+       "code": "POLS 110",
+       "title": "Introduction to Political Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COSC 121",
+       "title": "Computer Science A (Python)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "INF 330",
+       "title": "Business Intelligence",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "INF 604",
+       "title": "Data Analysis I",
+       "credits": 3,
+       "prereqs": [
+        "ITM 340"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ITM 340",
+       "title": "Maths for Computing",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring 2028",
+     "courses": [
+      {
+       "code": "INF 302",
+       "title": "Windows Client Administration",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 250",
+       "title": "Introduction to Web Development",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INS 605",
+       "title": "Data Analysis II",
+       "credits": 3,
+       "prereqs": [
+        "INF 604"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "INS 606",
+       "title": "Data Mining and Data Warehousing",
+       "credits": 3,
+       "prereqs": [
+        "INF 604"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "INS 407",
+       "title": "Time Series Analysis",
+       "credits": 3,
+       "prereqs": [
+        "MATH 177"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL 2028",
+     "courses": [
+      {
+       "code": "INF 300",
+       "title": "Foundations of Information Networking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 304",
+       "title": "Management Information Systems",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamental of Artificial Intelligence (Compulsory)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring 2029",
+     "courses": [
+      {
+       "code": "MIS 602",
+       "title": "Information Systems Design and Development",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 405",
+       "title": "Research Methods in Informatics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INS 409",
+       "title": "Data Governance",
+       "credits": 3,
+       "prereqs": [
+        "ITM 340"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 2029",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL 2029",
+     "courses": [
+      {
+       "code": "INF 430",
+       "title": "Tech. Innovation and Entrepreneurial Lead.",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 490",
+       "title": "Capstone Seminar in Informatics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship (Compulsory)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring 2030",
+     "courses": [
+      {
+       "code": "INF 610",
+       "title": "Public Policy, Ethics, Law in Tele.",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 645",
+       "title": "Artificial Intelligence Systems and Applications",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    }
+   ],
+   "electives": [
+    {
+     "code": "AIN 320",
+     "title": "Computer Vision",
+     "prereqs": []
+    },
+    {
+     "code": "CLD 371",
+     "title": "Cloud Operations",
+     "prereqs": []
+    },
+    {
+     "code": "CLD 374",
+     "title": "Cloud Developing with CI/CD",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 375",
+     "title": "Cloud Machine Learning Foundation and Data Engineering",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 376",
+     "title": "Cloud Native Development",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "ENTR 110",
+     "title": "Introduction to Entrepreneurship Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "FYP 401",
+     "title": "Final Year Project- I",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 209",
+     "title": "Fundamentals of Artificial Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 360",
+     "title": "Introduction to Internet of Things",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "ICT 361",
+     "title": "Introduction to Robotics",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "ICT 405",
+     "title": "Ethical Hacking",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 360",
+     "title": "Artificial Intelligence",
+     "prereqs": [
+      "ICT 209"
+     ]
+    },
+    {
+     "code": "ITM 370",
+     "title": "Data Analytics",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 380",
+     "title": "Cloud Computing",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 390",
+     "title": "Machine Learning",
+     "prereqs": [
+      "ICT 209"
+     ]
+    },
+    {
+     "code": "ITM 454",
+     "title": "Natural Language Processing",
+     "prereqs": []
+    },
+    {
+     "code": "AIN 330",
+     "title": "Generative AI",
+     "prereqs": [
+      "ITM 360"
+     ]
+    },
+    {
+     "code": "ICT 340",
+     "title": "Vibe Coding (Exploring Conversational Software Development with AI)",
+     "prereqs": []
+    }
+   ]
+  },
+  {
+   "id": "law-dual",
+   "name": "Law",
+   "degree": "Dual",
+   "credit_total": 124,
+   "source": "LAW (Dual).pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL (Semester 1)",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communication",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 101",
+       "title": "Introduction to Law and Legal Systems",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring (Semester 2)",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 199",
+       "title": "English for Legal Purposes",
+       "credits": 3,
+       "prereqs": [
+        "LEGL 101"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "POLS 110",
+       "title": "Introduction to Political Science",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 1",
+     "courses": [
+      {
+       "code": "ENVS 131C",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL (Semester 3)",
+     "courses": [
+      {
+       "code": "HIST 131",
+       "title": "Behavioral and Social Sciences",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ITEC 101",
+       "title": "Introduction to Information Technology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 101",
+       "title": "Introduction to the Humanities",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 200",
+       "title": "Business Calculus",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 261",
+       "title": "Cambodian Civil Code I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring (Semester 4)",
+     "courses": [
+      {
+       "code": "HUMN 110",
+       "title": "Arts and Culture",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 310",
+       "title": "Legal Ethics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 361",
+       "title": "Cambodian Civil Code II",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Law Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Law Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL (Semester 5)",
+     "courses": [
+      {
+       "code": "LEGL 332",
+       "title": "Cambodian Criminal Law and Procedure",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 435",
+       "title": "International Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LAW 402A",
+       "title": "The American Common Law System I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "LAW 407",
+       "title": "Legal Analysis, Writing and Research",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": null,
+       "title": "Law Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring (Semester 6)",
+     "courses": [
+      {
+       "code": "LEGL 340",
+       "title": "Labor Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 360",
+       "title": "Southeast Asian Law & Legal Systems",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamentals of AI",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LAW 401",
+       "title": "Procedure",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "LAW 402B",
+       "title": "The American Common Law System II",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 3",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL (Semester 7)",
+     "courses": [
+      {
+       "code": null,
+       "title": "Law Major Course",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Law Major Course",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": "LAW 404",
+       "title": "The American Public Law System",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "LAW 416",
+       "title": "Introduction to Business Organizations",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "LAW 453A",
+       "title": "International Trade Law and Policy",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring (Semester 8)",
+     "courses": [
+      {
+       "code": null,
+       "title": "Law Major Course",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Law Major Course",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": "LAW 444B",
+       "title": "International Commercial Transactions",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "LAW 440A",
+       "title": "International Human Rights Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      },
+      {
+       "code": "LAW 459",
+       "title": "Public International Environment Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "UA"
+      }
+     ]
+    }
+   ],
+   "electives": []
+  },
+  {
+   "id": "law-single",
+   "name": "Law",
+   "degree": "Single",
+   "credit_total": 124,
+   "source": "LAW (Single).pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL (Semester 1)",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communication",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 101",
+       "title": "Introduction to Law and Legal Systems",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring (Semester 1)",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 199",
+       "title": "English for Legal Purposes",
+       "credits": 3,
+       "prereqs": [
+        "LEGL 101"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "POLS 110",
+       "title": "Introduction to Political Science",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 1",
+     "courses": [
+      {
+       "code": "ENVS 131C",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ITEC 101",
+       "title": "Introduction to Information TechnologyAUPP",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL (Semester 3)",
+     "courses": [
+      {
+       "code": "HIST 131",
+       "title": "Behavioral and Social Sciences",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 101",
+       "title": "Introduction to the Humanities",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 200",
+       "title": "Business Calculus",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 261",
+       "title": "Cambodian Civil Code I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring (Semester 4)",
+     "courses": [
+      {
+       "code": "HUMN 110",
+       "title": "Arts and Culture",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 310",
+       "title": "Legal Ethics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 361",
+       "title": "Cambodian Civil Code II",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 320A",
+       "title": "Cambodian Contract Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 332A",
+       "title": "Cambodian General Criminal Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Summer",
+     "label": "Summer 2",
+     "courses": [
+      {
+       "code": "ICT 209",
+       "title": "Fundamentals of AI",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL (Semester 5)",
+     "courses": [
+      {
+       "code": "LEGL 332B",
+       "title": "Cambodian Criminal Law and Procedure",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 435",
+       "title": "International Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 326",
+       "title": "Cambodian General Law of Obligations",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 230",
+       "title": "Environmental Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 333",
+       "title": "Moot Court I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring (Semester 6)",
+     "courses": [
+      {
+       "code": "LEGL 340",
+       "title": "Labor Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 360",
+       "title": "Southeast Asian Law & Legal Systems",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 325A",
+       "title": "Cambodian Tort Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 332C",
+       "title": "Cambodian Special Criminal Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Law Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 3",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL (Semester 7)",
+     "courses": [
+      {
+       "code": "LEGL 350",
+       "title": "Family Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 430",
+       "title": "Cambodian Constiutional Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 390",
+       "title": "Negotiation and Dispute Settlement",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 400A",
+       "title": "Cambodian Property Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Law Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring (Semester 8)",
+     "courses": [
+      {
+       "code": "LEGL 435",
+       "title": "International (Private and Public) Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 420A",
+       "title": "Cambodian Civil Procedure",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 450",
+       "title": "Intellectual Property",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "LEGL 495",
+       "title": "Special Topic in Law",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      }
+     ]
+    }
+   ],
+   "electives": []
+  },
+  {
+   "id": "software-development",
+   "name": "Software Development",
+   "degree": "Single",
+   "credit_total": 120,
+   "source": "Software.pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL 2026",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "ITEC 101",
+       "title": "Introduction to Information Technology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "ENVS 131C",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring 2027",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communication",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "HUMN 101",
+       "title": "Introduction to Humanities",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "HIST 131",
+       "title": "Behavioral and Social Sciences",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education"
+      },
+      {
+       "code": "POLS 110",
+       "title": "Introduction to Political Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 2027",
+     "courses": [
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL 2027",
+     "courses": [
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education"
+      },
+      {
+       "code": "COSC 111",
+       "title": "Computer Science Survey",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 121",
+       "title": "Computer Science A",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 241",
+       "title": "Computer Science Fundamentals",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 201",
+       "title": "Java Programming I",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring 2028",
+     "courses": [
+      {
+       "code": "COSC 221",
+       "title": "Computer Science B",
+       "credits": 3,
+       "prereqs": [
+        "COSC 121"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "INFO 250",
+       "title": "Web Development I",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 331",
+       "title": "Operating Systems",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 320",
+       "title": "Cybersecurity Technician",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101",
+        "MATH 177"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 340",
+       "title": "Maths for Computing",
+       "credits": 3,
+       "prereqs": [
+        "MATH 177"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL 2028",
+     "courses": [
+      {
+       "code": "COSC 251",
+       "title": "Data Structure",
+       "credits": 3,
+       "prereqs": [
+        "ITM 201"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 301",
+       "title": "Software Requirements, Analysis & Design",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "INFO 652",
+       "title": "Programming and Database Design",
+       "credits": 3,
+       "prereqs": [
+        "INFO 250"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "COSC 340",
+       "title": "Networking Essentials",
+       "credits": 3,
+       "prereqs": [
+        "COSC 111"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamental of Artificial Intelligence (Compulsory)",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Elective"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring 2029",
+     "courses": [
+      {
+       "code": "INFO 251",
+       "title": "Web Development II",
+       "credits": 3,
+       "prereqs": [
+        "INFO 250"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 452",
+       "title": "Software Testing",
+       "credits": 3,
+       "prereqs": [
+        "ITM 201"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 302",
+       "title": "Mobile App Cross-Platform Dev. I",
+       "credits": 3,
+       "prereqs": [
+        "COSC 121"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ITM 380",
+       "title": "Cloud Computing",
+       "credits": 3,
+       "prereqs": [
+        "ITEC 101"
+       ],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 2029",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL 2029",
+     "courses": [
+      {
+       "code": "MATH 234A",
+       "title": "Analytic Geometry and Calculus I",
+       "credits": 5,
+       "prereqs": [
+        "MATH 177"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "INFO 653",
+       "title": "Web Development III",
+       "credits": 3,
+       "prereqs": [
+        "INFO 251"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 305",
+       "title": "Software Architecture & Design Pat.",
+       "credits": 3,
+       "prereqs": [
+        "ITM 201"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 340",
+       "title": "Vibe Coding (Exploring Conversational Software Development with AI)",
+       "credits": 3,
+       "prereqs": [
+        "ITM 340"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship (Compulsory)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring 2030",
+     "courses": [
+      {
+       "code": "FYP 401",
+       "title": "Final Year Project- I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      },
+      {
+       "code": "ICT 304",
+       "title": "Mobile App Cross-Platform Dev. II",
+       "credits": 3,
+       "prereqs": [
+        "ICT 302"
+       ],
+       "category": "Major"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "slot": true
+      }
+     ]
+    }
+   ],
+   "electives": [
+    {
+     "code": "AIN 320",
+     "title": "Computer Vision",
+     "prereqs": []
+    },
+    {
+     "code": "CLD 371",
+     "title": "Cloud Operations",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 372",
+     "title": "Cloud Solutions Architect",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 374",
+     "title": "Cloud Developing with CI/CD",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 376",
+     "title": "Cloud Native Development",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "ENTR 110",
+     "title": "Introduction to Entrepreneurship Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 209",
+     "title": "Fundamentals of Artificial Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 360",
+     "title": "Introduction to Internet of Things",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "ICT 361",
+     "title": "Introduction to Robotics",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "ICT 401",
+     "title": "Innovation and Design Thinking",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 405",
+     "title": "Ethical Hacking",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 406",
+     "title": "Advanced Ethical Hacking",
+     "prereqs": []
+    },
+    {
+     "code": "INF 330",
+     "title": "Business Intelligence",
+     "prereqs": []
+    },
+    {
+     "code": "INF 604",
+     "title": "Data Analysis I",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 301",
+     "title": "Java Programming II",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 350",
+     "title": "Project Management",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 360",
+     "title": "Artificial Intelligence",
+     "prereqs": [
+      "ICT 209"
+     ]
+    },
+    {
+     "code": "ITM 370",
+     "title": "Data Analytics",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 390",
+     "title": "Machine Learning",
+     "prereqs": [
+      "ICT 209"
+     ]
+    },
+    {
+     "code": "ITM 454",
+     "title": "Natural Language Processing",
+     "prereqs": []
+    },
+    {
+     "code": "AIN 330",
+     "title": "Generative AI",
+     "prereqs": [
+      "ITM 360"
+     ]
+    },
+    {
+     "code": "INS 407",
+     "title": "Time Series Analysis",
+     "prereqs": []
+    },
+    {
+     "code": "INS 409",
+     "title": "Data Governance",
+     "prereqs": []
+    }
+   ]
+  },
+  {
+   "id": "web-mobile-dual",
+   "name": "Web and Mobile Application Development",
+   "degree": "Dual",
+   "credit_total": 122,
+   "source": "Web and Mobile.pdf",
+   "terms": [
+    {
+     "year": 1,
+     "term": "Fall",
+     "label": "FALL 2026",
+     "courses": [
+      {
+       "code": "ENGL 101",
+       "title": "English Composition I",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "MATH 177",
+       "title": "Elementary Statistics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ITEC 101",
+       "title": "Introduction to Information Technology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENVS 131C",
+       "title": "Environmental Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "SMNR 101",
+       "title": "First Year Experience",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Spring",
+     "label": "Spring 2027",
+     "courses": [
+      {
+       "code": "ENGL 102",
+       "title": "English Composition II",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COMM 103",
+       "title": "Oral Communication",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HUMN 110",
+       "title": "Arts and Culture",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "HIST 131",
+       "title": "Behavioral and Social Sciences",
+       "credits": 3,
+       "prereqs": [
+        "ENGL 101"
+       ],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "PSYC 101",
+       "title": "Introductory Psychology",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 1,
+     "term": "Summer",
+     "label": "Summer 2027",
+     "courses": [
+      {
+       "code": "PHIL 110",
+       "title": "Critical Thinking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENVS 131A",
+       "title": "Applied Environmental Science",
+       "credits": 1,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Fall",
+     "label": "FALL 2027",
+     "courses": [
+      {
+       "code": "POLS 110",
+       "title": "Introduction to Political Science",
+       "credits": 3,
+       "prereqs": [],
+       "category": "General Education",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ITM 340",
+       "title": "Maths for Computing",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "COSC 121",
+       "title": "Computer Science A (Python)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ICT 302",
+       "title": "Mobile App Cross-platform Development I",
+       "credits": 3,
+       "prereqs": [
+        "COSC 121"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ICT 209",
+       "title": "Fundamental of Artificial Intelligence (Compulsory)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      }
+     ]
+    },
+    {
+     "year": 2,
+     "term": "Spring",
+     "label": "Spring 2028",
+     "courses": [
+      {
+       "code": null,
+       "title": "INF ??? Emphasis Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU",
+       "slot": true
+      },
+      {
+       "code": "INF 250",
+       "title": "Introduction to Web Development",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "ICT 304",
+       "title": "Mobile App Cross-platform Dev.II",
+       "credits": 3,
+       "prereqs": [
+        "ICT 302"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "ENTR 110",
+       "title": "Introduction to Entrepreneurship (Compulsory)",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Fall",
+     "label": "FALL 2028",
+     "courses": [
+      {
+       "code": "INF 300",
+       "title": "Foundations of Information Networking",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": null,
+       "title": "INF ??? Emphasis Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU",
+       "slot": true
+      },
+      {
+       "code": "INF 651",
+       "title": "Front -end Web Development",
+       "credits": 3,
+       "prereqs": [
+        "INF 250"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Spring",
+     "label": "Spring 2029",
+     "courses": [
+      {
+       "code": "INF 405",
+       "title": "Research Methods in Informatics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 430",
+       "title": "Tech. Innovation and Entre. Lead.",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 653",
+       "title": "Back-end Web Development",
+       "credits": 3,
+       "prereqs": [
+        "INF 651"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": "INF 655",
+       "title": "Front-End Web Development II",
+       "credits": 3,
+       "prereqs": [
+        "INF 651"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 3,
+     "term": "Summer",
+     "label": "Summer 2029",
+     "courses": [
+      {
+       "code": "INTS 400",
+       "title": "Internship",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major"
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Fall",
+     "label": "FALL 2029",
+     "courses": [
+      {
+       "code": "INF 490",
+       "title": "Capstone Seminar in Informatics",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 610",
+       "title": "Public Policy, Ethics, Law in Tele.",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 656",
+       "title": "Back-End Web Development II",
+       "credits": 3,
+       "prereqs": [
+        "INF 653"
+       ],
+       "category": "Major",
+       "taught_by": "AUPP"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    },
+    {
+     "year": 4,
+     "term": "Spring",
+     "label": "Spring 2030",
+     "courses": [
+      {
+       "code": "INF 652",
+       "title": "Database Design and Programming",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": "INF 650",
+       "title": "Intro. Human Computer Interaction",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Major",
+       "taught_by": "FHSU"
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      },
+      {
+       "code": null,
+       "title": "Elective",
+       "credits": 3,
+       "prereqs": [],
+       "category": "Elective",
+       "taught_by": "AUPP",
+       "slot": true
+      }
+     ]
+    }
+   ],
+   "electives": [
+    {
+     "code": "AIN 320",
+     "title": "Computer Vision",
+     "prereqs": []
+    },
+    {
+     "code": "CLD 371",
+     "title": "Cloud Operations",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 374",
+     "title": "Cloud Developing with CI/CD",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 375",
+     "title": "Cloud Machine Learning Foundation and Data Engineering",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "CLD 376",
+     "title": "Cloud Native Development",
+     "prereqs": [
+      "ITM 380"
+     ]
+    },
+    {
+     "code": "ENTR 110",
+     "title": "Introduction to Entrepreneurship Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "FYP 401",
+     "title": "Final Year Project- I",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 209",
+     "title": "Fundamentals of Artificial Intelligence (Compulsory)",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 303",
+     "title": "UI/UX Design",
+     "prereqs": []
+    },
+    {
+     "code": "ICT 360",
+     "title": "Introduction to Internet of Things",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "ICT 361",
+     "title": "Introduction to Robotics",
+     "prereqs": [
+      "COSC 121"
+     ]
+    },
+    {
+     "code": "ICT 405",
+     "title": "Ethical Hacking",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 360",
+     "title": "Artificial Intelligence",
+     "prereqs": [
+      "ICT 209"
+     ]
+    },
+    {
+     "code": "ITM 370",
+     "title": "Data Analytics",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 380",
+     "title": "Cloud Computing",
+     "prereqs": []
+    },
+    {
+     "code": "ITM 390",
+     "title": "Machine Learning",
+     "prereqs": [
+      "ICT 209"
+     ]
+    },
+    {
+     "code": "ITM 454",
+     "title": "Natural Language Processing",
+     "prereqs": []
+    },
+    {
+     "code": "AIN 330",
+     "title": "Generative AI",
+     "prereqs": [
+      "ITM 360"
+     ]
+    },
+    {
+     "code": "ICT 340",
+     "title": "Vibe Coding (Exploring Conversational Software Development with AI)",
+     "prereqs": []
+    },
+    {
+     "code": "INS 407",
+     "title": "Time Series Analysis",
+     "prereqs": []
+    }
+   ]
+  }
+ ]
+}

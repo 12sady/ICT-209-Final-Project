@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block title %}Import — Registration Planner{% endblock %}
+{% block content %}
+  <header class="page-header">
+    <div>
+      <h1>Import</h1>
+      <p class="program">Bring in your program's curriculum and this term's course offerings. Both live here so it's a one-stop setup/refresh page.</p>
+    </div>
+  </header>
+
+  <section class="card recommended-card">
+    <h2>Import curriculum</h2>
+    <p class="hint">Copy the table from Rean's curriculum page (or similar) and paste it below — this fills in your full course list (required + electives) and prerequisites automatically. It only previews here; nothing changes until you click Apply.</p>
+    <textarea id="curr-paste-input" rows="6" placeholder="Course Code&#9;Course Name&#9;CATEGORY&#9;Sub-Category&#9;Credits&#9;Course requisites&#10;COSC 121&#9;Computer Science A&#9;Major&#9;&#9;3&#9;-"></textarea>
+    <button id="curr-parse-btn">Parse</button>
+    <div id="curr-parse-preview"></div>
+  </section>
+
+  <details class="card">
+    <summary class="card-summary"><h2>Update a single curriculum course</h2></summary>
+    <p class="hint">Changed prerequisites, a new elective, a different credit count? Add or fix one course here without re-pasting everything. Enter an existing code to update it.</p>
+    <div class="manual-grid">
+      <label>Code<input type="text" id="mc-code" placeholder="COSC 121" /></label>
+      <label class="wide">Course name<input type="text" id="mc-name" /></label>
+      <label>Category<input type="text" id="mc-category" list="mc-category-list" placeholder="e.g. Major Electives" /></label>
+      <datalist id="mc-category-list"></datalist>
+      <label>Credits<input type="number" id="mc-credits" value="3" min="0" step="0.5" /></label>
+      <label class="wide">Prerequisites (comma-separated codes)<input type="text" id="mc-prereqs" placeholder="COSC 111, MATH 177" /></label>
+      <label class="opt-check"><input type="checkbox" id="mc-required" /> Required for my degree</label>
+    </div>
+    <button id="mc-save-btn">Save course</button>
+    <span id="mc-status" class="hint"></span>
+  </details>
+
+  {% if not is_admin %}
+  <section class="card">
+    <h2>Managed by the admin</h2>
+    <p class="hint">The term's course offerings, the academic calendar (term dates and breaks) and the sample course plans are published by the admin account, so everyone sees the same data. You can still bring in or edit <em>your own</em> curriculum above, or pick a sample plan on the <a href="{{ url_for('curriculum') }}">Curriculum</a> page.</p>
+  </section>
+  {% endif %}
+
+  <div id="admin-tools" {% if not is_admin %}hidden{% endif %}>
+  <details class="card" id="pe-card">
+    <summary class="card-summary"><h2>Sample course plans (admin)</h2></summary>
+    <p class="hint">The semester-by-semester plan for each major. Students pick one on the Curriculum page and get their own editable copy; changes you make here only affect students who pick the plan afterwards.</p>
+    <div id="pe-readonly" class="banner" hidden>Only the admin account (the first one created) can edit the shared plans. Students can edit their own copy on the Curriculum page.</div>
+    <div class="plan-pick">
+      <select id="pe-select" aria-label="Program plan"></select>
+      <button id="pe-new-btn" class="secondary" type="button">+ New plan</button>
+      <button id="pe-dup-btn" class="secondary" type="button">Duplicate</button>
+      <button id="pe-del-btn" class="secondary" type="button">Delete</button>
+    </div>
+    <div id="pe-editor" hidden style="margin-top: var(--sp-3);">
+      <div class="manual-grid">
+        <label class="wide">Program name<input type="text" id="pe-name" /></label>
+        <label>Degree<select id="pe-degree"><option value="Single">Single</option><option value="Dual">Dual</option><option value="">—</option></select></label>
+        <label>Total credits<input type="number" id="pe-total" min="0" /></label>
+      </div>
+      <div id="pe-terms"></div>
+      <button id="pe-add-term" class="secondary" type="button">+ Add a semester</button>
+      <h3 style="margin:var(--sp-4) 0 var(--sp-1);">Approved electives</h3>
+      <p class="hint">One per line: <code>CODE | Title | prerequisite codes</code> — for example <code>ITM 370 | Data Analytics | ITM 340</code>.</p>
+      <textarea id="pe-electives" rows="6"></textarea>
+      <div style="margin-top: var(--sp-3);">
+        <button id="pe-save-btn" type="button">Save plan</button>
+        <span id="pe-status" class="hint"></span>
+      </div>
+    </div>
+  </details>
+
+  <div class="step-divider">this term's course offerings</div>
+
+  <details class="card" id="cal-card">
+    <summary class="card-summary"><h2>Academic calendar</h2></summary>
+    <p class="hint" id="cal-hint">When the term starts and ends, plus any breaks. The "Add to calendar" export on the Plan page repeats each class weekly between these dates and skips the breaks. A section's own dates from the Excel file (Start Date / End Date) are used first when they exist.</p>
+    <div id="cal-readonly" class="banner" hidden>Only the admin account (the first one created) can change the academic calendar. You can see the current dates below.</div>
+    <div class="manual-grid">
+      <label class="wide">Term name<input type="text" id="cal-term" placeholder="Fall 2026" /></label>
+      <label>First day of classes<input type="date" id="cal-start" /></label>
+      <label>Last day of classes<input type="date" id="cal-end" /></label>
+    </div>
+    <div id="cal-detected" class="hint" style="margin:var(--sp-2) 0;" hidden></div>
+    <h3 style="margin:var(--sp-3) 0 var(--sp-1);">Breaks &amp; holidays</h3>
+    <p class="hint">No classes on these days (e.g. Pchum Ben, midterm break). For a single day, leave the end date the same.</p>
+    <div id="cal-breaks"></div>
+    <button id="cal-add-break" class="secondary" type="button">+ Add a break</button>
+    <div style="margin-top:var(--sp-3);">
+      <button id="cal-save-btn">Save calendar</button>
+      <span id="cal-status" class="hint"></span>
+    </div>
+  </details>
+
+  <section class="card">
+    <h2>How should new data be applied?</h2>
+    <label class="opt-check"><input type="radio" name="apply-mode" value="merge" checked /> Update — add new sections, update ones that changed, keep everything else</label>
+    <label class="opt-check" style="margin-top:6px;"><input type="radio" name="apply-mode" value="replace" /> Replace everything — the new data is the complete list of offerings</label>
+    <p class="hint" style="margin-top:var(--sp-2);">Applies to the Excel upload and the pasted text below. Offerings are shared by everyone using this app. Use "Update" for a refreshed seat count or a few new sections, "Replace" for a brand-new term.</p>
+  </section>
+
+  <section class="card step-card" style="margin-top: 20px;">
+    <span class="step-badge">1</span>
+    <h2>Upload</h2>
+    <input type="file" id="file-input" accept=".xlsx,.xls" />
+    <button id="upload-btn">Upload</button>
+    <p id="upload-status" class="hint"></p>
+  </section>
+
+  <section class="card step-card" id="sheet-section" hidden style="margin-top: 20px;">
+    <span class="step-badge">2</span>
+    <h2>Choose the sheet</h2>
+    <p class="hint">This workbook has more than one sheet — registrars often keep past terms in the same file. Pick the one with <strong>this term's</strong> actual course list; the wrong one will look empty or fail to map.</p>
+    <select id="sheet-select"></select>
+  </section>
+
+  <section class="card step-card" id="mapping-section" hidden style="margin-top: 20px;">
+    <span class="step-badge">3</span>
+    <h2>Map columns</h2>
+    <p class="hint">We guessed some of these from your headers — check and fix as needed. Fill in EITHER the separate Days/Start/End fields OR the single combined "Meeting time" field, whichever matches your sheet.</p>
+    <div class="table-wrap"><table class="mapping-table" id="mapping-table"></table></div>
+    <button id="preview-btn">Preview</button>
+  </section>
+
+  <section class="card step-card" id="preview-section" hidden style="margin-top: 20px;">
+    <span class="step-badge">4</span>
+    <h2>Preview &amp; import</h2>
+    <p id="preview-summary" class="hint"></p>
+    <div class="table-wrap"><table class="course-table" id="preview-table">
+      <thead>
+        <tr><th>Code</th><th>Sec</th><th>Title</th><th>Days</th><th>Time</th><th>Credits</th><th>Instructor</th></tr>
+      </thead>
+      <tbody id="preview-table-body"></tbody>
+    </table></div>
+    <div id="preview-errors"></div>
+    <button id="commit-btn">Looks good — import this</button>
+    <p id="commit-status" class="hint"></p>
+  </section>
+
+  <div class="step-divider">or, no Excel export?</div>
+
+  <details class="card">
+    <summary class="card-summary"><h2>Paste instead</h2></summary>
+    <p class="hint">If your registration system only shows a schedule on-screen, select and copy the course table straight out of the page and paste it below — tab-separated rows from a browser table work best. Best-effort parsing — check the result before relying on it.</p>
+    <textarea id="paste-input" rows="5" placeholder="ACCT 201	001	Financial Accounting	3.0	D. Tereladze	(E) 3:30PM - 5:00PM MW"></textarea>
+    <button id="parse-btn">Parse pasted text</button>
+    <div id="parse-output" class="parse-output"></div>
+    <div id="parse-apply-row" hidden style="margin-top:var(--sp-3);">
+      <button id="parse-apply-btn">Save these sections</button>
+      <span id="parse-apply-status" class="hint"></span>
+    </div>
+  </details>
+
+  <div class="step-divider">or, enter or fix a section by hand</div>
+
+  <details class="card" id="manual-section-card">
+    <summary class="card-summary"><h2 id="ms-heading">Add a section</h2></summary>
+    <p class="hint">For one-off changes — a new section, a changed time or instructor, or an updated seat count — without importing a whole file.</p>
+    <div class="manual-grid">
+      <label>Code<input type="text" id="ms-code" placeholder="COSC 121" /></label>
+      <label>Section<input type="text" id="ms-section" placeholder="001" /></label>
+      <label class="wide">Title<input type="text" id="ms-title" /></label>
+      <label>Credits<input type="number" id="ms-credits" value="3" min="0" step="0.5" /></label>
+      <label>Faculty<input type="text" id="ms-department" placeholder="IT" /></label>
+      <label class="wide">Instructor<input type="text" id="ms-instructor" /></label>
+      <label>Start<input type="time" id="ms-start" /></label>
+      <label>End<input type="time" id="ms-end" /></label>
+      <label>Classroom<input type="text" id="ms-location" placeholder="Room 204" /></label>
+      <label>First class date<input type="date" id="ms-start-date" /></label>
+      <label>Last class date<input type="date" id="ms-end-date" /></label>
+      <label>Total seats<input type="number" id="ms-seats-total" min="0" /></label>
+      <label>Seats available<input type="number" id="ms-seats-available" min="0" /></label>
+    </div>
+    <div class="day-picks" id="ms-days">
+      <label><input type="checkbox" value="Mon" /> Mon</label>
+      <label><input type="checkbox" value="Tue" /> Tue</label>
+      <label><input type="checkbox" value="Wed" /> Wed</label>
+      <label><input type="checkbox" value="Thu" /> Thu</label>
+      <label><input type="checkbox" value="Fri" /> Fri</label>
+      <label><input type="checkbox" value="Sat" /> Sat</label>
+      <label class="opt-check"><input type="checkbox" id="ms-online" /> Online / no fixed time</label>
+    </div>
+    <button id="ms-save-btn">Save section</button>
+    <button id="ms-clear-btn" class="secondary" type="button">Clear</button>
+    <span id="ms-status" class="hint"></span>
+  </details>
+
+  <details class="card">
+    <summary class="card-summary"><h2>Current offerings</h2></summary>
+    <p class="hint">Search what's loaded, then edit or remove a section.</p>
+    <input type="text" id="mo-search" placeholder="Search by code, title or instructor…" style="width:100%; max-width:420px;" />
+    <p id="mo-count" class="hint" style="margin-top:var(--sp-2);"></p>
+    <div class="table-wrap" id="mo-table-wrap"><table class="course-table" id="mo-table" hidden>
+      <thead><tr><th>Code</th><th>Sec</th><th>Title</th><th>Time</th><th>Room</th><th>Seats</th><th></th></tr></thead>
+      <tbody id="mo-body"></tbody>
+    </table></div>
+  </details>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='import.js') }}"></script>
+<script src="{{ url_for('static', filename='programs_admin.js') }}"></script>
+{% endblock %}

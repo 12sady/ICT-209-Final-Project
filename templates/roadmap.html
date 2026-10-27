@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Roadmap — Registration Planner{% endblock %}
+{% block content %}
+  <header class="page-header">
+    <div>
+      <h1>Graduation roadmap</h1>
+      <p class="program">Every remaining required course, placed in a semester so that prerequisites come first and no term goes over your credit limit. Drag a course to another term (or use its "Move to" menu) to try a different order.</p>
+    </div>
+  </header>
+
+  <section class="card" id="rm-empty" hidden>
+    <div class="empty-state">
+      <p id="rm-empty-title"></p>
+      <p id="rm-empty-body"></p>
+    </div>
+  </section>
+
+  <div id="rm-main" hidden>
+    <section class="stat-row" id="rm-stats" aria-label="Roadmap summary"></section>
+
+    <div class="banner warn" id="rm-honesty"></div>
+    <div id="rm-risks"></div>
+
+    <section class="card rm-settings">
+      <h2>Settings</h2>
+      <div class="inline-fields">
+        <label>First term to plan<select id="rm-start"></select></label>
+        <label>Max credits per term<input type="number" id="rm-max" min="1" max="30" step="1" /></label>
+        <label class="opt-check"><input type="checkbox" id="rm-summer" /> Use Summer terms</label>
+        <label class="opt-check"><input type="checkbox" id="rm-season" /> Keep Fall/Spring courses in the same season as the sample plan</label>
+      </div>
+      <div class="rm-actions">
+        <button id="rm-reset" class="secondary" type="button">Reset to automatic plan</button>
+        <span class="hint" id="rm-overridden"></span>
+      </div>
+    </section>
+
+    <p class="hint" id="rm-status" role="status" aria-live="polite"></p>
+    <div class="rm-board" id="rm-board"></div>
+    <p class="hint" id="rm-credit-note"></p>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='roadmap.js') }}"></script>
+{% endblock %}
