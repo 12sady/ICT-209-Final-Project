@@ -47,8 +47,8 @@ function timeBucket(start) {
 }
 
 function timeText(c) {
-  if (c.online || !c.start || !c.end) return "Online / no fixed time";
-  return `${c.days.join("/")} ${c.start}-${c.end}` + (c.location ? ` · ${c.location}` : "");
+  if (c.online || !c.start || !c.end) return '<span class="hint-inline">Online / no fixed time</span>';
+  return `${c.days.join("/")} ${c.start}–${c.end}` + (c.location ? `<div class="hint-inline">${c.location}</div>` : "");
 }
 
 async function loadCourses() {
@@ -198,26 +198,28 @@ function renderTable() {
     const deptCell = c.department
       ? `<span class="dept-badge" style="background:${cssVarFor(deptVar)}">${c.department}</span>`
       : `<span class="hint">—</span>`;
+    const seat = c.risk && c.risk !== "unknown"
+      ? `<span class="risk-badge ${riskClass(c.risk)}">${seatsText(c)} · ${c.risk}</span>`
+      : `<span class="hint-inline">No seat data</span>`;
     tr.innerHTML = `
-      <td class="code-cell">${c.code}</td>
-      <td class="nw">${c.section}</td>
-      <td>${deptCell}</td>
-      <td>${c.title}${curriculumTag(c.code)}</td>
-      <td colspan="2">${timeText(c)}</td>
-      <td>${c.credits}</td>
-      <td>${c.instructor || "—"}</td>
-      <td><span class="risk-badge ${riskClass(c.risk)}">${seatsText(c)} · ${c.risk || "unknown"}</span></td>
+      <td class="col-add"></td>
+      <td class="course-cell"><span class="code-cell">${c.code}</span> <span class="hint-inline">sec ${c.section}</span><div>${deptCell}</div></td>
+      <td class="wrap">${c.title}${curriculumTag(c.code)}</td>
+      <td class="when-cell">${timeText(c)}</td>
+      <td class="num">${c.credits}</td>
+      <td class="wrap">${c.instructor || "—"}</td>
+      <td>${seat}</td>
       <td>${demandBadge(c.demand)}</td>
-      <td></td>
     `;
-    const btnCell = tr.querySelector("td:last-child");
+    const btnCell = tr.querySelector(".col-add");
     const btn = document.createElement("button");
+    btn.setAttribute("aria-label", `${inWishlist ? "Already on wishlist:" : "Add to wishlist:"} ${c.code} section ${c.section}`);
     if (inWishlist) {
-      btn.textContent = "In wishlist";
+      btn.textContent = "✓ Added";
       btn.className = "secondary";
       btn.disabled = true;
     } else {
-      btn.textContent = "+ Wishlist";
+      btn.textContent = "+ Add";
       btn.onclick = () => addToWishlist(c.code);
     }
     btnCell.appendChild(btn);

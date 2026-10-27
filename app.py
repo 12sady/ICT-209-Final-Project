@@ -1871,4 +1871,7 @@ def api_offerings_delete():
 if __name__ == "__main__":
     # Port 5000 collides with macOS's AirPlay Receiver (Monterey+), which
     # answers on it and returns a 403 -- 5050 avoids that entirely.
-    app.run(debug=True, port=5050)
+    # Debug mode (auto-reload + the in-browser debugger) is OFF unless you ask
+    # for it:  FLASK_DEBUG=1 python3 app.py
+    debug = os.environ.get("FLASK_DEBUG", "").strip().lower() in ("1", "true", "yes", "on")
+    app.run(debug=debug, port=int(os.environ.get("PORT", "5050")))

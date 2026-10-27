@@ -867,3 +867,31 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
 .group-name { font-weight: 700; }
 .group-credits { margin-left: auto; font-size: 0.78rem; font-weight: 500; color: var(--muted); }
 .group-body { padding: var(--sp-2) var(--sp-3) var(--sp-3); }
+
+/* ---- Courses page: compact table, Add button first, narrower wishlist panel ---- */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.layout-browse { grid-template-columns: minmax(0, 1fr) 250px; gap: var(--sp-4); }
+@media (max-width: 1100px) { .layout-browse { grid-template-columns: minmax(0, 1fr); } .layout-browse > .side-panel { position: static; order: 2; } }
+.col-add { width: 1%; white-space: nowrap; }
+.col-add button { padding: 5px 10px; font-size: 0.78rem; }
+.course-cell { white-space: nowrap; }
+.course-cell .dept-badge { margin-top: 3px; display: inline-block; }
+.when-cell { white-space: nowrap; font-size: 0.82rem; }
+.layout-browse .calendar-panel { padding: var(--sp-3) var(--sp-4); }
+.layout-browse table.course-table td, .layout-browse table.course-table th { padding: 8px 8px; }
+/* Courses table on phones: one card per section, Add button top-right */
+@media (max-width: 700px) {
+  #course-table, #course-table tbody { display: block; }
+  #course-table thead { display: none; }
+  #course-table tr { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; padding: 12px 2px; border-bottom: 1px solid var(--border-soft); }
+  #course-table td { display: block; padding: 0; border: none; }
+  #course-table td.course-cell { order: 1; }
+  #course-table td.col-add { order: 2; margin-left: auto; width: auto; }
+  #course-table td:nth-child(3) { order: 3; flex: 1 0 100%; }
+  #course-table td.when-cell { order: 4; }
+  #course-table td.num { order: 5; color: var(--muted); }
+  #course-table td.num::after { content: " cr"; }
+  #course-table td:nth-child(6) { order: 6; font-size: 0.82rem; }
+  #course-table td:nth-child(7) { order: 7; }
+  #course-table td:nth-child(8) { order: 8; }
+}
