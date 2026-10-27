@@ -94,6 +94,13 @@ class ApiTests(unittest.TestCase):
         for url in ("/", "/gpa", "/compare", "/roadmap", "/api/gpa", "/api/roadmap", "/api/dashboard"):
             self.assertIn(anon.get(url).status_code, (302, 401), url)
 
+    def test_mark_through_endpoint(self):
+        c = self.student
+        r = c.post("/api/curriculum/through", json={"year": 1, "term": "Spring"}).get_json()
+        self.assertEqual(r["codes"], ["A 100", "B 200"])
+        self.assertEqual(r["new"], ["B 200"])                 # A 100 is already completed
+        self.assertEqual(c.post("/api/curriculum/through", json={"year": 9, "term": "Winter"}).status_code, 400)
+
     # ---- GPA ----
     def test_grades_roundtrip_and_survive_curriculum_save(self):
         c = self.student

@@ -928,3 +928,7 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
   .filters-toggle { display: inline-flex; }
   .filters.card:not(.open) { display: none; }
 }
+
+.mark-through { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); padding: 10px 12px; margin-bottom: var(--sp-3); background: var(--accent-soft); border-radius: var(--radius-sm); }
+.mark-through label { font-size: 0.84rem; font-weight: 600; color: var(--accent-dark); }
+.mark-through select { max-width: 100%; }

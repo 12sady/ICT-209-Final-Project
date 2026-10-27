@@ -1169,6 +1169,20 @@ def api_curriculum_from_program():
     return jsonify({"ok": True, "courses": len(new_req["catalog"]), "program": new_req["program"]})
 
 
+@app.route("/api/curriculum/through", methods=["POST"])
+def api_curriculum_through():
+    """Which saved-curriculum courses sit at or before a sample-plan semester.
+    Read-only: the Curriculum page merges the answer into its own unsaved state."""
+    body = request.get_json(silent=True) or {}
+    requirements, _ = load_data(requirements_path(), OFFERINGS_PATH)
+    try:
+        codes = progress.courses_through(requirements.get("catalog", []), body.get("year"), body.get("term"))
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    done = set(requirements.get("completed", []))
+    return jsonify({"codes": codes, "new": [c for c in codes if c not in done]})
+
+
 @app.route("/api/curriculum/parse", methods=["POST"])
 def api_curriculum_parse():
     """Paste-in parser for a curriculum table copied from a system with no

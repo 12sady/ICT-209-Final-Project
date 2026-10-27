@@ -73,5 +73,31 @@ class BottleneckTests(unittest.TestCase):
         pg.bottlenecks(cat, [], {})
 
 
+class MarkThroughTests(unittest.TestCase):
+    cat = [c("A 1", year=1, term="Fall"), c("B 1", year=1, term="Spring"), c("S 1", year=1, term="Summer"),
+           c("C 1", year=2, term="Fall"), c("X 1")]          # X 1 has no sample-plan position
+
+    def test_through_year1_spring(self):
+        self.assertEqual(pg.courses_through(self.cat, 1, "Spring"), ["A 1", "B 1"])
+
+    def test_summer_comes_after_spring_before_next_fall(self):
+        self.assertEqual(pg.courses_through(self.cat, 1, "Summer"), ["A 1", "B 1", "S 1"])
+        self.assertEqual(pg.courses_through(self.cat, 2, "Fall"), ["A 1", "B 1", "S 1", "C 1"])
+
+    def test_first_semester_only(self):
+        self.assertEqual(pg.courses_through(self.cat, 1, "fall"), ["A 1"])
+
+    def test_unplanned_courses_never_included(self):
+        self.assertNotIn("X 1", pg.courses_through(self.cat, 4, "Summer"))
+
+    def test_bad_semester(self):
+        for bad in [(0, "Fall"), (1, "Winter"), ("x", "Fall"), (None, None)]:
+            with self.assertRaises(ValueError):
+                pg.courses_through(self.cat, *bad)
+
+    def test_semester_list_sorted(self):
+        self.assertEqual(pg.plan_semesters(self.cat), [(1, "Fall"), (1, "Spring"), (1, "Summer"), (2, "Fall")])
+
+
 if __name__ == "__main__":
     unittest.main()

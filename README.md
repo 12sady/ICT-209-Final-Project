@@ -39,6 +39,9 @@ python3 scheduler.py
 
 ## Pages
 
+- **Curriculum** (`/curriculum`): pick your major's sample plan, then use **Mark everything up to here as
+  completed** to tick every course up to a chosen sample-plan semester in one go (you confirm first; nothing
+  is saved until Save curriculum). Courses outside the sample plan's order are never touched.
 - **Dashboard** (`/`): degree progress ring (credits done / left), progress by category,
   current GPA, this term's planned credits, estimated graduation term (from the
   roadmap), the required courses you can take now, and a **bottleneck** list (courses

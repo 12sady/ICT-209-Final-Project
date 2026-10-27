@@ -119,3 +119,38 @@ def bottlenecks(catalog, completed, prereqs, top=8):
                          "examples": sorted(d)[:4]})
     rows.sort(key=lambda r: (-r["unlocks"], not r["available_now"], r["code"]))
     return rows[:top]
+
+
+# ---------------------------------------------------------------------------
+# "Mark everything up to here as completed"
+# ---------------------------------------------------------------------------
+
+PLAN_TERM_RANK = {"Fall": 0, "Spring": 1, "Summer": 2}   # order inside a sample-plan year
+
+
+def plan_position(year, term):
+    """Sortable position of a sample-plan semester; None if it isn't one."""
+    try:
+        year = int(year)
+    except (TypeError, ValueError):
+        return None
+    term = str(term or "").strip().capitalize()
+    if year < 1 or term not in PLAN_TERM_RANK:
+        return None
+    return year * 10 + PLAN_TERM_RANK[term]
+
+
+def plan_semesters(catalog):
+    """Distinct sample-plan semesters in the catalog, in order: [(year, term), ...]."""
+    seen = {(int(c["plan_year"]), c["plan_term"]) for c in catalog if plan_position(c.get("plan_year"), c.get("plan_term")) is not None}
+    return sorted(seen, key=lambda yt: plan_position(*yt))
+
+
+def courses_through(catalog, year, term):
+    """Codes of every catalog course whose sample-plan semester is at or before
+    (year, term). Courses with no sample-plan position are never included."""
+    limit = plan_position(year, term)
+    if limit is None:
+        raise ValueError("Pick a sample-plan semester like Year 2 · Fall.")
+    return [c["code"] for c in catalog
+            if (plan_position(c.get("plan_year"), c.get("plan_term")) or 10**9) <= limit]

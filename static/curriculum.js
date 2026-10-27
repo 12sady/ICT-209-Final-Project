@@ -283,6 +283,7 @@ function renderSummary(shownCount) {
 }
 
 function renderAll() {
+  renderMarkThrough();
   document.getElementById("c-program").value = state.program || "";
   document.getElementById("c-year").value = state.year || "";
   document.getElementById("c-semester").value = state.semester || "";
@@ -545,3 +546,37 @@ document.getElementById("ce-apply-btn").addEventListener("click", () => {
 });
 
 loadPrograms();
+
+
+// ---- "Mark everything up to here as completed" ----
+const _MT_ORDER = { Fall: 0, Spring: 1, Summer: 2 };
+
+function renderMarkThrough() {
+  const box = document.getElementById("mark-through");
+  const sems = [...new Set(state.catalog.filter((c) => c.plan_year && c.plan_term).map((c) => `${c.plan_year}|${c.plan_term}`))]
+    .map((k) => k.split("|")).sort((a, b) => a[0] * 10 + (_MT_ORDER[a[1]] ?? 5) - (b[0] * 10 + (_MT_ORDER[b[1]] ?? 5)));
+  box.hidden = !sems.length;
+  const sel = document.getElementById("mt-select");
+  const keep = sel.value;
+  sel.innerHTML = '<option value="">Choose the last semester you finished…</option>' + sems.map(([y, t]) => `<option value="${y}|${t}">Year ${y} · ${t}</option>`).join("");
+  sel.value = keep;
+  document.getElementById("mt-btn").disabled = !sel.value;
+}
+
+document.getElementById("mt-select").addEventListener("change", () => { document.getElementById("mt-btn").disabled = !document.getElementById("mt-select").value; });
+document.getElementById("mt-btn").addEventListener("click", async () => {
+  const [year, term] = document.getElementById("mt-select").value.split("|");
+  const status = document.getElementById("mt-status");
+  const res = await fetch("/api/curriculum/through", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ year: Number(year), term }) });
+  const data = await res.json();
+  if (!res.ok) { status.textContent = data.error || "Couldn't do that."; return; }
+  const inPage = new Set(state.catalog.map((c) => c.code));
+  const fresh = data.codes.filter((c) => inPage.has(c) && !state.completed.includes(c));
+  if (!fresh.length) { status.textContent = `Nothing new: everything up to Year ${year} · ${term} is already marked completed.`; return; }
+  const credits = fresh.reduce((a, c) => a + creditsOf(c), 0);
+  if (!confirm(`Mark ${fresh.length} course${fresh.length === 1 ? "" : "s"} (${credits} credits) as completed, everything in the sample plan up to Year ${year} · ${term}?\n\nCourses you already completed stay as they are. You can undo any of them in the table, and nothing is saved until you press Save curriculum.`)) return;
+  state.completed.push(...fresh);
+  renderAll();
+  MS_STATUS(`Marked ${fresh.length} course${fresh.length === 1 ? "" : "s"} completed. Pick their semesters if you like, then press Save curriculum.`);
+  status.textContent = `Marked ${fresh.length} course${fresh.length === 1 ? "" : "s"} (${credits} cr).`;
+});

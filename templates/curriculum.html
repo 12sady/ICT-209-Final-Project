@@ -58,6 +58,12 @@
       <p>Choose a sample plan for your major above, or head to <a href="{{ url_for('import_page') }}">Import</a> to paste in your program's curriculum.</p>
     </div>
     <div class="stat-line" id="curr-summary"></div>
+    <div class="mark-through" id="mark-through" hidden>
+      <label for="mt-select">Already finished some semesters?</label>
+      <select id="mt-select" aria-label="Mark everything up to this semester"></select>
+      <button type="button" id="mt-btn" class="secondary" disabled>Mark everything up to here as completed</button>
+      <span class="hint" id="mt-status" role="status"></span>
+    </div>
     <div class="curr-toolbar" id="curr-toolbar" hidden>
       <div class="curr-filters">
         <input type="search" id="curr-search" placeholder="Search code or title…" aria-label="Search courses" />
