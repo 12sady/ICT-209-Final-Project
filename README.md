@@ -20,7 +20,8 @@ pip install -r requirements.txt     # flask, pandas, openpyxl, anthropic
 python3 app.py
 ```
 
-Open http://127.0.0.1:5050. There's sample data pre-loaded so the app
+Open http://127.0.0.1:5050. Debug mode (auto-reload) is off by default; turn it on with
+`FLASK_DEBUG=1 python3 app.py`, and change the port with `PORT=5051 python3 app.py`. There's sample data pre-loaded so the app
 isn't empty on first run — replace it with your real courses via the
 **Import Courses** and **Curriculum** pages.
 

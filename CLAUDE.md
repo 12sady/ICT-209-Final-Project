@@ -58,6 +58,7 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 ## Working notes
 - Playwright is NOT installed here: test in the built-in browser pane against a scratch copy of the project
   (copy code, NOT `data/.flask_secret`; make test accounts) plus the unit/API tests. Never run against real `data/`.
-- No git repo in this folder (offered `git init`; not done).
+- Git repo exists (commit after each fix; never push). `.gitignore` also excludes data/users.json and data/auth.json (password hashes).
+- Run the scratch copy with `PORT=5051` so it never collides with the real app on 5050. Debug is off unless `FLASK_DEBUG=1`.
 - Don't read or print `data/.flask_secret` or any API keys.
 - `static/script.js.old-unused` and `.idea/` are not part of the app.
