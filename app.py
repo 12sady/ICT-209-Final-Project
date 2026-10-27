@@ -39,6 +39,7 @@ import gpa
 import programs as plans
 import progress
 import roadmap
+import sheet
 import ai
 from scheduler import (
     load_data, load_wishlist, save_wishlist, enumerate_plans, find_alternates,
@@ -233,6 +234,11 @@ def roadmap_page():
     return render_template("roadmap.html", active="roadmap")
 
 
+@app.route("/registration-sheet")
+def registration_sheet_page():
+    return render_template("registration_sheet.html", active="plan")
+
+
 @app.route("/compare")
 def compare_page():
     return render_template("compare.html", active="compare")
@@ -367,6 +373,37 @@ def api_demo_student():
         json.dump(choices, f, indent=2)
     return jsonify({"ok": True, "username": username, "password": password, "program": prog["name"],
                     "summary": demo.summary(req, wishlist, choices["pins"])})
+
+
+# ---------------------------------------------------------------------------
+# Registration-day sheet (see sheet.py): the active plan, printable, with backups.
+# ---------------------------------------------------------------------------
+
+@app.route("/api/registration-sheet")
+def api_registration_sheet():
+    requirements, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    cal = _load_calendar()
+    out = {
+        "student": g.user["username"], "program": requirements.get("program") or "", "term": cal.get("term") or requirements.get("semester") or "",
+        "generated": datetime.now().strftime("%d %B %Y"),
+        "countdown": sheet.countdown(cal.get("registration_date"), datetime.now()),
+        "has_registration_date": bool(cal.get("registration_date")),
+        "plan": None,
+    }
+    active = _load_choices().get("active")
+    if not active:
+        return jsonify(out)
+    found, missing = _resolve_sections(active.get("sections") or [], offerings)
+    if not found:
+        out["missing"] = [f"{m['code']}-{m['section']}" for m in missing]
+        return jsonify(out)
+    alts = find_alternates(found, offerings, requirements)
+    out["plan"] = {
+        "rows": [sheet.sheet_row(s, alts.get(f"{s['code']}-{s['section']}", [])) for s in found],
+        "total_credits": sheet.total_credits(found), "sections": found,
+        "missing": [f"{m['code']}-{m['section']}" for m in missing],
+    }
+    return jsonify(out)
 
 
 # ---------------------------------------------------------------------------
@@ -684,7 +721,7 @@ def api_plan_compare():
 # ---------------------------------------------------------------------------
 
 CALENDAR_PATH = "data/academic_calendar.json"
-EMPTY_CALENDAR = {"term": "", "start": None, "end": None, "breaks": []}
+EMPTY_CALENDAR = {"term": "", "start": None, "end": None, "breaks": [], "registration_date": None}
 
 
 def _load_calendar():
@@ -717,7 +754,8 @@ def _clean_calendar(raw):
             raise ValueError(f"'{name}' ends before it starts.")
         breaks.append({"name": name, "start": b_start, "end": b_end})
     breaks.sort(key=lambda b: b["start"])
-    return {"term": term, "start": start, "end": end, "breaks": breaks}
+    registration = _clean_iso_date(raw.get("registration_date"), "Registration date")
+    return {"term": term, "start": start, "end": end, "breaks": breaks, "registration_date": registration}
 
 
 def _detected_term_dates(offerings):

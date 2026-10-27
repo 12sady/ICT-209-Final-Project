@@ -50,6 +50,8 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - Curriculum "mark everything up to here" (`progress.courses_through`, `POST /api/curriculum/through`) and the admin
   demo student (`demo.py`, `POST /api/admin/demo-student`, button on the Import page).
+- Registration-day sheet (`sheet.py`, `/registration-sheet`, `GET /api/registration-sheet`); academic calendar gained an
+  optional `registration_date`.
 
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Registration-day sheet — Registration Planner{% endblock %}
+{% block content %}
+  <header class="page-header">
+    <div>
+      <h1>Registration-day sheet</h1>
+      <p class="program">A one-page printout of your active plan for registration day: every section to pick, and the backups to try if a seat is gone.</p>
+    </div>
+    <div class="sheet-actions">
+      <button type="button" id="sheet-print" class="secondary" hidden>Print / Save as PDF</button>
+    </div>
+  </header>
+
+  <section class="card" id="sheet-empty" hidden>
+    <div class="empty-state">
+      <p id="sheet-empty-title"></p>
+      <p id="sheet-empty-body"></p>
+    </div>
+  </section>
+
+  <div class="countdown" id="sheet-countdown" hidden></div>
+
+  <article class="card sheet" id="sheet" hidden>
+    <div class="sheet-head">
+      <div>
+        <h2 class="sheet-title">Registration-day sheet</h2>
+        <p class="sheet-sub" id="sheet-sub"></p>
+      </div>
+      <div class="sheet-total" id="sheet-total"></div>
+    </div>
+    <p class="sheet-countdown-print" id="sheet-countdown-print"></p>
+    <div class="table-wrap"><table class="sheet-table" id="sheet-table"></table></div>
+    <div class="sheet-tt" id="sheet-tt"></div>
+    <p class="hint" id="sheet-missing"></p>
+    <p class="sheet-foot">This sheet only helps you plan. You register in AUPP's own system, and seat availability can change at any moment. Confirm requirements with your academic advisor.</p>
+  </article>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='registration_sheet.js') }}"></script>
+{% endblock %}

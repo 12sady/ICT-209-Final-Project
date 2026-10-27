@@ -610,6 +610,7 @@ async function loadCalendar() {
   MS("cal-term").value = cal.term || "";
   MS("cal-start").value = cal.start || "";
   MS("cal-end").value = cal.end || "";
+  MS("cal-registration").value = cal.registration_date || "";
   const wrap = MS("cal-breaks");
   wrap.innerHTML = "";
   (cal.breaks || []).forEach((b) => wrap.appendChild(breakRow(b)));
@@ -648,7 +649,7 @@ MS("cal-save-btn").addEventListener("click", async () => {
   const res = await fetch("/api/academic-calendar", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ term: MS("cal-term").value, start: MS("cal-start").value, end: MS("cal-end").value, breaks }),
+    body: JSON.stringify({ term: MS("cal-term").value, start: MS("cal-start").value, end: MS("cal-end").value, registration_date: MS("cal-registration").value, breaks }),
   });
   const data = await res.json();
   status.textContent = res.ok ? "Saved. New calendar exports will use these dates." : (data.error || "Couldn't save.");

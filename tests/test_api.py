@@ -125,6 +125,22 @@ class ApiTests(unittest.TestCase):
         second = self.admin.post("/api/admin/demo-student").get_json()
         self.assertNotEqual(second["username"], d["username"])                              # each press = a new account
 
+    def test_registration_sheet(self):
+        c = self.student
+        self.assertIsNone(c.get("/api/registration-sheet").get_json()["plan"])               # no active plan yet
+        self.assertEqual(self.admin.put("/api/academic-calendar", json={"term": "Fall 2026", "registration_date": "soon"}).status_code, 400)
+        self.assertEqual(self.student.put("/api/academic-calendar", json={"registration_date": "2099-01-01"}).status_code, 403)
+        self.assertEqual(self.admin.put("/api/academic-calendar", json={"term": "Fall 2026", "registration_date": "2099-01-01"}).status_code, 200)
+        c.post("/api/plan/active", json={"sections": [{"code": "B 200", "section": "001"}]})
+        d = c.get("/api/registration-sheet").get_json()
+        self.assertEqual(d["countdown"]["state"], "future")
+        row = d["plan"]["rows"][0]
+        self.assertEqual((row["code"], row["section"], row["when"]), ("B 200", "001", "Mon/Wed 09:00-10:30"))
+        self.assertEqual([b["section"] for b in row["backups"]], ["002"])                      # the Tue/Thu section is the backup
+        self.assertEqual(d["plan"]["total_credits"], 3)
+        c.delete("/api/plan/active")
+        self.admin.put("/api/academic-calendar", json={"term": "Fall 2026"})
+
     # ---- GPA ----
     def test_grades_roundtrip_and_survive_curriculum_save(self):
         c = self.student

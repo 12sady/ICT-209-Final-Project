@@ -932,3 +932,51 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
 .mark-through { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); padding: 10px 12px; margin-bottom: var(--sp-3); background: var(--accent-soft); border-radius: var(--radius-sm); }
 .mark-through label { font-size: 0.84rem; font-weight: 600; color: var(--accent-dark); }
 .mark-through select { max-width: 100%; }
+
+/* ---- Registration-day sheet ---- */
+.countdown { display: flex; align-items: center; gap: var(--sp-3); padding: 12px 16px; border-radius: var(--radius); margin-bottom: var(--sp-4); font-weight: 600; background: var(--accent-soft); color: var(--accent-dark); }
+.countdown-num { font-size: 1.8rem; font-weight: 800; line-height: 1; min-width: 2ch; }
+.countdown-today { background: var(--ok-bg); color: var(--ok-text); }
+.countdown-past, .countdown-none { background: var(--border-soft); color: var(--muted); font-weight: 500; font-size: 0.86rem; }
+.sheet-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--sp-3); border-bottom: 2px solid var(--text); padding-bottom: var(--sp-2); margin-bottom: var(--sp-3); }
+.sheet-title { margin: 0; font-size: 1.3rem; }
+.sheet-sub { margin: 2px 0 0; color: var(--muted); font-size: 0.85rem; }
+.sheet-total { text-align: right; font-size: 0.9rem; white-space: nowrap; }
+.sheet-total strong { font-size: 1.5rem; }
+.sheet-countdown-print { display: none; }
+.sheet-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.sheet-table th { text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.sheet-table td { padding: 8px; vertical-align: top; }
+.sheet-table tr.main td { border-top: 1px solid var(--border); }
+.sheet-table tr.backup td { padding-top: 0; padding-bottom: 8px; font-size: 0.78rem; color: var(--muted); }
+.sheet-table .sub { font-size: 0.78rem; color: var(--muted); font-weight: 400; }
+.sheet-table .big { font-size: 1.15rem; font-weight: 800; }
+.sheet-table .tick { width: 28px; }
+.box { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--text); border-radius: 3px; }
+.sheet-tt { margin-top: var(--sp-4); max-width: 520px; }
+.sheet-foot { margin: var(--sp-4) 0 0; font-size: 0.74rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: var(--sp-2); }
+@media (max-width: 700px) {
+  .sheet-table, .sheet-table tbody { display: block; }
+  .sheet-table thead { display: none; }
+  .sheet-table tr.main { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding: 8px 0 0; border-top: 1px solid var(--border); }
+  .sheet-table tr.main td { display: block; padding: 0; border: none; }
+  .sheet-table tr.main td:nth-child(1) { order: 1; width: auto; }
+  .sheet-table tr.main td:nth-child(2) { order: 2; flex: 1 1 0; min-width: 0; }
+  .sheet-table tr.main td:nth-child(3) { order: 3; }
+  .sheet-table tr.main td:nth-child(4) { order: 4; flex: 1 0 100%; padding-left: 26px; font-weight: 600; }
+  .sheet-table tr.main td:nth-child(5), .sheet-table tr.main td:nth-child(6), .sheet-table tr.main td:nth-child(7), .sheet-table tr.main td:nth-child(8) { order: 5; font-size: 0.78rem; color: var(--muted); }
+  .sheet-table tr.main td:nth-child(5) { padding-left: 26px; }
+  .sheet-table tr.main td:nth-child(7)::after { content: " cr"; }
+  .sheet-table tr.backup { display: block; }
+  .sheet-table tr.backup td { display: block; padding: 2px 0 8px 26px; }
+  .sheet-table tr.backup td:first-child { display: none; }
+}
+@media print {
+  .sheet-actions, #sheet-countdown { display: none !important; }
+  .sheet { border: none; box-shadow: none; padding: 0; }
+  .sheet-countdown-print { display: block; font-weight: 700; margin: 0 0 8px; }
+  .sheet-table { font-size: 11px; }
+  .sheet-table tr { break-inside: avoid; }
+  .sheet-tt { max-width: 420px; break-inside: avoid; }
+  .page-header { display: none !important; }
+}
