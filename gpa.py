@@ -36,6 +36,11 @@ _NOT_ATTEMPTED = {"W", "I", "AU"}
 _TERM_ORDER = {"spring": 1, "summer": 2, "fall": 3}
 
 
+def article(letter):
+    """'a' or 'an' for a grade letter, by how it is SAID: an A, an F, but a B, a C."""
+    return "an" if str(letter or "")[:1].upper() in "AEFHILMNORSX" else "a"
+
+
 def normalize_grade(raw):
     """'a-' -> 'A-'; '' / None -> ''. Returns '' for anything unrecognised."""
     g = str(raw or "").strip().upper().replace(" ", "")
@@ -172,5 +177,5 @@ def required_average(entries, term_credits, target):
         result.update(
             needed=round(needed, 4), feasible=True, letter=letter,
             message=(f"You already stay at {target:g} or above whatever you score this term." if already
-                     else f"Average {needed:.2f} (about a {letter}) across {term_credits:g} credits."))
+                     else f"Average {needed:.2f} (about {article(letter)} {letter}) across {term_credits:g} credits."))
     return result

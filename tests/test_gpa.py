@@ -90,6 +90,16 @@ class RequiredAverageTests(unittest.TestCase):
         self.assertIsNone(gpa.required_average(self.base, 15, 4.5)["needed"])
         self.assertIsNone(gpa.required_average(self.base, "abc", 3.5)["needed"])
 
+    def test_a_or_an(self):
+        self.assertEqual(gpa.article("A"), "an")
+        self.assertEqual(gpa.article("F"), "an")
+        self.assertEqual(gpa.article("B+"), "a")
+        self.assertEqual(gpa.article("C"), "a")
+        r = gpa.required_average([e(30, "B")], 15, 3.3)         # needs 3.9 -> an A
+        self.assertIn("about an A)", r["message"])
+        r = gpa.required_average([e(30, "B")], 15, 2.0 + 1.2)    # needs about 3.4 -> a B+ or A-
+        self.assertNotIn("about a A", r["message"])
+
     def test_new_student(self):
         r = gpa.required_average([], 15, 3.8)
         self.assertTrue(r["feasible"])

@@ -10,20 +10,30 @@ function escapeHtml(str) {
   const el = document.getElementById("status-strip");
   if (!el) return;
 
-  try {
-    const [coursesRes, curriculumRes, wishlistRes] = await Promise.all([
-      fetch("/api/courses"),
-      fetch("/api/curriculum"),
-      fetch("/api/wishlist"),
-    ]);
-    const courses = await coursesRes.json();
-    const curriculum = await curriculumRes.json();
-    const wishlist = await wishlistRes.json();
+  // Each request gets its own 8 s timeout and may fail on its own, so the strip
+  // always ends up showing something (never stuck on "Loading your data…").
+  const get = async (url) => {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 8000);
+    try {
+      const res = await fetch(url, { signal: ctl.signal });
+      if (!res.ok) throw new Error(String(res.status));
+      return await res.json();
+    } finally {
+      clearTimeout(timer);
+    }
+  };
 
-    const courseCount = (courses.courses || []).length;
-    const requiredCount = (curriculum.required_remaining || []).length;
-    const wishlistCount = (wishlist.wishlist || []).length;
-    const program = curriculum.program || "";
+  try {
+    const [c, cur, wl] = await Promise.allSettled([get("/api/courses"), get("/api/curriculum"), get("/api/wishlist")]);
+    if (c.status === "rejected" && cur.status === "rejected" && wl.status === "rejected") {
+      el.innerHTML = `<span class="empty">Couldn't load status. Is the app still running?</span>`;
+      return;
+    }
+    const courseCount = c.status === "fulfilled" ? (c.value.courses || []).length : 0;
+    const requiredCount = cur.status === "fulfilled" ? (cur.value.required_remaining || []).length : 0;
+    const wishlistCount = wl.status === "fulfilled" ? (wl.value.wishlist || []).length : 0;
+    const program = cur.status === "fulfilled" ? cur.value.program || "" : "";
 
     if (!courseCount && !requiredCount) {
       el.innerHTML = `<span class="empty">No data loaded yet — head to <a href="/import" style="color:inherit;font-weight:700;">Import</a> to bring in your curriculum and this term's courses.</span>`;
@@ -31,7 +41,7 @@ function escapeHtml(str) {
     }
 
     const parts = [];
-    if (program) parts.push(`<span>${program}</span>`);
+    if (program) parts.push(`<span>${escapeHtml(program)}</span>`);
     parts.push(`<span><strong>${courseCount}</strong> course section${courseCount === 1 ? "" : "s"} loaded</span>`);
     parts.push(`<span><strong>${requiredCount}</strong> required course${requiredCount === 1 ? "" : "s"} remaining</span>`);
     parts.push(`<span><strong>${wishlistCount}</strong> on wishlist</span>`);
