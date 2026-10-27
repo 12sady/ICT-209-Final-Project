@@ -52,6 +52,8 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
   demo student (`demo.py`, `POST /api/admin/demo-student`, button on the Import page).
 - Registration-day sheet (`sheet.py`, `/registration-sheet`, `GET /api/registration-sheet`); academic calendar gained an
   optional `registration_date`.
+- Advisor summary (`/advisor-summary`, `GET /api/advisor-summary`): composed from existing payloads (progress, GPA, roadmap, active plan).
+- Print layouts (registration sheet, advisor summary, plan page) were checked as CSS + on-screen only, not in a real print preview.
 
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.

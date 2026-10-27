@@ -980,3 +980,32 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
   .sheet-tt { max-width: 420px; break-inside: avoid; }
   .page-header { display: none !important; }
 }
+
+/* ---- Advisor summary ---- */
+.adv-figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--sp-3); margin-bottom: var(--sp-3); }
+.adv-fig { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; }
+.adv-fig-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.adv-fig-value { font-size: 1.5rem; font-weight: 800; }
+.adv-fig-value span { font-size: 0.9rem; font-weight: 500; color: var(--muted); }
+.adv-fig-sub { font-size: 0.74rem; color: var(--muted); }
+.adv-h { font-size: 0.95rem; margin: var(--sp-4) 0 var(--sp-2); padding-bottom: 3px; border-bottom: 1px solid var(--border); }
+.adv-bar { display: grid; grid-template-columns: minmax(120px, 1.2fr) 3fr auto; gap: var(--sp-3); align-items: center; font-size: 0.84rem; margin-bottom: 6px; }
+.adv-bar-track { height: 10px; background: var(--border-soft); border-radius: 999px; overflow: hidden; border: 1px solid var(--border); }
+.adv-bar-track span { display: block; height: 100%; background: var(--accent-dark); }
+.adv-bar-num { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.adv-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.adv-table th { text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 5px 8px; border-bottom: 1px solid var(--border); }
+.adv-table td { padding: 6px 8px; border-bottom: 1px solid var(--border-soft); vertical-align: top; }
+.adv-table .sub { color: var(--muted); }
+.adv-note { font-size: 0.74rem; color: var(--muted); margin: 4px 0 0; }
+.adv-risks { margin: 0 0 var(--sp-2); padding-left: 18px; font-size: 0.82rem; color: var(--warn-text); }
+.adv-lines i { display: block; height: 26px; border-bottom: 1px solid var(--border); }
+@media (max-width: 600px) { .adv-bar { grid-template-columns: 1fr; gap: 2px; } }
+@media print {
+  .adv-table { font-size: 10.5px; }
+  .adv-table tr, .adv-fig, .adv-bar { break-inside: avoid; }
+  .adv-h { break-after: avoid; }
+  .adv-bar-track, .adv-bar-track span { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .advisor-doc { font-size: 11px; }
+}
+@media (max-width: 600px) { #adv-plan th:nth-child(4), #adv-plan td:nth-child(4) { display: none; } }

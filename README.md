@@ -50,6 +50,10 @@ python3 scheduler.py
   *active plan*: tick-box per course, section number, days/time, room, instructor, seats, the backup
   sections that still fit around the rest of the plan, and a small weekly timetable. If the admin fills in
   **Registration opens** under Academic calendar (Import page), it shows a countdown. Use Print / Save as PDF.
+- **Advisor summary** (`/advisor-summary`, linked from the Dashboard): one printable page for an academic advisor with
+  credits done/left by category, cumulative and per-semester GPA, the roadmap to graduation (with its
+  projection caveat), this term's active plan, and blank lines for questions. Print / Save as PDF uses your
+  browser's print dialog, so nothing extra is installed.
 - **Dashboard** (`/`): degree progress ring (credits done / left), progress by category,
   current GPA, this term's planned credits, estimated graduation term (from the
   roadmap), the required courses you can take now, and a **bottleneck** list (courses

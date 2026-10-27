@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Advisor summary — Registration Planner{% endblock %}
+{% block content %}
+  <header class="page-header">
+    <div>
+      <h1>Advisor summary</h1>
+      <p class="program">One page to bring to an academic advisor: degree progress, GPA, the roadmap to graduation and this term's plan. Use Print / Save as PDF.</p>
+    </div>
+    <div class="sheet-actions"><button type="button" id="adv-print" class="secondary" hidden>Print / Save as PDF</button></div>
+  </header>
+
+  <section class="card" id="adv-empty" hidden>
+    <div class="empty-state">
+      <p>No curriculum yet, so there is nothing to summarise.</p>
+      <p>Choose your sample plan on the <a href="{{ url_for('curriculum') }}">Curriculum</a> page and mark what you've completed first.</p>
+    </div>
+  </section>
+
+  <article class="card sheet advisor-doc" id="adv-doc" hidden>
+    <div class="sheet-head">
+      <div>
+        <h2 class="sheet-title">Academic progress summary</h2>
+        <p class="sheet-sub" id="adv-sub"></p>
+      </div>
+      <div class="sheet-total" id="adv-grad"></div>
+    </div>
+
+    <div class="adv-figures" id="adv-figures"></div>
+
+    <h3 class="adv-h">Progress by category</h3>
+    <div id="adv-cats"></div>
+
+    <h3 class="adv-h">GPA by semester</h3>
+    <div class="table-wrap"><table class="adv-table" id="adv-gpa"></table></div>
+    <p class="adv-note" id="adv-gpa-note"></p>
+
+    <h3 class="adv-h">Roadmap to graduation</h3>
+    <div id="adv-risks"></div>
+    <div class="table-wrap"><table class="adv-table" id="adv-roadmap"></table></div>
+    <p class="adv-note" id="adv-road-note"></p>
+
+    <h3 class="adv-h">This term's plan <span class="hint-inline" id="adv-plan-credits"></span></h3>
+    <div class="table-wrap"><table class="adv-table" id="adv-plan"></table></div>
+
+    <h3 class="adv-h">Questions / notes for my advisor</h3>
+    <div class="adv-lines" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+    <p class="sheet-foot">Prepared by the student with Registration Planner, a planning tool. Credits and GPA come from what the student entered; the GPA uses a standard 4.0 scale that may differ from AUPP's official one. Roadmap terms after the first are projections from the sample plan and prerequisites, not published course offerings. Official requirements and records are the university's.</p>
+  </article>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='advisor_summary.js') }}"></script>
+{% endblock %}

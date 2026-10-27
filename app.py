@@ -234,6 +234,11 @@ def roadmap_page():
     return render_template("roadmap.html", active="roadmap")
 
 
+@app.route("/advisor-summary")
+def advisor_summary_page():
+    return render_template("advisor_summary.html", active="dashboard")
+
+
 @app.route("/registration-sheet")
 def registration_sheet_page():
     return render_template("registration_sheet.html", active="plan")
@@ -403,6 +408,47 @@ def api_registration_sheet():
         "total_credits": sheet.total_credits(found), "sections": found,
         "missing": [f"{m['code']}-{m['section']}" for m in missing],
     }
+    return jsonify(out)
+
+
+# ---------------------------------------------------------------------------
+# Advisor-ready summary: progress + GPA + roadmap + active plan in one printable page.
+# Built only from numbers the app already computes elsewhere.
+# ---------------------------------------------------------------------------
+
+@app.route("/api/advisor-summary")
+def api_advisor_summary():
+    req, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    cal = _load_calendar()
+    out = {"student": g.user["username"], "program": req.get("program") or "", "term": cal.get("term") or req.get("semester") or "",
+           "generated": datetime.now().strftime("%d %B %Y"), "has_curriculum": bool(req.get("catalog"))}
+    if not out["has_curriculum"]:
+        return jsonify(out)
+    entries, unknown, total = _gpa_summary(req)
+    out["gpa"] = {
+        "value": total["gpa"], "gpa_credits": total["gpa_credits"], "attempted": total["attempted"], "earned": total["earned"],
+        "graded": sum(1 for e in entries if e["grade"]), "completed": len(entries),
+        "semesters": [{"semester": r["semester"], "gpa": r["gpa"], "cumulative_gpa": r["cumulative_gpa"], "credits": r["gpa_credits"]}
+                      for r in gpa.by_semester(entries) if r["gpa_credits"] or r["attempted"]],
+        "courses": [{"code": e["code"], "name": e["name"], "credits": e["credits"], "semester": e["semester"], "grade": e["grade"]}
+                    for e in sorted(entries, key=lambda e: (roadmap.term_sort_key(e["semester"]) or 0, e["code"]))],
+    }
+    dash = _dashboard_payload()
+    out["progress"] = dash["progress"]
+    out["remaining_required"] = dash["remaining_required"]
+    out["bottlenecks"] = [{"code": b["code"], "name": b["name"], "unlocks": b["unlocks"]} for b in dash["bottlenecks"][:5]]
+    rm = _roadmap_payload()
+    road = rm["roadmap"]
+    out["roadmap"] = {
+        "graduation_term": road["graduation_term"], "real_offerings_term": road["real_offerings_term"], "max_credits": road["max_credits"],
+        "risks": [r["text"] for r in road["risks"]],
+        "terms": [{"label": t["label"], "credits": t["credits"],
+                   "courses": [(c["code"] or "Elective slot") + (f" {c['name']}" if c["code"] else "") for c in t["courses"]]} for t in road["terms"]],
+    }
+    active = _load_choices().get("active")
+    found = _resolve_sections(active.get("sections") or [], offerings)[0] if active else []
+    out["plan"] = [sheet.sheet_row(s_, []) for s_ in found] if found else None
+    out["plan_credits"] = sheet.total_credits(found) if found else 0
     return jsonify(out)
 
 

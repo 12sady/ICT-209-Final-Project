@@ -141,6 +141,23 @@ class ApiTests(unittest.TestCase):
         c.delete("/api/plan/active")
         self.admin.put("/api/academic-calendar", json={"term": "Fall 2026"})
 
+    def test_advisor_summary(self):
+        c = self.admin
+        c.put("/api/grades", json={"grades": {"A 100": "A"}})
+        d = c.get("/api/advisor-summary").get_json()
+        self.assertTrue(d["has_curriculum"])
+        self.assertEqual(d["progress"]["done"], 3)
+        self.assertEqual(d["gpa"]["value"], 4.0)
+        self.assertEqual([x["code"] for x in d["gpa"]["courses"]], ["A 100"])
+        self.assertEqual(d["gpa"]["semesters"][0]["semester"], "Fall 2025")
+        self.assertTrue(d["roadmap"]["terms"])
+        self.assertTrue(all("label" in t and "courses" in t for t in d["roadmap"]["terms"]))
+        self.assertIsNone(d["plan"])
+        c.put("/api/grades", json={"grades": {"A 100": ""}})
+        brand_new = self._signup("summarynew")
+        self.assertFalse(brand_new.get("/api/advisor-summary").get_json()["has_curriculum"])
+        self.assertEqual(brand_new.get("/advisor-summary").status_code, 200)
+
     # ---- GPA ----
     def test_grades_roundtrip_and_survive_curriculum_save(self):
         c = self.student
