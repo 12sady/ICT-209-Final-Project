@@ -11,7 +11,7 @@ Rules used:
   - NON_GPA_GRADES (pass/fail, withdrawn, incomplete, audit) never count toward GPA.
   - "Attempted" credits = credits of every course with a graded or pass/fail
     result (withdrawn, incomplete and audit are not attempted).
-  - "Earned" credits = credits of passed courses (a D- or better, or P).
+  - "Earned" credits = credits of passed courses (a D or better, or P).
   - Retakes are not handled: every completed course counts once.
 """
 
