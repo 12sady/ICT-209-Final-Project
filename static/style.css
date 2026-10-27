@@ -913,3 +913,7 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
   .compare-table[data-show="1"] [data-col]:not([data-col="1"]),
   .compare-table[data-show="2"] [data-col]:not([data-col="2"]) { display: none; }
 }
+
+/* Code blocks in the AI setup panel wrap long lines (like the AI_BASE_URL one) instead of being cut off */
+.advisor-setup pre, .advisor-setup code { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.advisor-setup pre { overflow-x: auto; max-width: 100%; }

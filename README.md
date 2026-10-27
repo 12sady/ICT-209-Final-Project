@@ -111,7 +111,7 @@ python3 app.py
 ```bash
 export AI_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
 export AI_API_KEY="key from aistudio.google.com"
-export AI_MODEL="a Flash model name from AI Studio"
+export AI_MODEL="gemini-3.8-flash"
 python3 app.py
 ```
 

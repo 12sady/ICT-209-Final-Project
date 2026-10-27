@@ -22,7 +22,7 @@ stored in the code or data files):
   Google Gemini's free tier or Groq):
       export AI_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
       export AI_API_KEY="your-key"
-      export AI_MODEL="<model id from the provider>"
+      export AI_MODEL="gemini-3.8-flash"
 
   Claude API (paid, best quality):
       pip install anthropic
