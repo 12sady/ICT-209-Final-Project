@@ -298,11 +298,27 @@ async function removeFromWishlist(code) {
   renderTable();
 }
 
+// Phones: the filter panel hides behind a "Filters" button; the badge counts the active filters.
+function updateFilterBadge() {
+  const f = currentFilters();
+  const n = [f.search, f.day, f.time, f.instructor, f.risk, f.department].filter(Boolean).length + (f.hideCompleted ? 1 : 0) + (f.inCurriculum ? 1 : 0);
+  const badge = document.getElementById("filters-badge");
+  badge.hidden = n === 0;
+  badge.textContent = String(n);
+  document.getElementById("filters-toggle").setAttribute("aria-label", `Filters, ${n} active`);
+}
+document.getElementById("filters-toggle").addEventListener("click", () => {
+  const panel = document.getElementById("filters-panel");
+  const open = panel.classList.toggle("open");
+  document.getElementById("filters-toggle").setAttribute("aria-expanded", String(open));
+});
+
 ["f-search", "f-day", "f-time", "f-instructor", "f-risk", "f-department", "f-hide-completed", "f-in-curriculum"].forEach((id) => {
   const el = document.getElementById(id);
   if (!el) return;
   const handler = () => {
     currentPage = 1;
+    updateFilterBadge();
     renderTable();
   };
   el.addEventListener("input", handler);
@@ -314,4 +330,5 @@ document.addEventListener("advisor:changed", async () => {
   renderTable();
 });
 
+updateFilterBadge();
 loadCourses();

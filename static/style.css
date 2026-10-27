@@ -920,3 +920,11 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
 
 .setup-line { margin: var(--sp-4) 0 0; padding: 10px 14px; background: var(--accent-soft); border-radius: var(--radius-sm); font-size: 0.86rem; color: var(--accent-dark); }
 .setup-line a { color: var(--accent-dark); font-weight: 600; }
+
+/* Courses page on phones: filters live behind a button so the course cards come first */
+.filters-toggle { display: none; align-items: center; gap: 8px; margin-bottom: var(--sp-3); }
+.filter-badge { background: var(--accent-dark); color: #fff; border-radius: 999px; min-width: 20px; padding: 1px 7px; font-size: 0.72rem; font-weight: 700; text-align: center; }
+@media (max-width: 700px) {
+  .filters-toggle { display: inline-flex; }
+  .filters.card:not(.open) { display: none; }
+}
