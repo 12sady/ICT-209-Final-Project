@@ -67,6 +67,12 @@ function timetableHtml(sections, opts) {
   });
   const hours = hi - lo, span = hours * 60;
   const codes = [...new Set((sections || []).map((s) => s.code))];
+  // Compact blocks show the course number ("111"); if two courses in the plan share a number
+  // ("COSC 111" and "MATH 111") they show the full code so labels are always unique.
+  const numOf = (c) => String(c).trim().split(/\s+/).pop();
+  const numCount = {};
+  codes.forEach((c) => { numCount[numOf(c)] = (numCount[numOf(c)] || 0) + 1; });
+  const shortLabel = (c) => (numCount[numOf(c)] > 1 ? c : numOf(c));
 
   const cols = days.map((day) => {
     const items = timed.filter((s) => s.days.includes(day))
@@ -94,7 +100,7 @@ function timetableHtml(sections, opts) {
         const tip = `${s.code}-${s.section} ${s.title || ""}\n${s.start}-${s.end}` + (s.location ? `\nRoom: ${s.location}` : "") + (s.instructor ? `\n${s.instructor}` : "");
         const meta = o.compact ? "" : `<span class="tt-meta">${escapeHtml(s.start)}–${escapeHtml(s.end)}</span>` + (s.location ? `<span class="tt-meta">${escapeHtml(s.location)}</span>` : "");
         html += `<div class="tt-block${n > 1 ? " tt-clash" : ""}" title="${escapeHtml(tip)}" style="top:${top}%;height:${height}%;left:${(it.lane / n) * 100}%;width:${100 / n}%;background:var(--${TT_COLORS[codes.indexOf(s.code) % TT_COLORS.length]})">` +
-          `<span class="tt-code">${escapeHtml(s.code)}${o.compact ? "" : "-" + escapeHtml(s.section)}</span>${meta}</div>`;
+          `<span class="tt-code">${o.compact ? escapeHtml(shortLabel(s.code)) : escapeHtml(s.code) + "-" + escapeHtml(s.section)}</span>${meta}</div>`;
       });
     });
     return `<div class="tt-day">${html}</div>`;
@@ -107,9 +113,11 @@ function timetableHtml(sections, opts) {
   }
   const onlineNote = online.length
     ? `<p class="tt-online">Online / no fixed time: ${online.map((s) => escapeHtml(`${s.code}-${s.section}`)).join(", ")}</p>` : "";
+  const legend = o.legend
+    ? `<div class="tt-legend">${codes.map((c) => `<span><i style="background:var(--${TT_COLORS[codes.indexOf(c) % TT_COLORS.length]})"></i>${escapeHtml(c)}</span>`).join("")}</div>` : "";
   return `<div class="tt${o.compact ? " tt-compact" : ""}" style="--days:${days.length};--hours:${hours}">` +
     `<div class="tt-head"><span></span>${days.map((d) => `<span>${d}</span>`).join("")}</div>` +
-    `<div class="tt-body"><div class="tt-times">${times}</div>${cols}</div></div>${onlineNote}`;
+    `<div class="tt-body"><div class="tt-times">${times}</div>${cols}</div></div>${onlineNote}${legend}`;
 }
 
 // ---------------------------------------------------------------------------

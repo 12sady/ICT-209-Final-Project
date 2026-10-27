@@ -115,6 +115,9 @@ def compare_plans(metrics, min_credits=12, max_credits=17):
     put("longest_gap", _winners([m["longest_gap"] for m in metrics], "min"), "shortest wait between two classes")
     put("total_wait", _winners([m["total_wait"] for m in metrics], "min"), "least time waiting between classes")
     put("left_out", _winners([len(m["left_out"]) for m in metrics], "min"), "fewest wishlist courses left out")
+    # Same count but different courses is NOT "no difference": flag it so the page can say so.
+    if "left_out" not in out and len({tuple(m["left_out"]) for m in metrics}) > 1:
+        out["left_out"] = {"winners": [], "reason": "Different courses left out", "different": True}
 
     # Seat risk only when seat data exists for every plan being compared.
     if all(m["has_seat_data"] for m in metrics):

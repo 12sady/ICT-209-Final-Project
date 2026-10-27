@@ -7,6 +7,7 @@ const dur = (m) => (!m ? "None" : m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? `
 const RISK_LABEL = { low: "Low", medium: "Medium", "fills fast": "Fills fast", full: "Full" };
 
 let D = null;
+let shown = 0; // phone layout: which plan column is visible
 
 const ROWS = [
   ["total_credits", "Total credits", (m) => `${m.total_credits % 1 ? m.total_credits.toFixed(1) : m.total_credits} credits`],
@@ -43,8 +44,8 @@ function render() {
   empty.hidden = true; main.hidden = false;
   const winners = (key) => (D.best[key] ? D.best[key].winners : []);
 
-  let html = `<thead><tr><th class="row-label"></th>` + plans.map((p) => `
-    <th class="plan-col"><div class="plan-name">Plan ${p.name}${p.is_active ? ` <span class="active-badge">Active</span>` : ""}</div>
+  let html = `<thead><tr><th class="row-label"></th>` + plans.map((p, i) => `
+    <th class="plan-col" data-col="${i}"><div class="plan-name">Plan ${p.name}${p.is_active ? ` <span class="active-badge">Active</span>` : ""}</div>
       <div class="plan-actions">
         <button class="${p.is_active ? "" : "secondary"} act-use" data-id="${p.id}" ${p.is_active ? "disabled" : ""}>${p.is_active ? "Your active plan" : "Use as my active plan"}</button>
         <button class="secondary act-ics" data-id="${p.id}">Add to calendar (.ics)</button>
@@ -54,21 +55,29 @@ function render() {
   ROWS.forEach(([key, label, fmt]) => {
     if (key === "worst_risk" && !plans.some((p) => p.metrics.has_seat_data) && !plans.some((p) => p.metrics.seat_risk.some((s) => s.demand === "high" || s.demand === "popular"))) {
       html += `<tr><th class="row-label">${label}<span class="row-why">No seat or demand data to compare yet</span></th>` +
-        plans.map(() => `<td><span class="hint-inline">No seat numbers imported</span></td>`).join("") + `</tr>`;
+        plans.map((p, i) => `<td data-col="${i}"><span class="hint-inline">No seat numbers imported</span></td>`).join("") + `</tr>`;
       return;
     }
     const win = winners(key);
-    const why = D.best[key] ? `<span class="row-why">Best: ${escapeHtml(D.best[key].reason)}</span>` : (plans.length > 1 ? `<span class="row-why">No difference</span>` : "");
+    const b = D.best[key];
+    const why = b && b.winners.length ? `<span class="row-why">Best: ${escapeHtml(b.reason)}</span>`
+      : b ? `<span class="row-why row-why-diff">Different courses</span>`
+      : (plans.length > 1 ? `<span class="row-why">No difference</span>` : "");
     html += `<tr><th class="row-label">${label}${why}</th>` + plans.map((p, i) =>
-      `<td class="${win.includes(i) ? "best" : ""}">${win.includes(i) ? `<span class="best-mark" title="${escapeHtml(D.best[key].reason)}">★ Best</span>` : ""}${fmt(p.metrics)}</td>`).join("") + `</tr>`;
+      `<td data-col="${i}" class="${win.includes(i) ? "best" : ""}">${win.includes(i) ? `<span class="best-mark" title="${escapeHtml(D.best[key].reason)}">★ Best</span>` : ""}${fmt(p.metrics)}</td>`).join("") + `</tr>`;
   });
 
-  html += `<tr class="tt-row"><th class="row-label">Week at a glance</th>` + plans.map((p) => `<td>${timetableHtml(p.sections, { compact: true })}</td>`).join("") + `</tr>`;
-  html += `<tr><th class="row-label">Sections</th>` + plans.map((p) => `<td class="sec-list">` +
+  html += `<tr class="tt-row"><th class="row-label">Week at a glance</th>` + plans.map((p, i) => `<td data-col="${i}">${timetableHtml(p.sections, { compact: true, legend: true })}</td>`).join("") + `</tr>`;
+  html += `<tr><th class="row-label">Sections</th>` + plans.map((p, i) => `<td data-col="${i}" class="sec-list">` +
     p.sections.map((s) => `<div><strong>${escapeHtml(s.code)}-${escapeHtml(s.section)}</strong> <span class="hint-inline">${escapeHtml(s.title || "")}</span><br>` +
       `<span class="hint-inline">${s.online || !s.start ? "Online / no fixed time" : `${(s.days || []).join(" ")} ${escapeHtml(s.start)}–${escapeHtml(s.end)}`}${s.location ? " · " + escapeHtml(s.location) : ""}</span></div>`).join("") +
     (p.missing.length ? `<div class="banner danger">No longer offered: ${escapeHtml(p.missing.join(", "))}</div>` : "") + `</td>`).join("") + `</tr></tbody>`;
   $("compare-table").innerHTML = html;
+  const tabs = $("compare-tabs");
+  tabs.innerHTML = plans.map((p, i) => `<button type="button" role="tab" data-i="${i}" aria-selected="${i === shown}">Plan ${p.name}${p.is_active ? " ★" : ""}</button>`).join("");
+  tabs.hidden = plans.length < 2;
+  $("compare-table").dataset.show = String(Math.min(shown, plans.length - 1));
+  tabs.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { shown = Number(b.dataset.i); render(); }));
   $("compare-table").style.setProperty("--plans", plans.length);
 
   $("compare-note").textContent = plans.length < 2

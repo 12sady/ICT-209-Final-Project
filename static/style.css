@@ -895,3 +895,21 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
   #course-table td:nth-child(7) { order: 7; }
   #course-table td:nth-child(8) { order: 8; }
 }
+
+/* Compare: legend under each timetable, "different courses" note, one plan at a time on phones */
+.tt-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 6px; font-size: 0.68rem; color: var(--muted); }
+.tt-legend span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.tt-legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+.row-why-diff { color: var(--warn-text); font-weight: 600; }
+.compare-tabs { display: none; }
+@media (max-width: 700px) {
+  .compare-tabs:not([hidden]) { display: flex; gap: 6px; margin-bottom: var(--sp-3); }
+  .compare-tabs button { flex: 1; background: var(--panel); color: var(--accent-dark); border: 1px solid var(--border); }
+  .compare-tabs button[aria-selected="true"] { background: var(--accent-dark); color: #fff; }
+  table.compare-table { min-width: 0; table-layout: auto; }
+  .compare-table th.row-label { width: 92px; font-size: 0.72rem; padding: 8px; }
+  .compare-table td, .compare-table th.plan-col { padding: 8px; }
+  .compare-table[data-show="0"] [data-col]:not([data-col="0"]),
+  .compare-table[data-show="1"] [data-col]:not([data-col="1"]),
+  .compare-table[data-show="2"] [data-col]:not([data-col="2"]) { display: none; }
+}

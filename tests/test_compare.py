@@ -67,6 +67,15 @@ class CompareTests(unittest.TestCase):
         self.assertEqual(best["total_wait"]["winners"], [1])       # a waits 150 min on Mon and Wed
         self.assertIn("fewest days", best["days_on_campus"]["reason"])
 
+    def test_same_count_different_courses_is_flagged(self):
+        a = compare.plan_metrics([sec("A 1", ["Mon"], "09:00", "10:00")], wishlist=["A 1", "B 1"])
+        b = compare.plan_metrics([sec("B 1", ["Tue"], "09:00", "10:00")], wishlist=["A 1", "B 1"])
+        best = compare.compare_plans([a, b])
+        self.assertEqual(best["left_out"]["winners"], [])
+        self.assertTrue(best["left_out"]["different"])
+        same = compare.compare_plans([a, a])
+        self.assertNotIn("left_out", same)             # identical sets: truly no difference
+
     def test_ties_have_no_winner(self):
         a, _ = self.two()
         best = compare.compare_plans([a, a])
