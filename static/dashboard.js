@@ -11,13 +11,17 @@ function ringSvg(pct) {
     <text x="60" y="66" text-anchor="middle" font-size="24" font-weight="700" fill="var(--text)">${Math.round(pct)}%</text></svg>`;
 }
 
-function renderSetup(d) {
-  const steps = [
+function setupSteps(d) {
+  return [
     [d.has_curriculum, "Choose your program's sample plan", "/curriculum", "Curriculum", "Loads your courses and prerequisites."],
     [d.completed_count > 0, "Mark the courses you've already completed", "/curriculum", "Curriculum", "So the app knows what's left."],
     [d.offerings_count > 0, "Check this term's courses are loaded", "/import", "Import", "The admin account imports the registrar's sheet."],
     [d.wishlist_count > 0, "Add courses you want to take", "/browse", "Browse & Wishlist", "Your schedule is built from your wishlist."],
   ];
+}
+
+function renderSetup(d) {
+  const steps = setupSteps(d);
   $("dash-steps").innerHTML = steps.map(([done, text, href, label, sub]) =>
     `<li class="${done ? "done" : ""}"><span class="check" aria-hidden="true">${done ? "✓" : ""}</span><div><strong>${text}</strong>${done ? ' <span class="status-badge status-ok">Done</span>' : ""}<div class="hint">${sub} <a href="${href}">${label}</a></div></div></li>`).join("");
 }
@@ -62,9 +66,16 @@ function renderMain(d) {
 (async () => {
   const d = await (await fetch("/api/dashboard")).json();
   $("dash-program").textContent = d.program ? `${d.username} · ${d.program}` : `Welcome, ${d.username}.`;
-  const showSetup = !d.has_curriculum || d.completed_count === 0 || d.offerings_count === 0 || d.wishlist_count === 0;
-  $("dash-start").hidden = !showSetup;
-  if (showSetup) renderSetup(d);
+  // All done: hide. 3 of 4 done: one line under the progress cards. Fewer: the full checklist.
+  const steps = setupSteps(d), left = steps.filter((st) => !st[0]);
+  $("dash-start").hidden = left.length < 2;
+  if (left.length >= 2) renderSetup(d);
+  const line = $("dash-setup-line");
+  line.hidden = left.length !== 1;
+  if (left.length === 1) {
+    const [, text, href] = left[0];
+    line.innerHTML = `Finish setup: <strong>1 step left</strong> — <a href="${href}">${escapeHtml(text)}</a>`;
+  }
   $("dash-main").hidden = !d.has_curriculum;
   if (d.has_curriculum) renderMain(d);
 })();

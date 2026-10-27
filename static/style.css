@@ -917,3 +917,6 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
 /* Code blocks in the AI setup panel wrap long lines (like the AI_BASE_URL one) instead of being cut off */
 .advisor-setup pre, .advisor-setup code { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
 .advisor-setup pre { overflow-x: auto; max-width: 100%; }
+
+.setup-line { margin: var(--sp-4) 0 0; padding: 10px 14px; background: var(--accent-soft); border-radius: var(--radius-sm); font-size: 0.86rem; color: var(--accent-dark); }
+.setup-line a { color: var(--accent-dark); font-weight: 600; }
