@@ -48,6 +48,9 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 - Tests: `python3 -m unittest` (pure logic + Flask test-client API tests in a temp dir; API tests skip if
   Flask is missing). Flask lives under /usr/local/bin/python3 (3.13) on this machine, not the default python3.
 
+- Curriculum "mark everything up to here" (`progress.courses_through`, `POST /api/curriculum/through`) and the admin
+  demo student (`demo.py`, `POST /api/admin/demo-student`, button on the Import page).
+
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.
 

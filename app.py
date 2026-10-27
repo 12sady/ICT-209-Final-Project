@@ -34,6 +34,7 @@ from flask import Flask, g, jsonify, redirect, render_template, request, send_fi
 
 import auth
 import compare
+import demo
 import gpa
 import programs as plans
 import progress
@@ -325,6 +326,47 @@ def api_plan_export_ics():
     # Tell the page what was (and wasn't) exported so it can say so.
     resp.headers["X-Export-Info"] = json.dumps(info, ensure_ascii=True)
     return resp
+
+
+# ---------------------------------------------------------------------------
+# Demo student (admin only): a ready-filled account for showing the app off.
+# ---------------------------------------------------------------------------
+
+@app.route("/api/admin/demo-student", methods=["POST"])
+def api_demo_student():
+    if not auth.is_admin(g.user):
+        return jsonify({"error": "Only the admin account can create a demo student."}), 403
+    body = request.get_json(silent=True) or {}
+    progs = plans.load_programs()
+    wanted = body.get("program_id")
+    prog = (next((p for p in progs if p["id"] == wanted), None) if wanted else
+            next((p for p in progs if p["id"] == "ai"), None) or next((p for p in progs if "artificial" in p["name"].lower()), None))
+    if not prog:
+        return jsonify({"error": "No Artificial Intelligence sample plan is published yet. Add one in 'Sample course plans' first."}), 400
+
+    username = "demo_student"
+    n = 2
+    while auth._find_by_username(username):
+        username = f"demo_student{n}"
+        n += 1
+    password = secrets.token_urlsafe(6)
+    user, err = auth.create_user(username, password, password)
+    if err:
+        return jsonify({"error": err}), 400
+
+    req = demo.build_requirements(prog, current_term=_load_calendar().get("term") or "Fall 2026")
+    offerings = _load_offerings()
+    wishlist, plan_keys = demo.choose_wishlist_and_plans(req, offerings)
+    folder = auth.user_dir(user["id"])
+    with open(os.path.join(folder, "degree_requirements.json"), "w") as f:
+        json.dump(req, f, indent=2)
+    save_wishlist(wishlist, os.path.join(folder, "wishlist.json"))
+    choices = {"pins": [{"id": secrets.token_hex(4), "name": "AB"[i], "sections": k} for i, k in enumerate(plan_keys)],
+               "active": {"sections": plan_keys[0]} if plan_keys else None}
+    with open(os.path.join(folder, "plan_choices.json"), "w") as f:
+        json.dump(choices, f, indent=2)
+    return jsonify({"ok": True, "username": username, "password": password, "program": prog["name"],
+                    "summary": demo.summary(req, wishlist, choices["pins"])})
 
 
 # ---------------------------------------------------------------------------

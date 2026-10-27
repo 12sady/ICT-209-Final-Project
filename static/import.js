@@ -656,3 +656,29 @@ MS("cal-save-btn").addEventListener("click", async () => {
 });
 
 loadCalendar();
+
+
+// ---- Demo student (admin) ----
+(function () {
+  const btn = document.getElementById("demo-btn");
+  if (!btn) return;
+  btn.addEventListener("click", async () => {
+    const status = document.getElementById("demo-status"), box = document.getElementById("demo-result");
+    btn.disabled = true;
+    status.textContent = "Creating…";
+    try {
+      const res = await fetch("/api/admin/demo-student", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      const data = await res.json();
+      if (!res.ok) { status.textContent = data.error || "Couldn't create the demo student."; return; }
+      const sm = data.summary;
+      status.textContent = "Created.";
+      box.hidden = false;
+      box.innerHTML = `<p><strong>Username:</strong> <code>${escapeHtml(data.username)}</code><br><strong>Password:</strong> <code>${escapeHtml(data.password)}</code></p>
+        <p class="hint">Save the password now: it isn't shown again. Log out, then sign in as this student. ${escapeHtml(data.program)} · ${sm.completed} courses completed (${sm.credits} credits, GPA ${sm.gpa == null ? "—" : sm.gpa.toFixed(2)}) · wishlist: ${escapeHtml(sm.wishlist.join(", ") || "none")} · ${sm.pins} pinned plan${sm.pins === 1 ? "" : "s"}.</p>`;
+    } catch (e) {
+      status.textContent = "Couldn't reach the server.";
+    } finally {
+      btn.disabled = false;
+    }
+  });
+})();

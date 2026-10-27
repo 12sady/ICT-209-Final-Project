@@ -42,6 +42,10 @@ python3 scheduler.py
 - **Curriculum** (`/curriculum`): pick your major's sample plan, then use **Mark everything up to here as
   completed** to tick every course up to a chosen sample-plan semester in one go (you confirm first; nothing
   is saved until Save curriculum). Courses outside the sample plan's order are never touched.
+- **Demo student** (admin only, Import page → "Demo student"): one press creates a filled-in account
+  (AI major, two years completed with grades, a wishlist for this term, two pinned plans, one active) so
+  every page has data. The random password is shown once. Each press makes a new `demo_student<N>` account.
+  Grades are generated deterministically for the demo; they are not real.
 - **Dashboard** (`/`): degree progress ring (credits done / left), progress by category,
   current GPA, this term's planned credits, estimated graduation term (from the
   roadmap), the required courses you can take now, and a **bottleneck** list (courses

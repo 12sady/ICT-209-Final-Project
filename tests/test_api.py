@@ -101,6 +101,30 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(r["new"], ["B 200"])                 # A 100 is already completed
         self.assertEqual(c.post("/api/curriculum/through", json={"year": 9, "term": "Winter"}).status_code, 400)
 
+    def test_demo_student_admin_only_and_fully_filled(self):
+        self.assertEqual(self.student.post("/api/admin/demo-student").status_code, 403)
+        self.assertEqual(self.admin.post("/api/admin/demo-student").status_code, 400)       # no AI plan published yet
+        prog = {"name": "Artificial Intelligence", "degree": "Single", "credit_total": 12, "terms": [
+            {"year": 1, "term": "Fall", "courses": [{"code": "AA 100", "title": "Intro", "credits": 3, "category": "General Education"}]},
+            {"year": 1, "term": "Spring", "courses": [{"code": "BB 200", "title": "Second", "credits": 3, "prereqs": ["AA 100"]}]},
+            {"year": 2, "term": "Fall", "courses": [{"code": "CC 300", "title": "Third", "credits": 3, "prereqs": ["BB 200"]}]},
+            {"year": 3, "term": "Fall", "courses": [{"code": "DD 400", "title": "Fourth", "credits": 3, "prereqs": ["CC 300"]}]}]}
+        self.assertEqual(self.admin.post("/api/programs", json=prog).status_code, 200)
+        r = self.admin.post("/api/admin/demo-student")
+        self.assertEqual(r.status_code, 200, r.data)
+        d = r.get_json()
+        self.assertEqual(d["summary"]["completed"], 3)
+        demo_client = self.app.app.test_client()
+        ok = demo_client.post("/login", data={"username": d["username"], "password": d["password"]})
+        self.assertEqual(ok.status_code, 302)
+        g = demo_client.get("/api/gpa").get_json()
+        self.assertEqual(len(g["entries"]), 3)
+        self.assertEqual(g["ungraded"], [])
+        self.assertIsNotNone(g["summary"]["gpa"])
+        self.assertEqual(demo_client.get("/api/dashboard").get_json()["progress"]["done"], 9)
+        second = self.admin.post("/api/admin/demo-student").get_json()
+        self.assertNotEqual(second["username"], d["username"])                              # each press = a new account
+
     # ---- GPA ----
     def test_grades_roundtrip_and_survive_curriculum_save(self):
         c = self.student

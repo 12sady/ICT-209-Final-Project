@@ -40,6 +40,13 @@
   {% endif %}
 
   <div id="admin-tools" {% if not is_admin %}hidden{% endif %}>
+  <details class="card" id="demo-card">
+    <summary class="card-summary"><h2>Demo student (admin)</h2></summary>
+    <p class="hint">Creates a ready-made account for showing the app to someone: Artificial Intelligence major, two years of completed courses with grades, a wishlist for this term and two pinned schedules, so every page is filled in. Each press makes a new account; the password is shown once.</p>
+    <button type="button" id="demo-btn">Create demo student</button>
+    <p class="hint" id="demo-status" role="status"></p>
+    <div id="demo-result" class="math-box" hidden></div>
+  </details>
   <details class="card" id="pe-card">
     <summary class="card-summary"><h2>Sample course plans (admin)</h2></summary>
     <p class="hint">The semester-by-semester plan for each major. Students pick one on the Curriculum page and get their own editable copy; changes you make here only affect students who pick the plan afterwards.</p>
