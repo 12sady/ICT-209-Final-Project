@@ -32,6 +32,7 @@ stored in the code or data files):
 
 import json
 import os
+import re
 import time
 import urllib.error
 import urllib.request
@@ -252,7 +253,7 @@ class AnthropicProvider:
             return {"type": "tool_use", "id": b.id, "name": b.name, "input": dict(b.input or {})}
         return {"type": "text", "text": ""}
 
-    def step(self, system_blocks, convo):
+    def step(self, system_blocks, convo, tools=None):
         msgs = []
         for m in convo:
             if m["role"] == "user":
@@ -272,10 +273,11 @@ class AnthropicProvider:
                     items.append(it)
                 msgs.append({"role": "user", "content": items})
         try:
+            kwargs = {"tools": TOOLS if tools is None else tools} if (tools is None or tools) else {}
             resp = self.client.messages.create(
                 model=MODEL, max_tokens=MAX_TOKENS,
                 system=[{"type": "text", "text": t} for t in system_blocks],
-                tools=TOOLS, messages=msgs,
+                messages=msgs, **kwargs,
             )
         except Exception as e:
             name = type(e).__name__
@@ -283,6 +285,10 @@ class AnthropicProvider:
                 raise AIAuthenticationError(str(e))
             if "RateLimit" in name or "Overloaded" in name:
                 raise AIRateLimitError(str(e))
+            if "NotFound" in name:
+                raise AIError("HTTP 404 model not found")
+            if "BadRequest" in name:
+                raise AIError("HTTP 400 " + str(e)[:200])
             if "Connection" in name or "Timeout" in name:
                 raise AIConnectionError(str(e))
             raise
@@ -327,7 +333,7 @@ class OpenAICompatProvider:
         except (urllib.error.URLError, TimeoutError, OSError) as e:
             raise AIConnectionError(str(e))
 
-    def step(self, system_blocks, convo):
+    def step(self, system_blocks, convo, tools=None):
         msgs = [{"role": "system", "content": "\n\n".join(system_blocks)}]
         for m in convo:
             if m["role"] == "user":
@@ -341,8 +347,11 @@ class OpenAICompatProvider:
             else:
                 for r in m["results"]:
                     msgs.append({"role": "tool", "tool_call_id": r["id"], "content": r["content"]})
-        tools = [{"type": "function", "function": {"name": t["name"], "description": t["description"], "parameters": t["input_schema"]}} for t in TOOLS]
-        data = self._post({"model": self.model, "messages": msgs, "tools": tools, "max_tokens": MAX_TOKENS})
+        use = TOOLS if tools is None else tools
+        payload = {"model": self.model, "messages": msgs, "max_tokens": MAX_TOKENS}
+        if use:
+            payload["tools"] = [{"type": "function", "function": {"name": t["name"], "description": t["description"], "parameters": t["input_schema"]}} for t in use]
+        data = self._post(payload)
         try:
             msg = data["choices"][0]["message"]
         except (KeyError, IndexError, TypeError):
@@ -358,6 +367,61 @@ class OpenAICompatProvider:
                     args = {}
             calls.append({"id": tc.get("id") or f"call_{int(time.time() * 1000)}_{i}", "name": fn.get("name", ""), "input": args if isinstance(args, dict) else {}})
         return (msg.get("content") or "").strip(), calls
+
+
+def scrub(text, key=None):
+    """Remove anything that looks like an API key from text before it is shown. Removes the
+    configured key itself plus any long token-like run of characters (providers sometimes echo a
+    masked key in their error messages)."""
+    text = str(text)
+    key = key if key is not None else (os.environ.get("AI_API_KEY") or os.environ.get("ANTHROPIC_API_KEY") or "")
+    if key:
+        text = text.replace(key, "[hidden]")
+    return re.sub(r"[A-Za-z0-9_\-\.\*]{20,}", "[hidden]", text)
+
+
+def _host(url):
+    m = re.match(r"^[a-z]+://([^/:]+)(:\d+)?", url or "")
+    return (m.group(1) + (m.group(2) or "")) if m else (url or "")
+
+
+def explain_error(exc, prov_name=None, base_url=None, model=None):
+    """Plain-language (what_happened, how_to_fix) for an AI failure. Never includes a key."""
+    prov_name = prov_name or provider()
+    base_url = base_url if base_url is not None else os.environ.get("AI_BASE_URL", "")
+    model = model if model is not None else (os.environ.get("AI_MODEL") or MODEL)
+    local = "localhost" in base_url or "127.0.0.1" in base_url
+    keyvar = "ANTHROPIC_API_KEY" if prov_name == "anthropic" else "AI_API_KEY"
+    if isinstance(exc, AIAuthenticationError):
+        return ("The AI service rejected your API key.",
+                f"Check that {keyvar} holds the right key for this service (copy it again, no spaces or quotes), "
+                "that it hasn't expired, and restart the app after changing it.")
+    if isinstance(exc, AIRateLimitError):
+        return ("The AI service says you are over its limit, or it is busy.",
+                "Wait a minute and try again. Free tiers allow only a few requests per minute and per day. "
+                "A local model (Ollama) has no such limit.")
+    if isinstance(exc, AIConnectionError):
+        if local:
+            return (f"Couldn't reach Ollama at {_host(base_url)}.",
+                    "Open the Ollama app (or run `ollama serve` in a terminal), then check AI_BASE_URL is "
+                    "http://localhost:11434/v1 (it must end in /v1).")
+        return (f"Couldn't reach {_host(base_url) or 'the AI service'}.",
+                "Check your internet connection and that AI_BASE_URL is spelled correctly "
+                "(for Gemini: https://generativelanguage.googleapis.com/v1beta/openai).")
+    detail = scrub(str(exc))
+    m = re.search(r"HTTP (\d{3})", detail)
+    code = int(m.group(1)) if m else None
+    if code == 404:
+        return (f"The service doesn't know the model '{model}' (or the URL path is wrong).",
+                "Check AI_MODEL is spelled exactly as the service lists it (Ollama: run `ollama list`, and `ollama pull <name>` "
+                "if it's missing; Gemini: copy the id from AI Studio). The base URL should end in /v1 (Ollama) or /v1beta/openai (Gemini).")
+    if code == 400:
+        return ("The service rejected the request.",
+                "Most often this model can't do tool calling, or the model name is wrong. Pick a model that supports "
+                "tools/function calling (for Ollama, llama3.1 or qwen2.5). Service said: " + detail[:200])
+    if code and code >= 500:
+        return ("The AI service had an internal error.", "That's on their side: try again in a few minutes.")
+    return ("Something unexpected came back from the AI service.", detail[:240] or "No details were given.")
 
 
 def make_provider():

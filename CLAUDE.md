@@ -54,6 +54,9 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
   optional `registration_date`.
 - Advisor summary (`/advisor-summary`, `GET /api/advisor-summary`): composed from existing payloads (progress, GPA, roadmap, active plan).
 - Print layouts (registration sheet, advisor summary, plan page) were checked as CSS + on-screen only, not in a real print preview.
+- `python3 ai_check.py`: AI connection self-check (ping + one real read-only tool round trip on a temp empty student);
+  `ai.explain_error` / `ai.scrub` give plain-language fixes and hide key-like text (used by the chat endpoint too).
+  Still never run against a real model by Claude; the user must run it.
 
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.

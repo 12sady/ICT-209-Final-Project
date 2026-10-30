@@ -1687,17 +1687,13 @@ def api_ai_chat():
         return jsonify({"error": f"That's a lot of questions for one hour. Try again in about {max(1, wait // 60)} minute(s)."}), 429
     try:
         result = ai.run_chat(messages, _advisor_context(), _advisor_tools())
-    except ai.AIAuthenticationError:
-        return jsonify({"error": "The AI service rejected the API key. Check the key you set when starting the app."}), 502
-    except ai.AIRateLimitError:
-        return jsonify({"error": "The AI service is busy or over its free limit right now. Try again in a minute."}), 502
-    except ai.AIConnectionError:
-        local = ai.provider() == "openai" and "localhost" in os.environ.get("AI_BASE_URL", "")
-        return jsonify({"error": "Couldn't reach Ollama. Is it running (open the Ollama app, or run `ollama serve`)?" if local
-                        else "Couldn't reach the AI service. Check your internet connection."}), 502
+    except (ai.AIAuthenticationError, ai.AIRateLimitError, ai.AIConnectionError, ai.AIError) as e:
+        # Plain-language cause + how to fix it (same wording as `python3 ai_check.py`); never includes a key.
+        what, fix = ai.explain_error(e)
+        return jsonify({"error": f"{what} {fix}"}), 502
     except Exception:  # never echo secrets
         app.logger.exception("AI chat failed")
-        return jsonify({"error": "Something went wrong talking to the AI service."}), 502
+        return jsonify({"error": "Something went wrong talking to the AI service. Run `python3 ai_check.py` in the terminal to find out why."}), 502
     return jsonify(result)
 
 

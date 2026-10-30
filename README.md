@@ -145,6 +145,23 @@ term to reach a 3.8?" or "can I graduate by Spring 2028?". It cannot enter or ch
 grades. These tools are covered by tests with a *fake* model; they haven't been tried
 against a real Gemini/Ollama/Claude model yet.
 
+**Check your AI connection (do this first)**
+
+```bash
+python3 ai_check.py
+```
+
+Run it in the same terminal, with the same `AI_BASE_URL` / `AI_MODEL` / `AI_API_KEY` (or
+`ANTHROPIC_API_KEY`) you use for the app. It prints which provider and model it will use (never the key,
+not even part of it), sends one tiny message and prints `OK` with the reply, or says in plain words what
+is wrong and how to fix it (wrong key, wrong model name, no internet, rate limit, Ollama not running).
+Then it runs one tool-calling round trip with the read-only `get_progress` tool on a temporary empty
+student (in a throw-away folder, so your data is never touched) and tells you whether the model called
+the tool correctly. If that second step fails, the connection works but the model is too weak at tool
+calls: the advisor would answer from memory and may invent facts, so try a stronger model. Exit code 0 =
+all good, 1 = a check failed, 2 = not configured. The advisor chat shows the same fix hints when a
+request fails. The tests for this use fake providers and never touch the network.
+
 Notes: small free models are weaker at looking things up and may make
 mistakes, so check anything important on the Plan page. With an online
 service, your curriculum and course questions are sent to that provider.
