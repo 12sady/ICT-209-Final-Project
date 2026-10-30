@@ -154,3 +154,34 @@ def courses_through(catalog, year, term):
         raise ValueError("Pick a sample-plan semester like Year 2 · Fall.")
     return [c["code"] for c in catalog
             if (plan_position(c.get("plan_year"), c.get("plan_term")) or 10**9) <= limit]
+
+
+# ---------------------------------------------------------------------------
+# Profile defaults after "Use this plan"
+# ---------------------------------------------------------------------------
+
+def ordinal(n):
+    n = int(n)
+    suffix = "th" if 10 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
+def next_unfinished_semester(catalog, completed):
+    """The first sample-plan semester (in order) that still has a required course
+    not completed, as (year, term); None if every planned required course is done."""
+    done = set(completed)
+    for year, term in plan_semesters(catalog):
+        for c in catalog:
+            if (c.get("required") and c["code"] not in done and int(c.get("plan_year") or 0) == year
+                    and c.get("plan_term") == term):
+                return year, term
+    return None
+
+
+def suggest_profile(catalog, completed, calendar_term):
+    """Values for the Curriculum page's Year and Semester boxes: Year = the sample-plan
+    year of the next unfinished semester ('2nd year'), Semester = the academic calendar's
+    term ('Fall 2026'). Either is None when it can't be worked out."""
+    nxt = next_unfinished_semester(catalog, completed)
+    term = str(calendar_term or "").strip()
+    return {"year": f"{ordinal(nxt[0])} year" if nxt else None, "semester": term or None}

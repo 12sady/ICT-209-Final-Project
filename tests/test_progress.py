@@ -99,5 +99,30 @@ class MarkThroughTests(unittest.TestCase):
         self.assertEqual(pg.plan_semesters(self.cat), [(1, "Fall"), (1, "Spring"), (1, "Summer"), (2, "Fall")])
 
 
+class SuggestProfileTests(unittest.TestCase):
+    cat = [c("A 1", year=1, term="Fall"), c("B 1", year=1, term="Spring"), c("C 1", year=2, term="Fall"),
+           c("E 1", required=False, year=2, term="Spring")]
+
+    def test_ordinals(self):
+        self.assertEqual([pg.ordinal(n) for n in (1, 2, 3, 4, 11, 12, 21)], ["1st", "2nd", "3rd", "4th", "11th", "12th", "21st"])
+
+    def test_nothing_done_is_first_year(self):
+        self.assertEqual(pg.suggest_profile(self.cat, [], "Fall 2026"), {"year": "1st year", "semester": "Fall 2026"})
+
+    def test_year_follows_next_unfinished_semester(self):
+        self.assertEqual(pg.next_unfinished_semester(self.cat, ["A 1", "B 1"]), (2, "Fall"))
+        self.assertEqual(pg.suggest_profile(self.cat, ["A 1", "B 1"], "Fall 2026")["year"], "2nd year")
+
+    def test_a_missed_early_course_keeps_the_year_back(self):
+        self.assertEqual(pg.suggest_profile(self.cat, ["B 1", "C 1"], None)["year"], "1st year")   # A 1 still open
+
+    def test_everything_done_or_no_calendar(self):
+        r = pg.suggest_profile(self.cat, ["A 1", "B 1", "C 1"], "")
+        self.assertEqual(r, {"year": None, "semester": None})     # electives don't count as unfinished
+
+    def test_empty_catalog(self):
+        self.assertEqual(pg.suggest_profile([], [], "Fall 2026"), {"year": None, "semester": "Fall 2026"})
+
+
 if __name__ == "__main__":
     unittest.main()

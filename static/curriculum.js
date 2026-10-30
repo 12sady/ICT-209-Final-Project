@@ -283,6 +283,8 @@ function renderSummary(shownCount) {
 }
 
 function renderAll() {
+  // Nothing to save until a curriculum exists: hide the sticky Save bar.
+  document.querySelector(".save-bar").hidden = !state.catalog.length;
   renderMarkThrough();
   document.getElementById("c-program").value = state.program || "";
   document.getElementById("c-year").value = state.year || "";
@@ -460,10 +462,19 @@ document.getElementById("plan-use-btn").addEventListener("click", async () => {
   });
   const data = await res.json();
   if (!res.ok) { status.textContent = data.error || "Couldn't load that plan."; return; }
+  // Anything the student already typed in Year / Semester wins over the suggested values.
+  const typed = { year: document.getElementById("c-year").value.trim(), semester: document.getElementById("c-semester").value.trim() };
   await loadCurriculum();
+  ["year", "semester"].forEach((k) => {
+    if (typed[k]) { state[k] = typed[k]; document.getElementById("c-" + k).value = typed[k]; }
+  });
   document.getElementById("group-by").value = "plan";
   renderCurriculumGroups();
-  status.textContent = `Loaded ${data.courses} courses. Mark what you've completed below, and edit anything that differs for you.`;
+  const filled = (data.filled || []).filter((k) => !typed[k]).map((k) => (k === "year" ? "Year" : "Semester"));
+  status.textContent = `Loaded ${data.courses} courses. ` +
+    (filled.length ? `Filled in ${filled.join(" and ")} for you (change it if it's wrong). ` : "") +
+    `Mark what you've completed below, and edit anything that differs for you.`;
+  MS_STATUS(status.textContent);   // the sample-plan card collapses after loading, so say it here too
 });
 
 document.getElementById("group-by").addEventListener("change", renderCurriculumGroups);

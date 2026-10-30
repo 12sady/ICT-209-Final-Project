@@ -1290,9 +1290,16 @@ def api_curriculum_from_program():
         return jsonify({"error": "Pick a program plan first."}), 400
     requirements, _ = load_data(requirements_path(), OFFERINGS_PATH)
     new_req = plans.apply_program(requirements, prog)
+    # Fill the Year / Semester boxes only when they're empty: never overwrite what the student already has.
+    sug = progress.suggest_profile(new_req["catalog"], new_req.get("completed", []), _load_calendar().get("term"))
+    filled = []
+    for key in ("year", "semester"):
+        if not str(new_req.get(key) or "").strip() and sug[key]:
+            new_req[key] = sug[key]
+            filled.append(key)
     with open(requirements_path(), "w") as f:
         json.dump(new_req, f, indent=2)
-    return jsonify({"ok": True, "courses": len(new_req["catalog"]), "program": new_req["program"]})
+    return jsonify({"ok": True, "courses": len(new_req["catalog"]), "program": new_req["program"], "filled": filled})
 
 
 @app.route("/api/curriculum/through", methods=["POST"])

@@ -1037,3 +1037,5 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
   .advisor-doc .sheet-foot { font-size: 8px; margin-top: 6px; padding-top: 3px; }
   .advisor-doc.card { padding: 0; }
 }
+
+.save-bar[hidden] { display: none; }

@@ -94,6 +94,26 @@ class ApiTests(unittest.TestCase):
         for url in ("/", "/gpa", "/compare", "/roadmap", "/api/gpa", "/api/roadmap", "/api/dashboard"):
             self.assertIn(anon.get(url).status_code, (302, 401), url)
 
+    def test_use_plan_fills_year_and_semester_only_when_empty(self):
+        prog = {"name": "Fill Test", "degree": "Single", "credit_total": 6, "terms": [
+            {"year": 1, "term": "Fall", "courses": [{"code": "ZZ 100", "title": "One", "credits": 3}]},
+            {"year": 2, "term": "Fall", "courses": [{"code": "ZZ 200", "title": "Two", "credits": 3}]}]}
+        pid = self.admin.post("/api/programs", json=prog).get_json()["program"]["id"]
+        self.admin.put("/api/academic-calendar", json={"term": "Fall 2026"})
+        empty = self._signup("fillempty")
+        r = empty.post("/api/curriculum/from-program", json={"program_id": pid}).get_json()
+        self.assertEqual(sorted(r["filled"]), ["semester", "year"])
+        got = empty.get("/api/curriculum").get_json()
+        self.assertEqual((got["year"], got["semester"]), ("1st year", "Fall 2026"))
+        typed = self._signup("filltyped")
+        body = json.loads(json.dumps(CURRICULUM)); body["year"] = "Junior"; body["semester"] = "Spring 2027"
+        typed.put("/api/curriculum", json=body)
+        r = typed.post("/api/curriculum/from-program", json={"program_id": pid}).get_json()
+        self.assertEqual(r["filled"], [])
+        got = typed.get("/api/curriculum").get_json()
+        self.assertEqual((got["year"], got["semester"]), ("Junior", "Spring 2027"))     # untouched
+        self.admin.put("/api/academic-calendar", json={"term": "Fall 2026"})
+
     def test_mark_through_endpoint(self):
         c = self.student
         r = c.post("/api/curriculum/through", json={"year": 1, "term": "Spring"}).get_json()
