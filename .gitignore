@@ -7,3 +7,7 @@ __pycache__/
 *.pyc
 data/users.json
 data/auth.json
+
+# Local AI settings and API key (never commit)
+ai-key.sh
+.env

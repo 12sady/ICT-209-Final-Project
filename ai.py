@@ -22,7 +22,7 @@ stored in the code or data files):
   Google Gemini's free tier or Groq):
       export AI_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
       export AI_API_KEY="your-key"
-      export AI_MODEL="gemini-3.8-flash"
+      export AI_MODEL="gemini-3.6-flash"
 
   Claude API (paid, best quality):
       pip install anthropic
@@ -341,8 +341,15 @@ class OpenAICompatProvider:
             elif m["role"] == "assistant":
                 msg = {"role": "assistant", "content": m.get("text") or ""}
                 if m.get("calls"):
-                    msg["tool_calls"] = [{"id": c["id"], "type": "function",
-                                          "function": {"name": c["name"], "arguments": json.dumps(c["input"])}} for c in m["calls"]]
+                    msg["tool_calls"] = []
+                    for c in m["calls"]:
+                        tc = {"id": c["id"], "type": "function",
+                              "function": {"name": c["name"], "arguments": json.dumps(c["input"])}}
+                        # Gemini 3 attaches an opaque "thought signature" to each tool call and
+                        # rejects the next request (HTTP 400) unless it is sent back unchanged.
+                        if c.get("extra_content"):
+                            tc["extra_content"] = c["extra_content"]
+                        msg["tool_calls"].append(tc)
                 msgs.append(msg)
             else:
                 for r in m["results"]:
@@ -365,7 +372,10 @@ class OpenAICompatProvider:
                     args = json.loads(args) if args.strip() else {}
                 except ValueError:
                     args = {}
-            calls.append({"id": tc.get("id") or f"call_{int(time.time() * 1000)}_{i}", "name": fn.get("name", ""), "input": args if isinstance(args, dict) else {}})
+            call = {"id": tc.get("id") or f"call_{int(time.time() * 1000)}_{i}", "name": fn.get("name", ""), "input": args if isinstance(args, dict) else {}}
+            if tc.get("extra_content"):          # Gemini's thought signature: keep it to echo back next turn
+                call["extra_content"] = tc["extra_content"]
+            calls.append(call)
         return (msg.get("content") or "").strip(), calls
 
 

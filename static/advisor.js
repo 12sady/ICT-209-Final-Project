@@ -97,7 +97,7 @@ python3 app.py</pre>
          <p><strong>2. Free online tier (e.g. Google Gemini)</strong></p>
          <pre>export AI_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
 export AI_API_KEY="key from aistudio.google.com"
-export AI_MODEL="gemini-3.8-flash"
+export AI_MODEL="gemini-3.6-flash"
 python3 app.py</pre>
          <p><strong>3. Claude (paid)</strong></p>
          <pre>pip install anthropic

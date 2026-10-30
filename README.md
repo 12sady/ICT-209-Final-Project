@@ -127,9 +127,15 @@ python3 app.py
 ```bash
 export AI_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
 export AI_API_KEY="key from aistudio.google.com"
-export AI_MODEL="gemini-3.8-flash"
+export AI_MODEL="gemini-3.6-flash"
 python3 app.py
 ```
+
+Gemini notes: the recommended model is **`gemini-3.6-flash`**. `gemini-3.8-flash` timed out in testing
+and may be slow, so try it only if 3.6 isn't good enough. Gemini 3 models attach an opaque "thought
+signature" to each tool call and reject the next request (HTTP 400) unless it is sent back unchanged; the
+app does this automatically, so the advisor's tool calls work with Gemini 3 (covered by a fake-server test,
+not yet confirmed by a full real conversation).
 
 **3. Claude API (paid, best answers)**
 

@@ -208,5 +208,47 @@ class ExplainErrorTests(unittest.TestCase):
             shutil.rmtree(tmp, ignore_errors=True)
 
 
+
+class GeminiThoughtSignatureTest(unittest.TestCase):
+    """Gemini 3 returns extra_content.google.thought_signature on tool calls and
+    returns HTTP 400 if the next request doesn't send it back unchanged."""
+
+    def test_signature_is_echoed_back_unchanged(self):
+        sig = {"google": {"thought_signature": "opaque-signature-123"}}
+        sent = []
+
+        def fake_post(payload):
+            sent.append(payload)
+            if len(sent) == 1:
+                return {"choices": [{"message": {"content": "", "tool_calls": [
+                    {"id": "c1", "type": "function", "extra_content": sig,
+                     "function": {"name": "get_progress", "arguments": "{}"}}]}}]}
+            return {"choices": [{"message": {"content": "done"}}]}
+
+        prov = ai.OpenAICompatProvider(base_url="https://example.com/v1", api_key="k", model="m")
+        prov._post = fake_post
+        out = ai.run_chat([{"role": "user", "content": "hi"}], "ctx",
+                          {"get_progress": lambda a: {"ok": 1}}, prov=prov)
+        self.assertEqual(out["reply"], "done")
+        assistant = [m for m in sent[1]["messages"] if m["role"] == "assistant"][0]
+        self.assertEqual(assistant["tool_calls"][0]["extra_content"], sig)
+
+    def test_calls_without_signature_are_unchanged(self):
+        sent = []
+
+        def fake_post(payload):
+            sent.append(payload)
+            if len(sent) == 1:
+                return {"choices": [{"message": {"content": "", "tool_calls": [
+                    {"id": "c1", "type": "function", "function": {"name": "t", "arguments": "{}"}}]}}]}
+            return {"choices": [{"message": {"content": "ok"}}]}
+
+        prov = ai.OpenAICompatProvider(base_url="https://example.com/v1", api_key="k", model="m")
+        prov._post = fake_post
+        ai.run_chat([{"role": "user", "content": "hi"}], "ctx", {"t": lambda a: {"ok": 1}}, prov=prov)
+        assistant = [m for m in sent[1]["messages"] if m["role"] == "assistant"][0]
+        self.assertNotIn("extra_content", assistant["tool_calls"][0])
+
+
 if __name__ == "__main__":
     unittest.main()

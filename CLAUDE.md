@@ -24,9 +24,12 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 - AI advisor ("Ask AI" drawer): tool-use loop whose tools only touch the logged-in student's data;
   25 msgs/hour/account. Providers via env vars only (never put keys in code or data files):
   `AI_BASE_URL` + `AI_MODEL` (+ `AI_API_KEY`) for Ollama/Gemini
-  (`https://generativelanguage.googleapis.com/v1beta/openai`, model `gemini-3.8-flash`),
-  or `ANTHROPIC_API_KEY` for Claude. The Gemini path has been tested with a fake server only,
-  not yet against real Gemini.
+  (`https://generativelanguage.googleapis.com/v1beta/openai`, recommended model `gemini-3.6-flash`;
+  `gemini-3.8-flash` timed out for the user and may be slow),
+  or `ANTHROPIC_API_KEY` for Claude. Gemini 3 needs its tool-call "thought signature" (`extra_content`)
+  echoed back unchanged or it returns HTTP 400: `OpenAICompatProvider.step` stores and re-sends it
+  (`GeminiThoughtSignatureTest`). Not yet confirmed end to end with a full real conversation.
+  `ai-key.sh` and `.env` are git-ignored for local keys: never commit or print them.
 
 ## Built since (all five planned features + AI tools are done)
 - GPA (`gpa.py`, `/gpa`): grades in the student's requirements file as optional `grades` map;

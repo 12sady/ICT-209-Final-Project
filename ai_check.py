@@ -53,10 +53,10 @@ def config_problem(cfg):
         return ("No AI is configured. Neither AI_BASE_URL nor ANTHROPIC_API_KEY is set in this terminal.",
                 'Free, on your computer:  export AI_BASE_URL="http://localhost:11434/v1" AI_MODEL="llama3.1"\n'
                 '    Free online (Gemini):    export AI_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai" '
-                'AI_API_KEY="<your key>" AI_MODEL="gemini-3.8-flash"\n'
+                'AI_API_KEY="<your key>" AI_MODEL="gemini-3.6-flash"\n'
                 "    (set them in the same terminal you run this script and the app from)")
     if cfg["provider"] == "openai" and not cfg["model"]:
-        return ("AI_BASE_URL is set but AI_MODEL is not.", 'Add the model name, e.g.  export AI_MODEL="gemini-3.8-flash"  (Ollama: the one you pulled).')
+        return ("AI_BASE_URL is set but AI_MODEL is not.", 'Add the model name, e.g.  export AI_MODEL="gemini-3.6-flash"  (Ollama: the one you pulled).')
     if cfg["provider"] == "openai" and cfg["key_needed"] and not cfg["key_set"]:
         return ("This server needs an API key but AI_API_KEY is not set.", 'export AI_API_KEY="<your key>"  (create one at aistudio.google.com for Gemini).')
     if cfg["provider"] == "anthropic":
