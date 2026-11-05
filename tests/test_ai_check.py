@@ -175,6 +175,20 @@ class ExplainErrorTests(unittest.TestCase):
         self.assertNotIn(KEY, ai.scrub(f"bad key {KEY}", key=KEY))
         self.assertNotIn("sk-proj-abcdefghijklmnop", ai.scrub("Incorrect API key: sk-proj-abcdefghijklmnop1234", key=""))
 
+    def test_gemini_bad_key_400_is_a_key_problem(self):
+        what, fix = ai.explain_error(ai.AIError('HTTP 400 {"error": {"message": "Please pass a valid API key"}}'), "openai", "https://x.test/v1", "m")
+        self.assertIn("API key", what)
+        self.assertIn("AI_API_KEY", fix)
+
+    def test_certificate_failure_is_named(self):
+        what, fix = ai.explain_error(ai.AIConnectionError("<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] x>"), "openai", "https://x.test/v1", "m")
+        self.assertIn("certificate", what)
+        self.assertIn("Install Certificates", fix)
+
+    def test_other_400_still_mentions_tools(self):
+        what, fix = ai.explain_error(ai.AIError("HTTP 400 tools not supported"), "openai", "https://x.test/v1", "m")
+        self.assertIn("tool", fix)
+
     def test_anthropic_wording_uses_its_own_key_name(self):
         what, fix = ai.explain_error(ai.AIAuthenticationError("x"), "anthropic", "", "claude")
         self.assertIn("ANTHROPIC_API_KEY", fix)
