@@ -313,13 +313,9 @@ class OpenAICompatProvider:
         self.timeout = timeout
 
     def _auth_headers(self):
-        """Google's newer AQ.-style keys are not reliably accepted as a Bearer token on the OpenAI-style
-        route, so for Google hosts send only Google's own header. Everyone else gets the usual Bearer."""
-        if not self.api_key:
-            return {}
-        if "googleapis.com" in self.base_url:
-            return {"x-goog-api-key": self.api_key}
-        return {"Authorization": f"Bearer {self.api_key}"}
+        """One credential only. Google's OpenAI-style route insists on the Bearer header (tested: the
+        x-goog-api-key header alone gets 'Missing or invalid Authorization header'), and sending both can fail."""
+        return {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
 
     def _post(self, payload):
         req = urllib.request.Request(

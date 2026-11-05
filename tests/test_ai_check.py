@@ -189,7 +189,7 @@ class ExplainErrorTests(unittest.TestCase):
         what, fix = ai.explain_error(ai.AIError("HTTP 400 tools not supported"), "openai", "https://x.test/v1", "m")
         self.assertIn("tool", fix)
 
-    def test_request_headers_have_user_agent_and_google_key_header(self):
+    def test_request_headers_have_user_agent_and_one_bearer_credential(self):
         seen = {}
 
         class R:
@@ -200,13 +200,13 @@ class ExplainErrorTests(unittest.TestCase):
         def fake(req, timeout=0):
             seen.update({k.lower(): v for k, v in req.header_items()})
             return R()
-        for base, has_goog in (("https://generativelanguage.googleapis.com/v1beta/openai", True), ("https://api.groq.com/openai/v1", False)):
+        for base in ("https://generativelanguage.googleapis.com/v1beta/openai", "https://api.groq.com/openai/v1"):
             seen.clear()
             with mock.patch.object(ai.urllib.request, "urlopen", fake):
                 ai.OpenAICompatProvider(base, "k", "m")._post({})
             self.assertEqual(seen["user-agent"], ai.USER_AGENT)
-            self.assertEqual("x-goog-api-key" in seen, has_goog)
-            self.assertEqual("authorization" in seen, not has_goog)  # one credential only, never both
+            self.assertEqual(seen["authorization"], "Bearer k")
+            self.assertNotIn("x-goog-api-key", seen)  # one credential only, never both
 
     def test_anthropic_wording_uses_its_own_key_name(self):
         what, fix = ai.explain_error(ai.AIAuthenticationError("x"), "anthropic", "", "claude")
