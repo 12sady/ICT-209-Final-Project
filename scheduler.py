@@ -172,6 +172,59 @@ class _Stop(Exception):
     pass
 
 
+def preference_reason(section, requirements):
+    """Why a section breaks the student's preferences: "too_early",
+    "day_off", or None. Same rules as violates_preferences."""
+    if not section.get("start") or not section.get("days"):
+        return None
+    prefs = requirements.get("preferences", {})
+    avoid_before = prefs.get("avoid_before")
+    if avoid_before and _to_minutes(section["start"]) < _to_minutes(avoid_before):
+        return "too_early"
+    if set(prefs.get("avoid_days", [])) & set(section["days"]):
+        return "day_off"
+    return None
+
+
+_MAX_CLASH_EXAMPLES = 5
+
+
+def _new_stats():
+    return {
+        "courses": [],                # per wishlist course: sections offered / usable / removed by reason
+        "removed_before_search": {"too_early": 0, "day_off": 0, "full": 0},
+        "steps": 0,                   # search-tree nodes visited (both passes)
+        "rejected": {"time_clash": 0, "over_credits": 0},   # choices tried and refused while listing plans
+        "clashes": [],                # a few example clashing pairs
+        "clash_pairs": 0,             # how many different section pairs clashed
+        "_seen": set(),
+        "wishlist_courses": 0,
+        "most_courses_that_fit": 0,
+        "valid_plans": 0,
+        "exhausted": True,
+    }
+
+
+def _note_clash(st, a, b):
+    key = tuple(sorted([(a["code"], a.get("section")), (b["code"], b.get("section"))]))
+    if key in st["_seen"]:
+        return
+    st["_seen"].add(key)
+    st["clash_pairs"] += 1
+    if len(st["clashes"]) < _MAX_CLASH_EXAMPLES:
+        order = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        days = sorted(set(a["days"]) & set(b["days"]), key=lambda d: order.index(d) if d in order else 9)
+        st["clashes"].append({
+            "a": f"{a['code']}-{a.get('section')}", "b": f"{b['code']}-{b.get('section')}",
+            "days": days, "a_time": f"{a['start']}-{a['end']}", "b_time": f"{b['start']}-{b['end']}",
+        })
+
+
+def public_stats(stats):
+    """The stats without internal bookkeeping, ready for JSON."""
+    return {k: v for k, v in (stats or {}).items() if not k.startswith("_")}
+
+
 def _day_metrics(sections):
     """Days on campus, earliest start, and total idle gap between classes --
     what students actually compare when picking between valid schedules."""
@@ -194,7 +247,7 @@ def _day_metrics(sections):
     }
 
 
-def enumerate_plans(requirements, offerings, wishlist, limit=5000, node_budget=2_000_000):
+def enumerate_plans(requirements, offerings, wishlist, limit=5000, node_budget=2_000_000, stats=None):
     """
     Every valid plan for this wishlist, not a random sample.
 
@@ -212,6 +265,10 @@ def enumerate_plans(requirements, offerings, wishlist, limit=5000, node_budget=2
     days on campus, then gaps); `total_found` is how many valid plans exist,
     and `exhausted` is False only if the `node_budget` safety valve stopped
     the search before every possibility was checked.
+
+    `stats`: pass a dict to get an account of the search filled in (it
+    never changes the result) -- see _new_stats() for what's in it. The Plan
+    page shows it as "Why this schedule?".
     """
     slots, blocked_required, blocked_wishlist, no_sections = build_slots(requirements, wishlist, offerings)
     max_credits = requirements.get("target_credits", {}).get("max", 17)
@@ -219,12 +276,25 @@ def enumerate_plans(requirements, offerings, wishlist, limit=5000, node_budget=2
 
     # Candidate sections per slot, minus ones the student ruled out or that
     # are already full. A slot with none left simply can't be scheduled.
+    st = _new_stats() if stats is None else stats
+    if stats is not None:
+        stats.clear()
+        stats.update(_new_stats())
     cands = []
     for slot in slots:
-        cands.append([
-            sec for sec in sections_for(slot["options"][0], offerings)
-            if not violates_preferences(sec, requirements) and sec.get("risk") != "full"
-        ])
+        offered = sections_for(slot["options"][0], offerings)
+        kept_secs = []
+        removed = {"too_early": 0, "day_off": 0, "full": 0}
+        for sec in offered:
+            why = preference_reason(sec, requirements) or ("full" if sec.get("risk") == "full" else None)
+            if why:
+                removed[why] += 1
+            else:
+                kept_secs.append(sec)
+        cands.append(kept_secs)
+        st["courses"].append({"code": slot["label"], "sections": len(offered), "usable": len(kept_secs), **removed})
+        for k, v in removed.items():
+            st["removed_before_search"][k] += v
     n = len(slots)
 
     conflict_memo = {}
@@ -235,10 +305,18 @@ def enumerate_plans(requirements, offerings, wishlist, limit=5000, node_budget=2
             conflict_memo[key] = conflict_memo[(id(b), id(a))] = sections_conflict(a, b)
         return conflict_memo[key]
 
-    def fits(sec, chosen, credits):
+    def fits(sec, chosen, credits, record=False):
         if credits + sec["credits"] > max_credits:
+            if record:
+                st["rejected"]["over_credits"] += 1
             return False
-        return not any(conflicts(sec, c) for c in chosen)
+        for c in chosen:
+            if conflicts(sec, c):
+                if record:
+                    st["rejected"]["time_clash"] += 1
+                    _note_clash(st, sec, c)
+                return False
+        return True
 
     nodes = 0
     exhausted = True
@@ -267,8 +345,12 @@ def enumerate_plans(requirements, offerings, wishlist, limit=5000, node_budget=2
         find(0, [], 0, 0)
     except _Stop:
         exhausted = False
+    st["steps"] += nodes
+    st["most_courses_that_fit"] = best
+    st["wishlist_courses"] = n
 
     if best == 0:
+        st["exhausted"] = exhausted
         return [], blocked_required, blocked_wishlist, no_sections, 0, exhausted
 
     # Pass 2: walk every plan that reaches that maximum, keeping only the
@@ -312,7 +394,7 @@ def enumerate_plans(requirements, offerings, wishlist, limit=5000, node_budget=2
             leaf(chosen, used)
             return
         for sec in cands[i]:
-            if fits(sec, chosen, credits):
+            if fits(sec, chosen, credits, record=True):
                 chosen.append(sec)
                 used.append(slots[i]["label"])
                 enum(i + 1, chosen, credits + sec["credits"], count + 1, used)
@@ -325,6 +407,9 @@ def enumerate_plans(requirements, offerings, wishlist, limit=5000, node_budget=2
         enum(0, [], 0, 0, [])
     except _Stop:
         exhausted = False
+    st["steps"] += nodes
+    st["valid_plans"] = total_found
+    st["exhausted"] = exhausted
 
     plans = []
     for sections, used, total, metrics in kept:

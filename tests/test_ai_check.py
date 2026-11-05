@@ -285,3 +285,121 @@ class GeminiThoughtSignatureTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UserAgentAndBlockTests(unittest.TestCase):
+    """Groq (behind Cloudflare) answers Python's default User-Agent with 403 'error code: 1010'."""
+
+    def _http_error(self, code, body):
+        import io
+        import urllib.error
+        return urllib.error.HTTPError("https://x/v1/chat/completions", code, "err", {}, io.BytesIO(body))
+
+    def test_sends_own_user_agent(self):
+        seen = {}
+
+        class Resp:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def read(self): return b'{"choices": []}'
+
+        def fake_urlopen(req, timeout=None):
+            seen["ua"] = req.get_header("User-agent")
+            return Resp()
+
+        with mock.patch("urllib.request.urlopen", fake_urlopen):
+            ai.OpenAICompatProvider("https://x/v1", "k", "m")._post({})
+        self.assertEqual(seen["ua"], ai.USER_AGENT)
+
+    def test_firewall_block_is_not_reported_as_bad_key(self):
+        p = ai.OpenAICompatProvider("https://x/v1", "k", "m")
+        with mock.patch("urllib.request.urlopen", side_effect=self._http_error(403, b"error code: 1010\n")):
+            with self.assertRaises(ai.AIConnectionError):
+                p._post({})
+        with mock.patch("urllib.request.urlopen", side_effect=self._http_error(401, b"bad key")):
+            with self.assertRaises(ai.AIAuthenticationError):
+                p._post({})
+
+
+class RateLimitRetryTests(unittest.TestCase):
+    """On HTTP 429 the client waits as long as the service asks, then tries again."""
+
+    def _429(self, headers):
+        import io
+        import urllib.error
+        return urllib.error.HTTPError("https://x/v1/chat/completions", 429, "Too Many Requests", headers, io.BytesIO(b"{}"))
+
+    def test_retry_wait_reads_headers(self):
+        self.assertEqual(ai.retry_wait({"retry-after": "7"}), 7.5)
+        self.assertEqual(ai.retry_wait({"x-ratelimit-reset-tokens": "2.5s"}), 3.0)
+        self.assertEqual(ai.retry_wait({"x-ratelimit-reset-tokens": "1m0s"}), 30.0)     # capped
+        self.assertEqual(ai.retry_wait({"x-ratelimit-reset-tokens": "120ms"}), 1.0)     # at least 1 s
+        self.assertEqual(ai.retry_wait({}), 10.5)
+
+    def test_waits_then_succeeds(self):
+        class Resp:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def read(self): return b'{"choices": [{"message": {"content": "hi"}}]}'
+        answers = [self._429({"retry-after": "2"}), Resp()]
+
+        def fake_urlopen(req, timeout=None):
+            a = answers.pop(0)
+            if isinstance(a, Exception):
+                raise a
+            return a
+
+        slept = []
+        with mock.patch("urllib.request.urlopen", fake_urlopen), mock.patch.object(ai, "_sleep", slept.append):
+            out = ai.OpenAICompatProvider("https://x/v1", "k", "m")._post({})
+        self.assertEqual(slept, [2.5])
+        self.assertEqual(out["choices"][0]["message"]["content"], "hi")
+
+    def test_gives_up_after_total_wait_budget(self):
+        slept = []
+        with mock.patch("urllib.request.urlopen", side_effect=lambda *a, **k: (_ for _ in ()).throw(self._429({"retry-after": "25"}))), \
+                mock.patch.object(ai, "_sleep", slept.append):
+            with self.assertRaises(ai.AIRateLimitError):
+                ai.OpenAICompatProvider("https://x/v1", "k", "m")._post({})
+        self.assertEqual(slept, [25.5])        # a second 25 s wait would pass the 40 s budget
+
+    def test_reasoning_effort_only_when_set(self):
+        sent = {}
+
+        def fake_post(self, payload):
+            sent.update(payload)
+            return {"choices": [{"message": {"content": "ok"}}]}
+        p = ai.OpenAICompatProvider("https://x/v1", "k", "m")
+        with mock.patch.object(ai.OpenAICompatProvider, "_post", fake_post), mock.patch.dict(os.environ, {"AI_REASONING_EFFORT": "low"}):
+            p.step(["sys"], [{"role": "user", "content": "hi"}], tools=[])
+        self.assertEqual(sent["reasoning_effort"], "low")
+        sent.clear()
+        env = {k: v for k, v in os.environ.items() if k != "AI_REASONING_EFFORT"}
+        with mock.patch.object(ai.OpenAICompatProvider, "_post", fake_post), mock.patch.dict(os.environ, env, clear=True):
+            p.step(["sys"], [{"role": "user", "content": "hi"}], tools=[])
+        self.assertNotIn("reasoning_effort", sent)
+
+
+class WaitEventTests(unittest.TestCase):
+    def test_rate_limit_pause_is_reported(self):
+        import io
+        import urllib.error
+        err = urllib.error.HTTPError("https://x/v1/chat/completions", 429, "Too Many", {"retry-after": "3"}, io.BytesIO(b"{}"))
+
+        class Resp:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def read(self): return b'{"choices": [{"message": {"content": "hi"}}]}'
+        answers = [err, Resp()]
+
+        def fake_urlopen(req, timeout=None):
+            a = answers.pop(0)
+            if isinstance(a, Exception):
+                raise a
+            return a
+        events = []
+        prov = ai.OpenAICompatProvider("https://x/v1", "k", "m")
+        with mock.patch("urllib.request.urlopen", fake_urlopen), mock.patch.object(ai, "_sleep", lambda s: None):
+            out = ai.run_chat([{"role": "user", "content": "hi"}], "ctx", {}, prov=prov, on_event=events.append)
+        self.assertEqual(out["reply"], "hi")
+        self.assertIn({"type": "wait", "seconds": 4}, events)

@@ -128,17 +128,19 @@ function renderBanners() {
       req.map((r) => `${r.code} (needs ${r.missing_prereqs.join(", ") || "a prereq"})`).join("; ");
     el.appendChild(b);
   }
-  if (noSec.length) {
+  // Wishlist courses that can't be in any plan this term: one short line of chips
+  // instead of a full-width yellow bar per reason. Hover a chip for the reason.
+  const chips = [
+    ...noSec.map((code) => `<span class="left-chip gray" title="No sections of ${escapeHtml(code)} are offered this term">Not offered · <strong>${escapeHtml(code)}</strong></span>`),
+    ...wl.map((r) => {
+      const need = r.missing_prereqs.join(", ") || "a prerequisite";
+      return `<span class="left-chip warn" title="You haven't completed ${escapeHtml(need)} yet">Needs ${escapeHtml(need)} · <strong>${escapeHtml(r.code)}</strong></span>`;
+    }),
+  ];
+  if (chips.length) {
     const b = document.createElement("div");
-    b.className = "banner warn";
-    b.innerHTML = `<strong>Not offered this term (no sections found):</strong> ${noSec.join(", ")}. Check the Import page.`;
-    el.appendChild(b);
-  }
-  if (wl.length) {
-    const b = document.createElement("div");
-    b.className = "banner warn";
-    b.innerHTML = `<strong>Wishlist items blocked by a prerequisite:</strong> ` +
-      wl.map((r) => `${r.code} (needs ${r.missing_prereqs.join(", ") || "a prereq"})`).join("; ");
+    b.className = "left-out";
+    b.innerHTML = `<span class="left-out-label">Left out of every plan:</span> ${chips.join("")}`;
     el.appendChild(b);
   }
 }
@@ -249,8 +251,71 @@ function renderPlan(index) {
 
   renderLegend(plan, codeList);
   renderSummary(plan, onlineSections);
+  renderWhy(plan);
   loadAlternates(plan);
   updateChoiceButtons();
+}
+
+// ---------------------------------------------------------------------------
+// "Why this schedule?" -- how the planner's constraint search got here
+// (scheduler.enumerate_plans fills planData.search) and why this plan ranks
+// where it does. Nothing is recomputed here; it only explains.
+// ---------------------------------------------------------------------------
+
+const _RANK_RULES = [
+  { label: "fits more of your wishlist", value: (p) => p.unmet_wishlist.length, show: (p) => `${p.sections.length} course${p.sections.length === 1 ? "" : "s"}` },
+  { label: "meets your minimum credits", value: (p) => (p.meets_min_credits ? 0 : 1), show: (p) => (p.meets_min_credits ? "meets it" : "below it") },
+  { label: "is closer to your credit limit", value: (p) => Math.abs(planData.max_credits - p.total_credits), show: (p) => `${p.total_credits} cr` },
+  { label: "has fewer days on campus", value: (p) => p.days_on_campus, show: (p) => `${p.days_on_campus} day${p.days_on_campus === 1 ? "" : "s"}` },
+  { label: "has less waiting between classes", value: (p) => p.gap_minutes || 0, show: (p) => `${Math.round(p.gap_minutes || 0)} min` },
+];
+
+function plural(n, word) { return `${n.toLocaleString()} ${word}${n === 1 ? "" : "s"}`; }
+
+function whyRanking(plan) {
+  const byRank = [...planData.plans].sort((a, b) => a.rank - b.rank);
+  const pos = byRank.indexOf(plan);
+  const rules = `<ol class="why-rules">${_RANK_RULES.map((r) => `<li>${escapeHtml(r.label)}</li>`).join("")}</ol>`;
+  const intro = `<p class="hint">Valid plans are ranked by these rules, in order. A later rule only matters when the earlier ones are tied:</p>${rules}`;
+  if (byRank.length < 2) return intro + `<p>This is the only valid plan, so it's first.</p>`;
+  const other = pos === 0 ? byRank[1] : byRank[pos - 1];
+  const rule = _RANK_RULES.find((r) => r.value(plan) !== r.value(other));
+  const name = (p) => `Plan ${escapeHtml(p.label)}`;
+  let verdict;
+  if (!rule) verdict = `${name(plan)} and ${name(other)} tie on every rule; they're just listed in course-code order.`;
+  else if (pos === 0) verdict = `<strong>${name(plan)} is the best fit</strong>: compared with the runner-up (${name(other)}), it ${rule.label} (${rule.show(plan)} vs ${rule.show(other)}).`;
+  else verdict = `${name(plan)} is <strong>#${pos + 1}</strong> in best-fit order: the plan just above it (${name(other)}) ${rule.label} (${rule.show(other)} vs ${rule.show(plan)}).`;
+  return intro + `<p>${verdict}</p>`;
+}
+
+function renderWhy(plan) {
+  const card = document.getElementById("why-card");
+  const s = planData.search;
+  if (!s || !s.wishlist_courses) { card.hidden = true; return; }
+  card.hidden = false;
+  const offered = s.courses.reduce((a, c) => a + c.sections, 0);
+  const rm = s.removed_before_search;
+  const removed = [
+    rm.too_early ? `${plural(rm.too_early, "section")} start before ${escapeHtml(planData.avoid_before)}` : "",
+    rm.day_off ? `${plural(rm.day_off, "section")} meet on a day you keep free (${escapeHtml(planData.avoid_days.join(", "))})` : "",
+    rm.full ? `${plural(rm.full, "section")} ${rm.full === 1 ? "is" : "are"} full` : "",
+  ].filter(Boolean);
+  const clashes = (s.clashes || []).map((c) =>
+    `<li><span class="nw">${escapeHtml(c.a)}</span> and <span class="nw">${escapeHtml(c.b)}</span> both meet ${escapeHtml(c.days.join(", "))} (${escapeHtml(c.a_time)} vs ${escapeHtml(c.b_time)})</li>`).join("");
+  const fitAll = s.most_courses_that_fit === s.wishlist_courses;
+  document.getElementById("why-body").innerHTML = `
+    <p class="hint">The planner treats your timetable as a <strong>constraint satisfaction problem</strong>: pick one section per course so that no two classes overlap, credits stay at or under ${planData.max_credits}, and your preferences hold. It searches by <strong>backtracking</strong>: choose a section, move to the next course, and step back to try another section whenever a rule breaks.</p>
+    <h3 class="why-h">How it searched</h3>
+    <ul class="why-list">
+      <li>Your wishlist: <strong>${plural(s.wishlist_courses, "course")}</strong> with ${plural(offered, "section")} offered.</li>
+      <li>Removed before searching: ${removed.length ? removed.join("; ") : "none (no section broke your preferences)"}.</li>
+      <li>Explored <strong>${plural(s.steps, "step")}</strong> of the search tree${s.exhausted ? "" : " (stopped early: too many possibilities)"}.</li>
+      <li>Refused <strong>${plural(s.rejected.time_clash, "choice")}</strong> because of a time clash${s.rejected.over_credits ? ` and <strong>${plural(s.rejected.over_credits, "choice")}</strong> for going over ${planData.max_credits} credits` : ""}.</li>
+      <li>Result: <strong>${plural(s.valid_plans, "valid plan")}</strong> ${fitAll ? `fit all ${s.wishlist_courses} courses` : `fit at most ${s.most_courses_that_fit} of your ${s.wishlist_courses} courses together`}.</li>
+    </ul>
+    ${clashes ? `<h3 class="why-h">Example clashes it avoided</h3><ul class="why-list">${clashes}</ul>${s.clash_pairs > s.clashes.length ? `<p class="hint">…and ${plural(s.clash_pairs - s.clashes.length, "more clashing pair")}.</p>` : ""}` : ""}
+    <h3 class="why-h">Why this plan is ranked here</h3>
+    ${whyRanking(plan)}`;
 }
 
 function renderLegend(plan, codeList) {
@@ -264,23 +329,38 @@ function renderLegend(plan, codeList) {
     .join("");
 }
 
+function fmtWait(m) {
+  m = Math.round(m || 0);
+  if (!m) return "None";
+  const h = Math.floor(m / 60), r = m % 60;
+  return h ? `${h} h${r ? ` ${r} m` : ""}` : `${r} m`;
+}
+
+// Six small tiles instead of a tall list; extra notes underneath only when they matter.
 function renderSummary(plan, onlineSections) {
-  const dl = document.getElementById("plan-summary");
-  dl.innerHTML = `
-    <dt>Total credits</dt><dd>${plan.total_credits}</dd>
-    <dt>Credit load</dt><dd>${plan.meets_min_credits ? "Within the allowed range" : `Below the ${planData.min_credits}-credit minimum — add ${planData.min_credits - plan.total_credits} more credit(s) from Browse &amp; Wishlist`}</dd>
-    <dt>Courses scheduled</dt><dd>${plan.sections.length}</dd>
-    <dt>Days on campus</dt><dd>${plan.days_on_campus}</dd>
-    <dt>Earliest start</dt><dd>${fmtMinutes(plan.earliest_start)}</dd>
-    <dt>Waiting between classes</dt><dd>${plan.gap_minutes ? Math.round(plan.gap_minutes) + " min total" : "None"}</dd>
-  `;
-  if (plan.unmet_wishlist && plan.unmet_wishlist.length) {
-    dl.innerHTML += `<dt>Wishlist that didn't fit this plan</dt><dd>${plan.unmet_wishlist.join(", ")} <span class="hint" style="margin:2px 0 0;">Remove one below to try fitting the rest.</span></dd>`;
+  const box = document.getElementById("plan-summary");
+  const dropped = (plan.unmet_wishlist || []).length;
+  const tile = (label, value, cls) => `<div class="sum-tile${cls ? " " + cls : ""}"><span>${label}</span><strong>${value}</strong></div>`;
+  let html = `<div class="sum-tiles">
+    ${tile("Credits", plan.total_credits, plan.meets_min_credits ? "" : "low")}
+    ${tile("Courses", plan.sections.length)}
+    ${tile("Days", plan.days_on_campus)}
+    ${tile("Starts", fmtMinutes(plan.earliest_start))}
+    ${tile("Waiting", fmtWait(plan.gap_minutes))}
+    ${tile("Dropped", dropped, dropped ? "low" : "")}
+  </div>`;
+  if (!plan.meets_min_credits) {
+    const short = planData.min_credits - plan.total_credits;
+    html += `<div class="sum-warn"><span>⚠ ${short} credit${short === 1 ? "" : "s"} below your ${planData.min_credits}-credit minimum</span>
+      <a class="sum-fix" href="/browse">Find a course →</a></div>`;
+  }
+  if (dropped) {
+    html += `<p class="sum-note"><strong>Didn't fit this plan:</strong> ${plan.unmet_wishlist.map(escapeHtml).join(", ")}. Remove one from your wishlist to try fitting the rest.</p>`;
   }
   if (onlineSections && onlineSections.length) {
-    const names = onlineSections.map((s) => `${s.code}-${s.section}`).join(", ");
-    dl.innerHTML += `<dt>Online / no fixed time</dt><dd>${names} (listed under the timetable)</dd>`;
+    html += `<p class="sum-note"><strong>Online / no fixed time:</strong> ${onlineSections.map((s) => `${escapeHtml(s.code)}-${escapeHtml(s.section)}`).join(", ")} (listed under the timetable)</p>`;
   }
+  box.innerHTML = html;
 }
 
 // ---------------------------------------------------------------------------

@@ -27,10 +27,16 @@ API:
 import io
 import json
 import os
+import queue
 import secrets
+import threading
 from datetime import datetime, timedelta
 
-from flask import Flask, g, jsonify, redirect, render_template, request, send_file, session, url_for
+from flask import (Flask, Response, copy_current_request_context, g, jsonify, redirect, render_template, request,
+                   send_file, session, url_for)
+
+import envfile
+envfile.load()  # AI settings from .env (git-ignored), before ai.py reads them
 
 import auth
 import compare
@@ -40,10 +46,11 @@ import programs as plans
 import progress
 import roadmap
 import sheet
+import structure
 import ai
 from scheduler import (
     load_data, load_wishlist, save_wishlist, enumerate_plans, find_alternates,
-    build_slots, prereqs_met, missing_prereqs,
+    build_slots, prereqs_met, missing_prereqs, public_stats,
 )
 import excel_importer
 from excel_importer import list_sheets, read_headers, guess_mapping, parse_with_mapping, TARGET_FIELDS, _risk_from_seats
@@ -87,6 +94,23 @@ def plan_choices_path():
 
 def pending_import_path():
     return _user_file("_pending_import.xlsx")
+
+
+def _program_structure(req):
+    """The official program structure for the student's program, or None
+    (then everything keeps using the sample plan, as before)."""
+    return structure.get(req.get("program_id"))
+
+
+def _load_data():
+    """load_data for the logged-in student. When their program has a program
+    structure (structure.py), the catalog comes back sorted into its
+    categories, so every page counts courses the same way."""
+    req, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    st = _program_structure(req)
+    if st and req.get("catalog"):
+        req = structure.overlay(req, st)
+    return req, offerings
 
 
 @app.before_request
@@ -269,10 +293,11 @@ def api_plans():
     """Every valid plan for the wishlist (see scheduler.enumerate_plans).
     Sections are sent once in `section_pool`; each plan just lists indices
     into it, which keeps thousands of plans small on the wire."""
-    requirements, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    requirements, offerings = _load_data()
     wishlist = load_wishlist(wishlist_path())
+    search = {}
     plans, blocked_required, blocked_wishlist, no_sections, total_found, exhausted = enumerate_plans(
-        requirements, offerings, wishlist
+        requirements, offerings, wishlist, stats=search
     )
 
     pool, pool_index = [], {}
@@ -307,6 +332,10 @@ def api_plans():
         "ignore_prereqs": bool(requirements.get("preferences", {}).get("ignore_prereqs")),
         "wishlist_count": len(wishlist),
         "min_credits": requirements.get("target_credits", {}).get("min", 12),
+        "max_credits": requirements.get("target_credits", {}).get("max", 17),
+        "avoid_before": requirements.get("preferences", {}).get("avoid_before") or "",
+        "avoid_days": requirements.get("preferences", {}).get("avoid_days") or [],
+        "search": public_stats(search),     # "Why this schedule?" on the Plan page
     })
 
 
@@ -314,7 +343,7 @@ def api_plans():
 def api_plan_alternates():
     """Backup sections for one plan, computed on demand for whichever plan
     is on screen (instead of for every possible plan up front)."""
-    requirements, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    requirements, offerings = _load_data()
     wanted = {(x.get("code"), x.get("section")) for x in (request.get_json(silent=True) or {}).get("sections", [])}
     sections = [s for s in offerings if (s["code"], s["section"]) in wanted]
     return jsonify({"alternates": find_alternates(sections, offerings, requirements)})
@@ -387,7 +416,7 @@ def api_demo_student():
 
 @app.route("/api/registration-sheet")
 def api_registration_sheet():
-    requirements, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    requirements, offerings = _load_data()
     cal = _load_calendar()
     out = {
         "student": g.user["username"], "program": requirements.get("program") or "", "term": cal.get("term") or requirements.get("semester") or "",
@@ -419,7 +448,7 @@ def api_registration_sheet():
 
 @app.route("/api/advisor-summary")
 def api_advisor_summary():
-    req, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    req, offerings = _load_data()
     cal = _load_calendar()
     out = {"student": g.user["username"], "program": req.get("program") or "", "term": cal.get("term") or req.get("semester") or "",
            "generated": datetime.now().strftime("%d %B %Y"), "has_curriculum": bool(req.get("catalog"))}
@@ -458,7 +487,7 @@ def api_advisor_summary():
 # ---------------------------------------------------------------------------
 
 def _dashboard_payload():
-    req, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    req, offerings = _load_data()
     catalog = req.get("catalog", [])
     completed = req.get("completed", [])
     prereqs = req.get("prereqs", {})
@@ -476,7 +505,12 @@ def _dashboard_payload():
     if not catalog:
         return out
     offered = {s["code"] for s in offerings} if offerings else None
-    out["progress"] = progress.category_progress(catalog, completed, req.get("elective_slots", []))
+    st = _program_structure(req)
+    if st:
+        out["progress"] = structure.evaluate(st, completed)
+        out["structure"] = True
+    else:
+        out["progress"] = progress.category_progress(catalog, completed, req.get("elective_slots", []))
     out["available"] = progress.available_now(catalog, completed, prereqs, offered)
     out["bottlenecks"] = progress.bottlenecks(catalog, completed, prereqs)
     rm = _roadmap_payload()
@@ -485,7 +519,8 @@ def _dashboard_payload():
         "risks": [r["text"] for r in rm["roadmap"]["risks"]], "real_offerings_term": rm["roadmap"]["real_offerings_term"],
         "remaining_courses": rm["roadmap"]["remaining_courses"],
     }
-    out["remaining_required"] = len(progress.remaining_required(catalog, completed))
+    out["remaining_required"] = (len(out["progress"]["remaining_required"]) if st
+                                 else len(progress.remaining_required(catalog, completed)))
     return out
 
 
@@ -523,7 +558,7 @@ def _save_roadmap_settings(st):
 def _roadmap_inputs(st=None):
     """Everything build_roadmap needs, from the student's files + settings."""
     st = st or _load_roadmap_settings()
-    req, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    req, offerings = _load_data()
     cal = _load_calendar()
     tc = req.get("target_credits", {})
     max_credits = st["max_credits"] or tc.get("max") or 17
@@ -674,7 +709,7 @@ def _resolve_sections(keys, offerings):
 
 def _plan_ctx(sections_keys):
     """Resolve a saved plan against today's offerings."""
-    _, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    _, offerings = _load_data()
     return _resolve_sections(sections_keys, offerings)
 
 
@@ -735,7 +770,7 @@ def api_plan_active():
 
 @app.route("/api/plan/compare")
 def api_plan_compare():
-    requirements, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    requirements, offerings = _load_data()
     wishlist = load_wishlist(wishlist_path())
     counts, seats, mine = _wishlist_counts(), _seat_totals(offerings), set(wishlist)
     demand = {c: _demand(c, counts, seats, mine) for c in {s["code"] for s in offerings}}
@@ -755,7 +790,8 @@ def api_plan_compare():
         })
     best = compare.compare_plans(all_metrics, tc.get("min", 12), tc.get("max", 17)) if len(all_metrics) > 1 else {}
     return jsonify({"plans": plans_out, "best": best, "min_credits": tc.get("min", 12), "max_credits": tc.get("max", 17),
-                    "wishlist_count": len(wishlist), "max_pins": MAX_PINS})
+                    "wishlist_count": len(wishlist), "max_pins": MAX_PINS,
+                    "verdict": compare.verdict(best, len(plans_out)) if len(plans_out) > 1 else None})
 
 
 # ---------------------------------------------------------------------------
@@ -1020,9 +1056,28 @@ def _build_plan_ics(plan, calendar=None):
 # Course catalog + wishlist API
 # ---------------------------------------------------------------------------
 
+@app.route("/api/status")
+def api_status():
+    """Everything the status strip under the header shows, in one request:
+    degree progress (program structure when there is one, else the sample
+    plan), program, sections loaded this term, required courses left, wishlist size."""
+    req, offerings = _load_data()
+    catalog, completed = req.get("catalog", []), req.get("completed", [])
+    prog = None
+    if catalog:
+        st = _program_structure(req)
+        p = structure.evaluate(st, completed) if st else progress.category_progress(catalog, completed, req.get("elective_slots", []))
+        prog = {"done": p["done"], "total": p["total"], "percent": p["percent"]}
+    return jsonify({
+        "program": req.get("program") or "", "sections": len(offerings),
+        "required_left": len(req.get("required_remaining") or []),
+        "wishlist": len(load_wishlist(wishlist_path())), "progress": prog,
+    })
+
+
 @app.route("/api/courses")
 def api_courses():
-    _, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    _, offerings = _load_data()
     counts, seats, mine = _wishlist_counts(), _seat_totals(offerings), _my_wishlist()
     courses = [dict(c, demand=_demand(c["code"], counts, seats, mine)) for c in offerings]
     return jsonify({"courses": courses})
@@ -1030,7 +1085,7 @@ def api_courses():
 
 @app.route("/api/wishlist", methods=["GET", "POST"])
 def api_wishlist():
-    requirements, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    requirements, offerings = _load_data()
     wishlist = load_wishlist(wishlist_path())
 
     if request.method == "POST":
@@ -1072,6 +1127,8 @@ def api_wishlist_remove(code):
 def api_curriculum():
     if request.method == "PUT":
         body = request.get_json(silent=True) or {}
+        for key in ("structure_progress",):       # read-only extras sent back by GET
+            body.pop(key, None)
         # Safety net: when a full catalog is present, required_remaining is
         # always derived from it (required courses minus completed ones)
         # rather than trusted as a separately-maintained list, so the two
@@ -1084,7 +1141,7 @@ def api_curriculum():
             ]
         # Grades are edited on the GPA page; the Curriculum page never owns them,
         # so a stale copy of this page can't wipe or overwrite them.
-        existing, _ = load_data(requirements_path(), OFFERINGS_PATH)
+        existing, _ = _load_data()
         done = set(body.get("completed", []))
         grades = {c: g for c, g in (existing.get("grades") or {}).items() if c in done}
         if grades:
@@ -1095,7 +1152,10 @@ def api_curriculum():
             json.dump(body, f, indent=2)
         return jsonify({"ok": True})
 
-    requirements, _ = load_data(requirements_path(), OFFERINGS_PATH)
+    requirements, _ = _load_data()
+    st = _program_structure(requirements)
+    if st:
+        requirements = dict(requirements, structure_progress=structure.evaluate(st, requirements.get("completed", [])))
     return jsonify(requirements)
 
 
@@ -1126,7 +1186,7 @@ def _gpa_entries(req):
 def _planned_courses():
     """Courses of the student's chosen (active) plan, or of the best-ranked plan
     when none is chosen. Returns (courses, source) with source "active"/"best"/None."""
-    requirements, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    requirements, offerings = _load_data()
     active = _load_choices().get("active")
     if active:
         found, _missing = _resolve_sections(active.get("sections") or [], offerings)
@@ -1150,7 +1210,7 @@ def _gpa_summary(req):
 
 @app.route("/api/gpa")
 def api_gpa():
-    req, _ = load_data(requirements_path(), OFFERINGS_PATH)
+    req, _ = _load_data()
     entries, unknown, total = _gpa_summary(req)
     planned, planned_source = _planned_courses()
     return jsonify({
@@ -1176,7 +1236,7 @@ def api_grades():
     body = (request.get_json(silent=True) or {}).get("grades")
     if not isinstance(body, dict):
         return jsonify({"error": "Send {\"grades\": {\"COSC 111\": \"A\"}}."}), 400
-    req, _ = load_data(requirements_path(), OFFERINGS_PATH)
+    req, _ = _load_data()
     done = set(req.get("completed", []))
     grades = dict(req.get("grades") or {})
     for code, raw in body.items():
@@ -1202,7 +1262,7 @@ def api_gpa_whatif():
     """Nothing is saved: tries grades for the planned term, and/or works out
     what average is needed to hit a target cumulative GPA."""
     body = request.get_json(silent=True) or {}
-    req, _ = load_data(requirements_path(), OFFERINGS_PATH)
+    req, _ = _load_data()
     entries, _, _ = _gpa_summary(req)
     out = {}
     if isinstance(body.get("grades"), dict):
@@ -1248,7 +1308,7 @@ def api_programs():
         plans.save_programs(existing)
         return jsonify({"ok": True, "program": prog})
 
-    requirements, _ = load_data(requirements_path(), OFFERINGS_PATH)
+    requirements, _ = _load_data()
     return jsonify({
         "programs": [plans.summary(p) for p in plans.load_programs()],
         "can_edit": auth.is_admin(g.user),
@@ -1289,8 +1349,11 @@ def api_curriculum_from_program():
     prog = plans.get_program(body.get("program_id"))
     if not prog:
         return jsonify({"error": "Pick a program plan first."}), 400
-    requirements, _ = load_data(requirements_path(), OFFERINGS_PATH)
+    requirements, _ = _load_data()
     new_req = plans.apply_program(requirements, prog)
+    st = _program_structure(new_req)
+    if st:
+        new_req = structure.overlay(new_req, st)
     # Fill the Year / Semester boxes only when they're empty: never overwrite what the student already has.
     sug = progress.suggest_profile(new_req["catalog"], new_req.get("completed", []), _load_calendar().get("term"))
     filled = []
@@ -1308,7 +1371,7 @@ def api_curriculum_through():
     """Which saved-curriculum courses sit at or before a sample-plan semester.
     Read-only: the Curriculum page merges the answer into its own unsaved state."""
     body = request.get_json(silent=True) or {}
-    requirements, _ = load_data(requirements_path(), OFFERINGS_PATH)
+    requirements, _ = _load_data()
     try:
         codes = progress.courses_through(requirements.get("catalog", []), body.get("year"), body.get("term"))
     except ValueError as e:
@@ -1357,7 +1420,7 @@ def _sec_brief(s, demand=None):
 
 
 def _advisor_context():
-    requirements, offerings = load_data(requirements_path(), OFFERINGS_PATH)
+    requirements, offerings = _load_data()
     wishlist = load_wishlist(wishlist_path())
     cal = _load_calendar()
     catalog = {c["code"]: c for c in requirements.get("catalog", [])}
@@ -1382,7 +1445,11 @@ def _advisor_tools():
     req_path, wl_path = requirements_path(), wishlist_path()
 
     def load():
-        return load_data(req_path, OFFERINGS_PATH)
+        req, off = load_data(req_path, OFFERINGS_PATH)
+        st = _program_structure(req)
+        if st and req.get("catalog"):            # same categories / required flags as the pages show
+            req = structure.overlay(req, st)
+        return req, off
 
     def curriculum_status(_args):
         req, off = load()
@@ -1686,16 +1753,55 @@ def api_ai_chat():
     wait = ai.rate_limited(g.user["id"])
     if wait:
         return jsonify({"error": f"That's a lot of questions for one hour. Try again in about {max(1, wait // 60)} minute(s)."}), 429
+    if request.args.get("stream") == "1":
+        return _ai_chat_stream(messages)
     try:
         result = ai.run_chat(messages, _advisor_context(), _advisor_tools())
-    except (ai.AIAuthenticationError, ai.AIRateLimitError, ai.AIConnectionError, ai.AIError) as e:
-        # Plain-language cause + how to fix it (same wording as `python3 ai_check.py`); never includes a key.
-        what, fix = ai.explain_error(e)
-        return jsonify({"error": f"{what} {fix}"}), 502
-    except Exception:  # never echo secrets
-        app.logger.exception("AI chat failed")
-        return jsonify({"error": "Something went wrong talking to the AI service. Run `python3 ai_check.py` in the terminal to find out why."}), 502
+    except Exception as e:
+        return jsonify({"error": _ai_error_text(e)}), 502
     return jsonify(result)
+
+
+def _ai_error_text(e):
+    """Plain-language cause + how to fix it (same wording as `python3 ai_check.py`); never includes a key."""
+    if isinstance(e, (ai.AIAuthenticationError, ai.AIRateLimitError, ai.AIConnectionError, ai.AIError)):
+        what, fix = ai.explain_error(e)
+        return f"{what} {fix}"
+    app.logger.exception("AI chat failed")   # never echo secrets
+    return "Something went wrong talking to the AI service. Run `python3 ai_check.py` in the terminal to find out why."
+
+
+def _ai_chat_stream(messages):
+    """Same as the JSON chat, but sent as one JSON object per line while it
+    works, so the chat can show each step live ("Checking your GPA…"):
+    step events from ai.run_chat, then {"type": "done", reply, actions, steps}
+    or {"type": "error", "error"}. The AI runs in a worker thread that keeps
+    this request's context (the tools need the logged-in student)."""
+    events = queue.Queue()
+    context_text, tools = _advisor_context(), _advisor_tools()
+    user = g.user
+
+    @copy_current_request_context
+    def work():
+        g.user = user      # `g` belongs to the app context, which the copied request context doesn't carry over
+        try:
+            result = ai.run_chat(messages, context_text, tools, on_event=events.put)
+            events.put({"type": "done", **result})
+        except Exception as e:
+            events.put({"type": "error", "error": _ai_error_text(e)})
+        finally:
+            events.put(None)
+
+    threading.Thread(target=work, daemon=True).start()
+
+    def generate():
+        while True:
+            ev = events.get()
+            if ev is None:
+                return
+            yield json.dumps(ev, ensure_ascii=False, default=str) + "\n"
+
+    return Response(generate(), mimetype="application/x-ndjson", headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
 # ---------------------------------------------------------------------------

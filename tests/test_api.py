@@ -183,7 +183,7 @@ class ApiTests(unittest.TestCase):
         c = self.student
         self.assertEqual(c.put("/api/grades", json={"grades": {"A 100": "a-"}}).status_code, 200)
         g = c.get("/api/gpa").get_json()
-        self.assertAlmostEqual(g["summary"]["gpa"], 3.7)
+        self.assertAlmostEqual(g["summary"]["gpa"], 3.67)
         stale = json.loads(json.dumps(CURRICULUM))          # a Curriculum page that has never seen grades
         self.assertEqual(c.put("/api/curriculum", json=stale).status_code, 200)
         self.assertEqual(c.get("/api/curriculum").get_json()["grades"], {"A 100": "A-"})
@@ -191,6 +191,47 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(c.put("/api/grades", json={"grades": {"B 200": "A"}}).status_code, 400)   # not completed
         self.assertEqual(c.put("/api/grades", json={"grades": {"A 100": ""}}).status_code, 200)
         self.assertIsNone(c.get("/api/gpa").get_json()["summary"]["gpa"])
+
+    def _user_id(self, client):
+        with client.session_transaction() as sess:
+            return sess["user_id"]
+
+    def test_program_structure_counts_by_category(self):
+        import shutil as _sh
+        _sh.copy(os.path.join(ROOT, "data", "program_structures.json"), os.path.join("data", "program_structures.json"))
+        try:
+            c = self._signup("structure1")
+            cur = json.loads(json.dumps(CURRICULUM))
+            cur["program_id"] = "software-development"
+            cur["completed"] = ["COSC 111", "ENGL 101", "ENGL 101 (ENR)", "AIN 320"]
+            cur["catalog"].append({"code": "COSC 111", "name": "CS Survey", "category": "Major", "credits": 3, "required": True})
+            self.assertEqual(c.put("/api/curriculum", json=cur).status_code, 200)
+            got = c.get("/api/curriculum").get_json()
+            sp = got["structure_progress"]
+            rows = {r["category"]: r["done"] for r in sp["rows"]}
+            self.assertEqual(rows, {"General Education": 3, "Major": 3, "Core/Major": 0, "Electives": 3})
+            self.assertEqual(sp["total"], 120)
+            self.assertIn("ENGL 101 (ENR)", sp["not_counted"][0]["courses"])
+            self.assertIn("MATH 234A", {x["code"] for x in got["catalog"]})          # added from the structure
+            self.assertEqual(c.put("/api/curriculum", json=got).status_code, 200)     # GET -> PUT round trip
+            req_file = os.path.join(self.app.auth.user_dir(self._user_id(c)), "degree_requirements.json")
+            with open(req_file) as f:
+                self.assertNotIn("structure_progress", json.load(f))                 # read-only extra not saved
+            d = c.get("/api/dashboard").get_json()
+            self.assertEqual(d["progress"]["done"], 9)
+            self.assertEqual(d["progress"]["total"], 120)
+            self.assertEqual(d["remaining_required"], 13)                              # 14 Major courses - COSC 111
+        finally:
+            os.remove(os.path.join("data", "program_structures.json"))
+
+    def test_status_strip_endpoint(self):
+        d = self.student.get("/api/status").get_json()
+        self.assertEqual(d["program"], "Test Program")
+        self.assertEqual(d["sections"], len(OFFERINGS))
+        self.assertEqual(d["wishlist"], 1)
+        self.assertEqual(d["required_left"], 2)                   # B 200, C 300
+        self.assertEqual((d["progress"]["done"], d["progress"]["total"]), (3, 12))   # A 100 of 3 required + 1 slot
+        self.assertIsNone(self._signup("statusnew").get("/api/status").get_json()["progress"])
 
     def test_old_file_without_grades_still_works(self):
         d = self.admin.get("/api/gpa").get_json()
@@ -315,6 +356,69 @@ class ApiTests(unittest.TestCase):
         out = ai.run_chat([{"role": "user", "content": "can I graduate by Spring 2028?"}], "ctx", self._tools(), prov=Fake())
         self.assertEqual(out["reply"], "ok")
         self.assertEqual(out["actions"], [])      # nothing was changed
+
+    def test_chat_reports_steps_and_events(self):
+        import ai
+
+        class Fake:
+            def __init__(self):
+                self.n = 0
+            def step(self, system, convo):
+                self.n += 1
+                if self.n == 1:
+                    return "", [{"id": "1", "name": "get_progress", "input": {}}, {"id": "2", "name": "nope", "input": {}}]
+                return "done", []
+        events = []
+        out = ai.run_chat([{"role": "user", "content": "hi"}], "ctx", self._tools(), prov=Fake(), on_event=events.append)
+        self.assertEqual([s["name"] for s in out["steps"]], ["get_progress", "nope"])
+        self.assertEqual([s["ok"] for s in out["steps"]], [True, False])
+        self.assertEqual(out["steps"][0]["label"], "Checking your degree progress")
+        self.assertIn("credits_done", out["steps"][0]["preview"])
+        self.assertEqual([e["type"] for e in events], ["thinking", "tool", "tool_done", "tool", "tool_done", "thinking"])
+
+    def test_chat_stream_endpoint(self):
+        import ai
+        from unittest import mock
+
+        class Fake:
+            def __init__(self):
+                self.n = 0
+            def step(self, system, convo):
+                self.n += 1
+                if self.n == 1:
+                    return "", [{"id": "1", "name": "get_gpa", "input": {}}, {"id": "2", "name": "get_progress", "input": {}}]
+                return "Your GPA is fine.", []
+        c = self._signup("streamer1")
+        self.assertEqual(c.put("/api/curriculum", json=CURRICULUM).status_code, 200)
+        with mock.patch.object(ai, "status", return_value={"available": True}), \
+                mock.patch.object(ai, "make_provider", return_value=Fake()):
+            r = c.post("/api/ai/chat?stream=1", json={"messages": [{"role": "user", "content": "gpa?"}]})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn("ndjson", r.content_type)
+            lines = [json.loads(l) for l in r.get_data(as_text=True).splitlines() if l.strip()]
+        types = [l["type"] for l in lines]
+        self.assertEqual(types[0], "thinking")
+        self.assertIn({"type": "tool", "name": "get_gpa", "label": "Checking your GPA", "input": {}}, lines)
+        self.assertEqual(types[-1], "done")
+        self.assertEqual(lines[-1]["reply"], "Your GPA is fine.")
+        self.assertEqual(lines[-1]["steps"][0]["name"], "get_gpa")
+        for step in lines[-1]["steps"]:
+            self.assertTrue(step["ok"], step["preview"])                  # tools saw the logged-in student
+
+    def test_chat_stream_reports_errors_as_events(self):
+        import ai
+        from unittest import mock
+
+        class Broken:
+            def step(self, system, convo):
+                raise ai.AIRateLimitError("HTTP 429")
+        c = self._signup("streamer2")
+        with mock.patch.object(ai, "status", return_value={"available": True}), \
+                mock.patch.object(ai, "make_provider", return_value=Broken()):
+            r = c.post("/api/ai/chat?stream=1", json={"messages": [{"role": "user", "content": "hi"}]})
+            lines = [json.loads(l) for l in r.get_data(as_text=True).splitlines() if l.strip()]
+        self.assertEqual(lines[-1]["type"], "error")
+        self.assertIn("over its limit", lines[-1]["error"])
 
 
 if __name__ == "__main__":

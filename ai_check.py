@@ -22,6 +22,9 @@ import shutil
 import sys
 import tempfile
 
+import envfile
+envfile.load()  # AI settings from .env (git-ignored), before ai.py reads them
+
 import ai
 
 ROOT = os.path.dirname(os.path.abspath(__file__))

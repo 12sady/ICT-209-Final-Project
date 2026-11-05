@@ -10,20 +10,39 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <nav class="topnav" aria-label="Main">
-    <a class="brand" href="{{ url_for('index') }}">Registration Planner<span class="brand-sub">plan your term before you register</span></a>
-    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <a class="brand" href="{{ url_for('index') }}">
+      <span class="brand-logo" aria-hidden="true">🎓</span>
+      <span class="brand-text">Registration Planner<span class="brand-sub">AUPP · plan your term before you register</span></span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu"><span aria-hidden="true">☰</span></button>
     <div class="nav-links" id="nav-links">
-      <a href="{{ url_for('index') }}" {% if active=='dashboard' %}aria-current="page"{% endif %}>Dashboard</a>
-      <a href="{{ url_for('curriculum') }}" {% if active=='curriculum' %}aria-current="page"{% endif %}>Curriculum</a>
-      <a href="{{ url_for('browse') }}" {% if active=='browse' %}aria-current="page"{% endif %}>Courses</a>
-      <a href="{{ url_for('plan_page') }}" {% if active=='plan' %}aria-current="page"{% endif %}>Plan</a>
-      <a href="{{ url_for('compare_page') }}" {% if active=='compare' %}aria-current="page"{% endif %}>Compare</a>
-      <a href="{{ url_for('roadmap_page') }}" {% if active=='roadmap' %}aria-current="page"{% endif %}>Roadmap</a>
-      <a href="{{ url_for('gpa_page') }}" {% if active=='gpa' %}aria-current="page"{% endif %}>GPA</a>
-      <a href="{{ url_for('import_page') }}" {% if active=='import' %}aria-current="page"{% endif %}>Import</a>
-      <span class="nav-divider"></span>
-      {% if current_username %}<span class="nav-user">{{ current_username }}</span>{% endif %}
-      <a href="{{ url_for('logout') }}" title="Log out">Log out</a>
+      <div class="nav-pages">
+        <a href="{{ url_for('index') }}" {% if active=='dashboard' %}aria-current="page"{% endif %}>Dashboard</a>
+        <a href="{{ url_for('curriculum') }}" {% if active=='curriculum' %}aria-current="page"{% endif %}>Curriculum</a>
+        <a href="{{ url_for('browse') }}" {% if active=='browse' %}aria-current="page"{% endif %}>Courses</a>
+        <a href="{{ url_for('plan_page') }}" {% if active=='plan' %}aria-current="page"{% endif %}>Plan</a>
+        <a href="{{ url_for('compare_page') }}" {% if active=='compare' %}aria-current="page"{% endif %}>Compare</a>
+        <a href="{{ url_for('roadmap_page') }}" {% if active=='roadmap' %}aria-current="page"{% endif %}>Roadmap</a>
+        <a href="{{ url_for('gpa_page') }}" {% if active=='gpa' %}aria-current="page"{% endif %}>GPA</a>
+        <a href="{{ url_for('import_page') }}" {% if active=='import' %}aria-current="page"{% endif %}>Import</a>
+      </div>
+      {% if current_username %}
+      {% set initial = current_username[:1]|upper %}
+      <div class="nav-user">
+        <button class="user-btn" id="user-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="user-menu">
+          <span class="user-av" aria-hidden="true">{{ initial }}</span><span class="user-name">{{ current_username }}</span><span class="user-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="user-menu" id="user-menu" hidden>
+          <div class="user-menu-head">Signed in as<strong>{{ current_username }}</strong><span>{{ "Admin" if is_admin else "Student" }}</span></div>
+          <a class="user-logout" href="{{ url_for('logout') }}">↪ Log out</a>
+        </div>
+      </div>
+      <div class="nav-user-card">
+        <span class="user-av" aria-hidden="true">{{ initial }}</span>
+        <span class="user-card-text"><strong>{{ current_username }}</strong><span>{{ "Admin" if is_admin else "Student" }}</span></span>
+        <a class="user-logout" href="{{ url_for('logout') }}">Log out</a>
+      </div>
+      {% endif %}
     </div>
   </nav>
 
@@ -34,23 +53,29 @@
   </main>
 
   {% if current_username %}
-  <button id="advisor-fab" class="advisor-fab" type="button" aria-controls="advisor-panel" aria-expanded="false">Ask AI</button>
-  <aside id="advisor-panel" class="advisor-panel" hidden aria-label="AI advisor">
+  <button id="advisor-fab" class="advisor-fab" type="button" aria-controls="advisor-panel" aria-expanded="false"><span class="advisor-spark" aria-hidden="true">✦</span> Ask AI</button>
+  <aside id="advisor-panel" class="advisor-panel" hidden aria-label="AI advisor" data-username="{{ current_username }}">
     <header class="advisor-head">
-      <div><strong>AI advisor</strong><span class="advisor-sub">Knows your curriculum and this term's courses</span></div>
-      <div>
-        <button id="advisor-clear" class="advisor-link" type="button">Clear</button>
-        <button id="advisor-close" class="advisor-link" type="button" aria-label="Close">Close</button>
+      <div class="advisor-avatar" aria-hidden="true">✦</div>
+      <div class="advisor-title">
+        <strong>AI Advisor</strong>
+        <span class="advisor-sub"><span class="advisor-dot" id="advisor-dot" aria-hidden="true"></span><span id="advisor-status">Reads your real data</span></span>
+      </div>
+      <div class="advisor-head-actions">
+        <button id="advisor-clear" class="advisor-icon-btn" type="button" aria-label="Clear chat" title="Clear chat">⟲</button>
+        <button id="advisor-close" class="advisor-icon-btn" type="button" aria-label="Close" title="Close">✕</button>
       </div>
     </header>
     <div id="advisor-setup" class="advisor-setup" hidden></div>
     <div id="advisor-log" class="advisor-log" aria-live="polite"></div>
-    <div id="advisor-suggest" class="advisor-suggest"></div>
+    <div id="advisor-suggest" class="advisor-suggest" hidden></div>
     <form id="advisor-form" class="advisor-form">
-      <textarea id="advisor-input" rows="2" maxlength="2000" placeholder="e.g. No classes before 10, Fridays free, I want ITM 360"></textarea>
-      <button id="advisor-send" type="submit">Send</button>
+      <div class="advisor-input-wrap">
+        <textarea id="advisor-input" rows="1" maxlength="2000" placeholder="Ask anything about your studies…" aria-label="Your question"></textarea>
+        <button id="advisor-send" class="advisor-send" type="submit" aria-label="Send" title="Send">➤</button>
+      </div>
     </form>
-    <p class="advisor-note">AI can make mistakes. It plans only; you register in AUPP's own system. Confirm requirements with your advisor.</p>
+    <p class="advisor-note">AI can make mistakes. It only plans; you register in AUPP's own system. Confirm with your advisor.</p>
   </aside>
   {% endif %}
 

@@ -9,7 +9,7 @@
   </header>
 
   <details class="card" id="plan-card">
-    <summary class="card-summary"><h2>Sample course plan <span class="hint-inline" id="plan-summary-note"></span></h2></summary>
+    <summary class="card-summary"><h2>Sample course plan (suggested order) <span class="hint-inline" id="plan-summary-note"></span></h2></summary>
     <p class="hint" id="plan-hint">Pick your major and the app loads AUPP's sample course plan as your curriculum, with prerequisites. It keeps the courses you've already completed. After that, it's your own copy: edit, add or remove anything below.</p>
     <div class="plan-pick">
       <select id="plan-select" aria-label="Program"><option value="">Choose your program…</option></select>
@@ -49,6 +49,13 @@
     <p class="hint">Set a course to Completed in the table below and pick the semester you took it — it shows up here grouped by semester.</p>
     <div id="completed-by-semester"></div>
   </details>
+
+  <section class="card" id="structure-card" hidden>
+    <h2>Program structure: what you must complete</h2>
+    <p class="hint">The official rules to graduate: credits needed in each category. Any completed course on a category's list counts toward it, not only the one the sample plan suggests. This is separate from the sample course plan, which is just a suggested order. Updates when you save.</p>
+    <div class="table-wrap"><table class="course-table" id="structure-table"></table></div>
+    <p class="hint" id="structure-notes"></p>
+  </section>
 
   <section class="card">
     <h2>Your curriculum</h2>

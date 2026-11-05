@@ -31,7 +31,13 @@ function renderMain(d) {
   $("dash-ring").innerHTML = ringSvg(p.percent);
   $("dash-credits").innerHTML = `${cr(p.done)} <span class="stat-of">of ${cr(p.total)} credits</span>`;
   $("dash-credits-sub").textContent = `${cr(p.remaining)} credits left · ${d.remaining_required} required course${d.remaining_required === 1 ? "" : "s"} to go`;
-  $("dash-extra").textContent = p.extra_electives ? `${p.extra_electives} extra elective${p.extra_electives === 1 ? "" : "s"} completed beyond the plan's slots (not counted).` : "";
+  if (d.structure) {
+    const nc = (p.not_counted || []).map((g) => `${g.group.replace(/ \(not counted\)$/, "")}: ${g.courses.join(", ")}`);
+    const extra = p.extra_credits ? [`${cr(p.extra_credits)} cr above a category's requirement`] : [];
+    $("dash-extra").textContent = [...extra, ...nc].length ? `Not counted toward ${cr(p.total)}: ${[...extra, ...nc].join(" · ")}.` : "";
+  } else {
+    $("dash-extra").textContent = p.extra_electives ? `${p.extra_electives} extra elective${p.extra_electives === 1 ? "" : "s"} completed beyond the plan's slots (not counted).` : "";
+  }
 
   const g = d.graduation;
   const tile = (label, value, sub, href) => `<a class="stat stat-link" href="${href}"><div class="stat-label">${label}</div><div class="stat-value">${value}</div><div class="stat-sub">${sub}</div></a>`;
@@ -44,7 +50,7 @@ function renderMain(d) {
 
   $("dash-cats").innerHTML = p.rows.map((r) => {
     const pct = r.total ? Math.round((100 * r.done) / r.total) : 0;
-    return `<div class="bar-row"><div class="bar-label"><span>${escapeHtml(r.category)}</span><span class="num-inline">${cr(r.done)} / ${cr(r.total)} cr</span></div>
+    return `<div class="bar-row"><div class="bar-label"><span>${escapeHtml(r.category)}</span><span class="num-inline">${cr(r.done)} / ${cr(r.total)} cr${r.extra ? ` (+${cr(r.extra)} extra)` : ""}</span></div>
       <div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${escapeHtml(r.category)}"><span style="width:${pct}%"></span></div></div>`;
   }).join("");
 
