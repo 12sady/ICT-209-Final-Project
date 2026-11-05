@@ -59,7 +59,8 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 - Print layouts (registration sheet, advisor summary, plan page) were checked as CSS + on-screen only, not in a real print preview.
 - `python3 ai_check.py`: AI connection self-check (ping + one real read-only tool round trip on a temp empty student);
   `ai.explain_error` / `ai.scrub` give plain-language fixes and hide key-like text (used by the chat endpoint too).
-  Still never run against a real model by Claude; the user must run it.
+  The user ran it against real Gemini (gemini-3.6-flash, AQ.-style key over the OpenAI route with a single Bearer header): ping and the
+  get_progress tool round trip both passed. A full multi-turn chat in the app is still unconfirmed. Claude never runs it (it would need the key).
 
 - Offerings now carry optional `prerequisites` (list; imported from a "Pre-requisite" column via `excel_importer.parse_prerequisites`,
   shown in Browse and editable in the manual section form). Display only: the scheduler still checks the student's own curriculum prereqs.
