@@ -298,6 +298,9 @@ class AnthropicProvider:
         return text, calls
 
 
+USER_AGENT = "AUPP-Registration-Planner/1.0"  # some hosts (Groq via Cloudflare) block Python's default User-Agent
+
+
 class OpenAICompatProvider:
     """Any server that speaks the OpenAI chat-completions format with tool
     calling: Ollama (local), Google Gemini's OpenAI-compatible endpoint, Groq,
@@ -313,8 +316,9 @@ class OpenAICompatProvider:
         req = urllib.request.Request(
             self.base_url + "/chat/completions",
             data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json",
-                     **({"Authorization": f"Bearer {self.api_key}"} if self.api_key else {})},
+            headers={"Content-Type": "application/json", "User-Agent": USER_AGENT,
+                     **({"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}),
+                     **({"x-goog-api-key": self.api_key} if self.api_key and "googleapis.com" in self.base_url else {})},
         )
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as r:
