@@ -312,13 +312,21 @@ class OpenAICompatProvider:
         self.model = model or os.environ.get("AI_MODEL", "")
         self.timeout = timeout
 
+    def _auth_headers(self):
+        """Google's newer AQ.-style keys are not reliably accepted as a Bearer token on the OpenAI-style
+        route, so for Google hosts send only Google's own header. Everyone else gets the usual Bearer."""
+        if not self.api_key:
+            return {}
+        if "googleapis.com" in self.base_url:
+            return {"x-goog-api-key": self.api_key}
+        return {"Authorization": f"Bearer {self.api_key}"}
+
     def _post(self, payload):
         req = urllib.request.Request(
             self.base_url + "/chat/completions",
             data=json.dumps(payload).encode("utf-8"),
             headers={"Content-Type": "application/json", "User-Agent": USER_AGENT,
-                     **({"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}),
-                     **({"x-goog-api-key": self.api_key} if self.api_key and "googleapis.com" in self.base_url else {})},
+                     **self._auth_headers()},
         )
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as r:

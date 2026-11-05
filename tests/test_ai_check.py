@@ -206,6 +206,7 @@ class ExplainErrorTests(unittest.TestCase):
                 ai.OpenAICompatProvider(base, "k", "m")._post({})
             self.assertEqual(seen["user-agent"], ai.USER_AGENT)
             self.assertEqual("x-goog-api-key" in seen, has_goog)
+            self.assertEqual("authorization" in seen, not has_goog)  # one credential only, never both
 
     def test_anthropic_wording_uses_its_own_key_name(self):
         what, fix = ai.explain_error(ai.AIAuthenticationError("x"), "anthropic", "", "claude")
