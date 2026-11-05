@@ -61,6 +61,12 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
   `ai.explain_error` / `ai.scrub` give plain-language fixes and hide key-like text (used by the chat endpoint too).
   Still never run against a real model by Claude; the user must run it.
 
+- Offerings now carry optional `prerequisites` (list; imported from a "Pre-requisite" column via `excel_importer.parse_prerequisites`,
+  shown in Browse and editable in the manual section form). Display only: the scheduler still checks the student's own curriculum prereqs.
+- Demo data is **Spring 2027** (IT undergraduate sheet, 224 sections, classes 11 Jan - 30 Apr 2027, breaks from the AUPP calendar PDF);
+  Fall 2026 was removed on purpose. No rooms or seats yet (registrar gives rooms near enrolment day): Browse's demand badge
+  (from wishlists) is the stand-in for seat pressure. Registration-opens date still unset.
+
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.
 

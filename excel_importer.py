@@ -49,6 +49,7 @@ TARGET_FIELDS = {
     "location": "Classroom / room (optional) -- shown on the plan and added to calendar events",
     "start_date": "First day of this class (optional) -- calendar events start here",
     "end_date": "Last day of this class (optional) -- calendar events stop here",
+    "prerequisites": "Pre-requisite (optional, e.g. 'ITEC 101,MATH 177' or 'NONE') -- shown in Browse",
 }
 
 BASE_REQUIRED_FIELDS = ["code", "section", "title", "credits"]
@@ -78,6 +79,7 @@ _GUESS_KEYWORDS = {
     "location": ["classroom", "room", "location", "venue", "building", "bldg"],
     "start_date": ["start date", "begin date", "first day", "begins"],
     "end_date": ["end date", "last day", "finish date", "ends"],
+    "prerequisites": ["pre-requisite", "prerequisite", "pre-req", "prereq"],
 }
 
 DAY_ALIASES = {
@@ -284,6 +286,23 @@ def _risk_from_seats(total, available):
 _NO_LOCATION = {"", "tbd", "tba", "tbc", "n/a", "na", "nan", "none", "nat", "-"}
 
 
+def parse_prerequisites(raw):
+    """'ITEC 101,MATH 177' -> ['ITEC 101', 'MATH 177']; 'NONE' / blank -> [].
+    Text that isn't a course code (e.g. 'Year 3/4') is kept as written."""
+    if raw is None or (not isinstance(raw, str) and pd.isna(raw)):
+        return []
+    out = []
+    for part in re.split(r"[,;&]|\band\b", str(raw), flags=re.I):
+        part = " ".join(part.split())
+        if not part or part.lower() in ("none", "nan", "n/a", "na", "-", "—"):
+            continue
+        m = re.fullmatch(r"([A-Za-z]{2,5})\s*-?\s*(\d{3}[A-Za-z]?)", part)
+        part = f"{m.group(1).upper()} {m.group(2).upper()}" if m else part
+        if part not in out:
+            out.append(part)
+    return out
+
+
 def _clean_location(raw):
     """A room name, or None when the sheet only says TBD/blank."""
     if raw is None or (not isinstance(raw, str) and pd.isna(raw)):
@@ -381,6 +400,7 @@ def parse_with_mapping(path, mapping, sheet_name=0):
                     if dep and dep.lower() not in ("nan", "none", "nat"):
                         department = dep
 
+            prerequisites = parse_prerequisites(record.get(mapping["prerequisites"])) if "prerequisites" in mapping else []
             location = _clean_location(record.get(mapping["location"])) if "location" in mapping else None
             start_date = _parse_date(record.get(mapping["start_date"])) if "start_date" in mapping else None
             end_date = _parse_date(record.get(mapping["end_date"])) if "end_date" in mapping else None
@@ -416,6 +436,7 @@ def parse_with_mapping(path, mapping, sheet_name=0):
                     "location": location,
                     "start_date": start_date,
                     "end_date": end_date,
+                    "prerequisites": prerequisites,
                 })
         except Exception as e:  # keep going on a single bad row
             errors.append({"row": excel_row, "reason": str(e)})

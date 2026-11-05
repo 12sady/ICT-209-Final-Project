@@ -392,6 +392,7 @@ function readSectionForm() {
     location: MS("ms-location").value,
     start_date: MS("ms-start-date").value,
     end_date: MS("ms-end-date").value,
+    prerequisites: MS("ms-prereq").value,
     seats_total: MS("ms-seats-total").value,
     seats_available: MS("ms-seats-available").value,
     online: MS("ms-online").checked,
@@ -407,7 +408,7 @@ function syncOnlineToggle() {
 
 function clearSectionForm() {
   editingOriginal = null;
-  ["ms-code", "ms-section", "ms-title", "ms-department", "ms-instructor", "ms-start", "ms-end", "ms-seats-total", "ms-seats-available", "ms-location", "ms-start-date", "ms-end-date"]
+  ["ms-code", "ms-section", "ms-title", "ms-department", "ms-instructor", "ms-start", "ms-end", "ms-seats-total", "ms-seats-available", "ms-location", "ms-start-date", "ms-end-date", "ms-prereq"]
     .forEach((id) => { MS(id).value = ""; });
   MS("ms-credits").value = "3";
   MS("ms-online").checked = false;
@@ -429,6 +430,7 @@ function editSection(row) {
   MS("ms-location").value = row.location || "";
   MS("ms-start-date").value = row.start_date || "";
   MS("ms-end-date").value = row.end_date || "";
+  MS("ms-prereq").value = (row.prerequisites || []).join(", ");
   MS("ms-seats-total").value = row.seats_total ?? "";
   MS("ms-seats-available").value = row.seats_available ?? "";
   MS("ms-online").checked = !!row.online;
