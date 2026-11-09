@@ -55,6 +55,7 @@ from scheduler import (
     load_data, load_wishlist, save_wishlist, enumerate_plans, find_alternates,
     build_slots, prereqs_met, missing_prereqs, public_stats,
 )
+import excel_importer
 from excel_importer import list_sheets, read_headers, guess_mapping, parse_with_mapping, TARGET_FIELDS, _risk_from_seats
 from parser import parse_schedule_text, CODE_RE
 from curriculum_parser import parse_curriculum_text
@@ -2029,7 +2030,7 @@ def _apply_offerings(incoming, mode):
             # text never has them) shouldn't wipe what an earlier import knew.
             row = dict(row)
             for field in ("department", "seats_total", "seats_available",
-                          "location", "start_date", "end_date"):
+                          "location", "start_date", "end_date", "prerequisites"):
                 if row.get(field) in (None, ""):
                     row[field] = old.get(field)
             if row.get("risk") == "unknown" and not row.get("online"):
@@ -2122,7 +2123,15 @@ def _clean_section(raw):
         "location": location or None,
         "start_date": start_date,
         "end_date": end_date,
+        "prerequisites": _clean_prereq_list(raw.get("prerequisites")),
     }
+
+
+def _clean_prereq_list(v):
+    """A list (or comma text) of prerequisite codes/notes -> a tidy list of short strings."""
+    if isinstance(v, str):
+        v = excel_importer.parse_prerequisites(v)
+    return [str(p).strip()[:40] for p in (v or []) if str(p).strip()][:12]
 
 
 def _clean_iso_date(v, label="Date"):

@@ -204,7 +204,7 @@ function renderTable() {
     tr.innerHTML = `
       <td class="col-add"></td>
       <td class="course-cell"><span class="code-cell">${c.code}</span> <span class="hint-inline">sec ${c.section}</span><div>${deptCell}</div></td>
-      <td class="wrap">${c.title}${curriculumTag(c.code)}</td>
+      <td class="wrap">${c.title}${curriculumTag(c.code)}${(c.prerequisites || []).length ? `<div class="hint-inline">Prereq: ${c.prerequisites.map(escapeHtml).join(", ")}</div>` : ""}</td>
       <td class="when-cell">${timeText(c)}</td>
       <td class="num">${c.credits}</td>
       <td class="wrap">${c.instructor || "—"}</td>

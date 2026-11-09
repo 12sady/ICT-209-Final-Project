@@ -386,6 +386,11 @@ class OpenAICompatProvider:
         self.timeout = timeout
         self.on_wait = None      # optional callable(seconds), told before a rate-limit pause
 
+    def _auth_headers(self):
+        """One credential only. Google's OpenAI-style route insists on the Bearer header (tested: the
+        x-goog-api-key header alone gets 'Missing or invalid Authorization header'), and sending both can fail."""
+        return {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
+
     def _post(self, payload):
         waited = 0.0
         for attempt in range(RATE_LIMIT_RETRIES + 1):
@@ -408,7 +413,7 @@ class OpenAICompatProvider:
             # Our own User-Agent: some hosts (e.g. Groq, behind Cloudflare) answer
             # Python's default "Python-urllib/3.x" with 403 "error code: 1010".
             headers={"Content-Type": "application/json", "User-Agent": USER_AGENT,
-                     **({"Authorization": f"Bearer {self.api_key}"} if self.api_key else {})},
+                     **self._auth_headers()},
         )
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as r:
@@ -517,6 +522,10 @@ def explain_error(exc, prov_name=None, base_url=None, model=None):
                 "Wait a minute and try again. Free tiers allow only a few requests per minute and per day. "
                 "A local model (Ollama) has no such limit.")
     if isinstance(exc, AIConnectionError):
+        if "CERTIFICATE_VERIFY_FAILED" in str(exc):
+            return ("Python can't verify the service's security certificate (this is not an internet or key problem).",
+                    'On a Mac with Python from python.org, run:  "/Applications/Python 3.13/Install Certificates.command"  '
+                    "(adjust the version number), then try again.")
         if local:
             return (f"Couldn't reach Ollama at {_host(base_url)}.",
                     "Open the Ollama app (or run `ollama serve` in a terminal), then check AI_BASE_URL is "
@@ -531,6 +540,10 @@ def explain_error(exc, prov_name=None, base_url=None, model=None):
         return (f"The service doesn't know the model '{model}' (or the URL path is wrong).",
                 "Check AI_MODEL is spelled exactly as the service lists it (Ollama: run `ollama list`, and `ollama pull <name>` "
                 "if it's missing; Gemini: copy the id from AI Studio). The base URL should end in /v1 (Ollama) or /v1beta/openai (Gemini).")
+    if code in (400, 401, 403) and re.search(r"api[ _-]?key", detail, re.I) and re.search(r"valid|invalid|expired|not found", detail, re.I):
+        return ("The AI service rejected your API key.",
+                f"Check that {keyvar} holds the right key for this service (copy it again, no spaces or quotes), "
+                "that it hasn't expired, and restart the app after changing it.")
     if code == 400:
         return ("The service rejected the request.",
                 "Most often this model can't do tool calling, or the model name is wrong. Pick a model that supports "

@@ -83,7 +83,7 @@
       },
       {
        "code": "HIST 131",
-       "title": "Behavioral and Social Sciences",
+       "title": "World History from 1500 CE",
        "credits": 3,
        "prereqs": [
         "ENGL 101"
@@ -1894,7 +1894,7 @@
       },
       {
        "code": "HIST 131",
-       "title": "Behavioral and Social Sciences",
+       "title": "World History from 1500 CE",
        "credits": 3,
        "prereqs": [
         "ENGL 101"
@@ -1949,7 +1949,7 @@
        "taught_by": "AUPP"
       },
       {
-       "code": "CSCI 111",
+       "code": "COSC 111",
        "title": "Survey of Computer Science",
        "credits": 3,
        "prereqs": [
@@ -1963,7 +1963,7 @@
        "title": "Java Programming I",
        "credits": 3,
        "prereqs": [
-        "CSCI 111"
+        "COSC 111"
        ],
        "category": "Major",
        "taught_by": "AUPP"
@@ -1977,7 +1977,7 @@
        "taught_by": "AUPP"
       },
       {
-       "code": "CSCI 241",
+       "code": "COSC 241",
        "title": "Foundation of Computing",
        "credits": 3,
        "prereqs": [
@@ -1994,7 +1994,7 @@
      "label": "Spring 2028",
      "courses": [
       {
-       "code": "CSCI 121",
+       "code": "COSC 121",
        "title": "Computer Science I",
        "credits": 3,
        "prereqs": [],
@@ -2037,17 +2037,17 @@
      "label": "FALL 2028",
      "courses": [
       {
-       "code": "CSCI 221",
+       "code": "COSC 221",
        "title": "Computer Science II",
        "credits": 3,
        "prereqs": [
-        "CSCI 121"
+        "COSC 121"
        ],
        "category": "Major",
        "taught_by": "FHSU"
       },
       {
-       "code": "CSCI 251",
+       "code": "COSC 251",
        "title": "Data Structures",
        "credits": 3,
        "prereqs": [],
@@ -2089,7 +2089,7 @@
      "label": "Spring 2029",
      "courses": [
       {
-       "code": "CSCI 321",
+       "code": "COSC 321",
        "title": "Assembly Language",
        "credits": 3,
        "prereqs": [],
@@ -2097,7 +2097,7 @@
        "taught_by": "FHSU"
       },
       {
-       "code": "CSCI 331",
+       "code": "COSC 331",
        "title": "Operating Systems",
        "credits": 3,
        "prereqs": [],
@@ -2154,7 +2154,7 @@
      "label": "FALL 2029",
      "courses": [
       {
-       "code": "CSCI 421",
+       "code": "COSC 421",
        "title": "Programming Languages",
        "credits": 3,
        "prereqs": [],
@@ -2162,7 +2162,7 @@
        "taught_by": "FHSU"
       },
       {
-       "code": "CSCI 431",
+       "code": "COSC 431",
        "title": "Computer Graphics",
        "credits": 3,
        "prereqs": [],
@@ -2203,7 +2203,7 @@
      "label": "Spring 2030",
      "courses": [
       {
-       "code": "CSCI 441",
+       "code": "COSC 441",
        "title": "Software Engineering",
        "credits": 3,
        "prereqs": [],
@@ -2480,7 +2480,7 @@
       },
       {
        "code": "HIST 131",
-       "title": "Behavioral and Social Sciences",
+       "title": "World History from 1500 CE",
        "credits": 3,
        "prereqs": [
         "ENGL 101"
@@ -3001,7 +3001,7 @@
       },
       {
        "code": "HIST 131",
-       "title": "Behavioral and Social Sciences",
+       "title": "World History from 1500 CE",
        "credits": 3,
        "prereqs": [
         "ENGL 101"
@@ -3967,7 +3967,7 @@
       },
       {
        "code": "HIST 131",
-       "title": "Behavioral and Social Sciences",
+       "title": "World History from 1500 CE",
        "credits": 3,
        "prereqs": [
         "ENGL 101"
@@ -4508,7 +4508,7 @@
      "courses": [
       {
        "code": "HIST 131",
-       "title": "Behavioral and Social Sciences",
+       "title": "World History from 1500 CE",
        "credits": 3,
        "prereqs": [],
        "category": "General Education",
@@ -5366,7 +5366,7 @@
       },
       {
        "code": "HIST 131",
-       "title": "Behavioral and Social Sciences",
+       "title": "World History from 1500 CE",
        "credits": 3,
        "prereqs": [
         "ENGL 101"
@@ -5956,7 +5956,7 @@
      "courses": [
       {
        "code": "HIST 131",
-       "title": "Behavioral and Social Sciences",
+       "title": "World History from 1500 CE",
        "credits": 3,
        "prereqs": [],
        "category": "General Education",
@@ -6385,7 +6385,7 @@
      "courses": [
       {
        "code": "HIST 131",
-       "title": "Behavioral and Social Sciences",
+       "title": "World History from 1500 CE",
        "credits": 3,
        "prereqs": [],
        "category": "General Education",
@@ -6769,7 +6769,7 @@
       },
       {
        "code": "HIST 131",
-       "title": "Behavioral and Social Sciences",
+       "title": "World History from 1500 CE",
        "credits": 3,
        "prereqs": [
         "ENGL 101"
@@ -7322,7 +7322,7 @@
       },
       {
        "code": "HIST 131",
-       "title": "Behavioral and Social Sciences",
+       "title": "World History from 1500 CE",
        "credits": 3,
        "prereqs": [
         "ENGL 101"

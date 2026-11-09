@@ -4,21 +4,13 @@
   <header class="page-header">
     <div>
       <h1>Import</h1>
-      <p class="program">Bring in your program's curriculum and this term's course offerings. Both live here so it's a one-stop setup/refresh page.</p>
+      <p class="program">Bring in this term's course offerings and the academic calendar. Your curriculum comes from a sample plan on the Curriculum page.</p>
     </div>
   </header>
 
-  <section class="card recommended-card">
-    <h2>Import curriculum</h2>
-    <p class="hint">Copy the table from Rean's curriculum page (or similar) and paste it below — this fills in your full course list (required + electives) and prerequisites automatically. It only previews here; nothing changes until you click Apply.</p>
-    <textarea id="curr-paste-input" rows="6" placeholder="Course Code&#9;Course Name&#9;CATEGORY&#9;Sub-Category&#9;Credits&#9;Course requisites&#10;COSC 121&#9;Computer Science A&#9;Major&#9;&#9;3&#9;-"></textarea>
-    <button id="curr-parse-btn">Parse</button>
-    <div id="curr-parse-preview"></div>
-  </section>
-
   <details class="card">
     <summary class="card-summary"><h2>Update a single curriculum course</h2></summary>
-    <p class="hint">Changed prerequisites, a new elective, a different credit count? Add or fix one course here without re-pasting everything. Enter an existing code to update it.</p>
+    <p class="hint">Changed prerequisites, a new elective, a different credit count? Add or fix one course here. Enter an existing code to update it.</p>
     <div class="manual-grid">
       <label>Code<input type="text" id="mc-code" placeholder="COSC 121" /></label>
       <label class="wide">Course name<input type="text" id="mc-name" /></label>
@@ -35,7 +27,7 @@
   {% if not is_admin %}
   <section class="card">
     <h2>Managed by the admin</h2>
-    <p class="hint">The term's course offerings, the academic calendar (term dates and breaks) and the sample course plans are published by the admin account, so everyone sees the same data. You can still bring in or edit <em>your own</em> curriculum above, or pick a sample plan on the <a href="{{ url_for('curriculum') }}">Curriculum</a> page.</p>
+    <p class="hint">The term's course offerings, the academic calendar (term dates and breaks) and the sample course plans are published by the admin account, so everyone sees the same data. You can pick a sample plan and edit <em>your own</em> curriculum on the <a href="{{ url_for('curriculum') }}">Curriculum</a> page.</p>
   </section>
   {% endif %}
 
@@ -174,6 +166,7 @@
       <label>Classroom<input type="text" id="ms-location" placeholder="Room 204" /></label>
       <label>First class date<input type="date" id="ms-start-date" /></label>
       <label>Last class date<input type="date" id="ms-end-date" /></label>
+      <label class="wide">Prerequisites<input type="text" id="ms-prereq" placeholder="ITEC 101, MATH 177 (or leave empty)" /></label>
       <label>Total seats<input type="number" id="ms-seats-total" min="0" /></label>
       <label>Seats available<input type="number" id="ms-seats-available" min="0" /></label>
     </div>

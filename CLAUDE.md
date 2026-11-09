@@ -101,7 +101,18 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 - Print layouts (registration sheet, advisor summary, plan page) were checked as CSS + on-screen only, not in a real print preview.
 - `python3 ai_check.py`: AI connection self-check (ping + one real read-only tool round trip on a temp empty student);
   `ai.explain_error` / `ai.scrub` give plain-language fixes and hide key-like text (used by the chat endpoint too).
-  Still never run against a real model by Claude; the user must run it.
+  The user ran it against real Gemini (gemini-3.6-flash, AQ.-style key over the OpenAI route with a single Bearer header): ping and the
+  get_progress tool round trip both passed. A full multi-turn chat in the app is still unconfirmed. Claude never runs it (it would need the key).
+
+- Offerings now carry optional `prerequisites` (list; imported from a "Pre-requisite" column via `excel_importer.parse_prerequisites`,
+  shown in Browse and editable in the manual section form). Display only: the scheduler still checks the student's own curriculum prereqs.
+- Demo data is **Spring 2027** (IT undergraduate sheet, 224 sections, classes 11 Jan - 30 Apr 2027, breaks from the AUPP calendar PDF);
+  Fall 2026 was removed on purpose. No rooms or seats yet (registrar gives rooms near enrolment day): Browse's demand badge
+  (from wishlists) is the stand-in for seat pressure. Registration-opens date still unset.
+
+- Course codes: computer science is `COSC` (never `CSCI`). The registrar sheet cross-lists some as "COSC 111/CSCI 111"; `excel_importer.normalize_code_prefix` maps CSCI -> COSC and keeps one row. HIST 131 is "World History from 1500 CE" (11 sample plans had a wrongly parsed title "Behavioral and Social Sciences", fixed). Students who already copied a plan keep their old titles until they press "Use this plan" again.
+
+- The Import page no longer has the "Import curriculum" paste card (the sample plans on the Curriculum page replace it). The backend `/api/curriculum/parse` and `curriculum_parser.py` are still there, unused by the UI.
 
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.

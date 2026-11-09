@@ -175,6 +175,39 @@ class ExplainErrorTests(unittest.TestCase):
         self.assertNotIn(KEY, ai.scrub(f"bad key {KEY}", key=KEY))
         self.assertNotIn("sk-proj-abcdefghijklmnop", ai.scrub("Incorrect API key: sk-proj-abcdefghijklmnop1234", key=""))
 
+    def test_gemini_bad_key_400_is_a_key_problem(self):
+        what, fix = ai.explain_error(ai.AIError('HTTP 400 {"error": {"message": "Please pass a valid API key"}}'), "openai", "https://x.test/v1", "m")
+        self.assertIn("API key", what)
+        self.assertIn("AI_API_KEY", fix)
+
+    def test_certificate_failure_is_named(self):
+        what, fix = ai.explain_error(ai.AIConnectionError("<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] x>"), "openai", "https://x.test/v1", "m")
+        self.assertIn("certificate", what)
+        self.assertIn("Install Certificates", fix)
+
+    def test_other_400_still_mentions_tools(self):
+        what, fix = ai.explain_error(ai.AIError("HTTP 400 tools not supported"), "openai", "https://x.test/v1", "m")
+        self.assertIn("tool", fix)
+
+    def test_request_headers_have_user_agent_and_one_bearer_credential(self):
+        seen = {}
+
+        class R:
+            def read(self): return b'{"choices": []}'
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+
+        def fake(req, timeout=0):
+            seen.update({k.lower(): v for k, v in req.header_items()})
+            return R()
+        for base in ("https://generativelanguage.googleapis.com/v1beta/openai", "https://api.groq.com/openai/v1"):
+            seen.clear()
+            with mock.patch.object(ai.urllib.request, "urlopen", fake):
+                ai.OpenAICompatProvider(base, "k", "m")._post({})
+            self.assertEqual(seen["user-agent"], ai.USER_AGENT)
+            self.assertEqual(seen["authorization"], "Bearer k")
+            self.assertNotIn("x-goog-api-key", seen)  # one credential only, never both
+
     def test_anthropic_wording_uses_its_own_key_name(self):
         what, fix = ai.explain_error(ai.AIAuthenticationError("x"), "anthropic", "", "claude")
         self.assertIn("ANTHROPIC_API_KEY", fix)
