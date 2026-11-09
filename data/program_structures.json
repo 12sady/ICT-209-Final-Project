@@ -1,0 +1,434 @@
+{
+  "_about": "Program structures: the credits each category needs to graduate, and which courses count toward it. Separate from program_plans.json (the sample plan = suggested semester order). Programs not listed here keep using the sample plan.",
+  "programs": {
+    "software-development": {
+      "name": "Software Development",
+      "total_credits": 120,
+      "source": "Courses: AUPP SIS degree audit, Software Development (2023 cohort), Nov 2026. Credit targets: aupp.edu.kh Software Development program page (31 + 44 + 27 + 18 = 120).",
+      "categories": [
+        {
+          "name": "General Education",
+          "credits": 31,
+          "groups": [
+            {
+              "name": "Foundation",
+              "courses": [
+                {
+                  "code": "ENGL 101",
+                  "name": "English Composition I",
+                  "credits": 3
+                },
+                {
+                  "code": "ENGL 102",
+                  "name": "English Composition II",
+                  "credits": 3
+                },
+                {
+                  "code": "ITEC 101",
+                  "name": "Introduction to Information Technology",
+                  "credits": 3
+                },
+                {
+                  "code": "MATH 122",
+                  "name": "Trigonometry",
+                  "credits": 3
+                },
+                {
+                  "code": "MATH 177",
+                  "name": "Elementary Statistics",
+                  "credits": 3
+                },
+                {
+                  "code": "SMNR 101",
+                  "name": "First Year Experience",
+                  "credits": 1
+                }
+              ]
+            },
+            {
+              "name": "Humanities and Arts",
+              "courses": [
+                {
+                  "code": "ENGL 240",
+                  "name": "Literature",
+                  "credits": 3
+                },
+                {
+                  "code": "ENGL 260",
+                  "name": "Southeast Asian Literature and Film in Translation",
+                  "credits": 3
+                },
+                {
+                  "code": "HUMN 101",
+                  "name": "Introduction to the Humanities",
+                  "credits": 3
+                },
+                {
+                  "code": "HUMN 110",
+                  "name": "Arts and Culture",
+                  "credits": 3
+                },
+                {
+                  "code": "HUMN 250",
+                  "name": "Ethics and Society",
+                  "credits": 3
+                }
+              ]
+            },
+            {
+              "name": "Behavioral and Social Sciences",
+              "courses": [
+                {
+                  "code": "COMM 103",
+                  "name": "Oral Communication",
+                  "credits": 3
+                },
+                {
+                  "code": "GEOG 120",
+                  "name": "World Regional Geography",
+                  "credits": 3
+                },
+                {
+                  "code": "HIST 130",
+                  "name": "World History to 1500 C.E.",
+                  "credits": 3
+                },
+                {
+                  "code": "HIST 131",
+                  "name": "World History from 1500 CE to the Present",
+                  "credits": 3
+                },
+                {
+                  "code": "LEGL 101",
+                  "name": "Introduction to Law and the Legal System",
+                  "credits": 3
+                },
+                {
+                  "code": "POLS 110",
+                  "name": "Introduction to Political Science",
+                  "credits": 3
+                }
+              ]
+            },
+            {
+              "name": "Math and Natural Sciences",
+              "courses": [
+                {
+                  "code": "ENVS 131C",
+                  "name": "Environmental Science",
+                  "credits": 3
+                },
+                {
+                  "code": "GEOG 220",
+                  "name": "Introduction to Physical Geography",
+                  "credits": 3
+                },
+                {
+                  "code": "PSCI 220",
+                  "name": "Exploring the Universe",
+                  "credits": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Major",
+          "credits": 44,
+          "courses": [
+            {
+              "code": "COSC 111",
+              "name": "Computer Science Survey",
+              "credits": 3
+            },
+            {
+              "code": "COSC 121",
+              "name": "Computer Science A",
+              "credits": 3
+            },
+            {
+              "code": "COSC 221",
+              "name": "Computer Science B",
+              "credits": 3
+            },
+            {
+              "code": "COSC 241",
+              "name": "Computing Science Fundamentals",
+              "credits": 3
+            },
+            {
+              "code": "COSC 251",
+              "name": "Data Structure",
+              "credits": 3
+            },
+            {
+              "code": "COSC 331",
+              "name": "Operating Systems",
+              "credits": 3
+            },
+            {
+              "code": "COSC 340",
+              "name": "Networking Essentials",
+              "credits": 3
+            },
+            {
+              "code": "ICT 301",
+              "name": "Software Requirements, Analysis & Design",
+              "credits": 3
+            },
+            {
+              "code": "ICT 320",
+              "name": "Cybersecurity Technician",
+              "credits": 3
+            },
+            {
+              "code": "INFO 652",
+              "name": "Programming and Database Design",
+              "credits": 3
+            },
+            {
+              "code": "ITM 201",
+              "name": "Java Programming I",
+              "credits": 3
+            },
+            {
+              "code": "ITM 340",
+              "name": "Maths for Computing",
+              "credits": 3
+            },
+            {
+              "code": "ITM 350",
+              "name": "Project Management",
+              "credits": 3
+            },
+            {
+              "code": "MATH 234A",
+              "name": "Analytic Geometry and Calculus I",
+              "credits": 5
+            }
+          ]
+        },
+        {
+          "name": "Core/Major",
+          "credits": 27,
+          "courses": [
+            {
+              "code": "FYP 401",
+              "name": "Final Year Project - I",
+              "credits": 3
+            },
+            {
+              "code": "ICT 302",
+              "name": "Mobile App Cross-platform Development I",
+              "credits": 3
+            },
+            {
+              "code": "ICT 305",
+              "name": "Software Architecture and Design Patterns",
+              "credits": 3
+            },
+            {
+              "code": "ICT 452",
+              "name": "Software Testing",
+              "credits": 3
+            },
+            {
+              "code": "INFO 250",
+              "name": "Web Development I",
+              "credits": 3
+            },
+            {
+              "code": "INFO 251",
+              "name": "Web Development II",
+              "credits": 3
+            },
+            {
+              "code": "INFO 653",
+              "name": "Web Development III",
+              "credits": 3
+            },
+            {
+              "code": "INFO 654",
+              "name": "Building Scalable Web Application",
+              "credits": 3
+            },
+            {
+              "code": "INTS 400",
+              "name": "Internship",
+              "credits": 3
+            },
+            {
+              "code": "ITM 380",
+              "name": "Cloud Computing",
+              "credits": 3
+            },
+            {
+              "code": "ITM 475",
+              "name": "Final Year Project",
+              "credits": 3
+            }
+          ]
+        },
+        {
+          "name": "Electives",
+          "credits": 18,
+          "courses": [
+            {
+              "code": "AIN 320",
+              "name": "Computer Vision",
+              "credits": 3
+            },
+            {
+              "code": "CLD 371",
+              "name": "Cloud Operations",
+              "credits": 3
+            },
+            {
+              "code": "CLD 372",
+              "name": "Cloud Solutions Architect",
+              "credits": 3
+            },
+            {
+              "code": "CLD 374",
+              "name": "Cloud Developing with CI/CD",
+              "credits": 3
+            },
+            {
+              "code": "CLD 376",
+              "name": "Cloud Native Development",
+              "credits": 3
+            },
+            {
+              "code": "CLD 377",
+              "name": "Cloud Security",
+              "credits": 3
+            },
+            {
+              "code": "ICT 340",
+              "name": "Vibe Coding: Exploring Conversational Software Development with AI",
+              "credits": 3
+            },
+            {
+              "code": "ICT 401",
+              "name": "Innovation and Design Thinking",
+              "credits": 3
+            },
+            {
+              "code": "ICT 405",
+              "name": "Ethical Hacking",
+              "credits": 3
+            },
+            {
+              "code": "ICT 406",
+              "name": "Advanced Ethical Hacking",
+              "credits": 3
+            },
+            {
+              "code": "INF 330",
+              "name": "Business Intelligence",
+              "credits": 3
+            },
+            {
+              "code": "INF 604",
+              "name": "Data Analysis I",
+              "credits": 3
+            },
+            {
+              "code": "ITM 301",
+              "name": "Java Programming II",
+              "credits": 3
+            },
+            {
+              "code": "ITM 360",
+              "name": "Artificial Intelligence",
+              "credits": 3
+            },
+            {
+              "code": "ITM 370",
+              "name": "Data Analytics",
+              "credits": 3
+            },
+            {
+              "code": "ITM 390",
+              "name": "Machine Learning",
+              "credits": 3
+            },
+            {
+              "code": "ITM 454",
+              "name": "Natural Language Processing",
+              "credits": 3
+            }
+          ]
+        }
+      ],
+      "not_counted": [
+        {
+          "name": "Enrichment",
+          "courses": [
+            {
+              "code": "ENGL 101 (ENR)",
+              "name": "English Composition I (Enrichment)",
+              "credits": 3
+            }
+          ]
+        },
+        {
+          "name": "Other courses",
+          "note": "Listed in the degree audit with no category.",
+          "courses": [
+            {
+              "code": "CLD 375",
+              "name": "Cloud Machine Learning Foundation and Data Engineering",
+              "credits": 3
+            },
+            {
+              "code": "CYBR 352",
+              "name": "Linux Fundamentals",
+              "credits": 3
+            },
+            {
+              "code": "ENTR 110",
+              "name": "Introduction to Entrepreneurship",
+              "credits": 3
+            },
+            {
+              "code": "ICT 209",
+              "name": "Fundamentals of Artificial Intelligence",
+              "credits": 3
+            },
+            {
+              "code": "ICT 303",
+              "name": "UI/UX Design",
+              "credits": 3
+            },
+            {
+              "code": "ICT 304",
+              "name": "Mobile App Cross-platform Development II",
+              "credits": 3
+            },
+            {
+              "code": "ICT 360",
+              "name": "Introduction to Internet of Things",
+              "credits": 3
+            },
+            {
+              "code": "ICT 361",
+              "name": "Introduction to Robotics",
+              "credits": 3
+            },
+            {
+              "code": "INS 407",
+              "name": "Time Series Analysis",
+              "credits": 3
+            },
+            {
+              "code": "INS 605",
+              "name": "Data Analysis II",
+              "credits": 3
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

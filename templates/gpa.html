@@ -19,17 +19,16 @@
     <section class="stat-row" aria-label="GPA summary" id="gpa-stats"></section>
 
     <section class="card">
-      <h2>Your grades</h2>
-      <p class="hint" id="grades-hint">Pick a grade for each completed course — it saves as you go. Pass/fail, withdrawn, incomplete and audit grades are kept out of the GPA.</p>
+      <h2>Your grades by semester</h2>
+      <p class="hint" id="grades-hint">Click a semester to see or change its grades — changes save as you go. Pass/fail, withdrawn, incomplete and audit grades are kept out of the GPA.</p>
+      <p class="hint" id="semester-note" hidden>None of your completed courses has a semester yet. Pick one in the "Semester taken" column on the <a href="{{ url_for('curriculum') }}">Curriculum</a> page to see GPA term by term.</p>
+      <div class="gpa-group-bar">
+        <button type="button" class="secondary" id="open-all">Open all</button>
+        <button type="button" class="secondary" id="close-all">Close all</button>
+        <span class="hint" id="grade-status" role="status"></span>
+      </div>
       <div id="grades-by-semester"></div>
       <p class="hint" id="unknown-note" hidden></p>
-      <p class="hint" id="grade-status" role="status"></p>
-    </section>
-
-    <section class="card">
-      <h2>GPA by semester</h2>
-      <p class="hint" id="semester-note" hidden>None of your completed courses has a semester yet. Pick one in the "Semester taken" column on the <a href="{{ url_for('curriculum') }}">Curriculum</a> page to see GPA term by term.</p>
-      <div class="table-wrap"><table class="course-table" id="semester-table"></table></div>
     </section>
 
     <div class="two-col">
@@ -51,9 +50,9 @@
     </div>
 
     <details class="advanced-section card">
-      <summary>Grade scale used (an assumption — check it against AUPP's)</summary>
+      <summary>Grade scale used (AUPP's)</summary>
       <div class="advanced-body"><div id="scale-box" class="scale-grid"></div>
-        <p class="hint">Edit <code>GRADE_SCALE</code> in <code>gpa.py</code> if AUPP's scale is different.</p></div>
+        <p class="hint">Checked against a real AUPP grade report: every term GPA matches. It's set in <code>GRADE_SCALE</code> in <code>gpa.py</code>.</p></div>
     </details>
   </div>
 {% endblock %}

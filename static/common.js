@@ -25,27 +25,24 @@ function escapeHtml(str) {
   };
 
   try {
-    const [c, cur, wl] = await Promise.allSettled([get("/api/courses"), get("/api/curriculum"), get("/api/wishlist")]);
-    if (c.status === "rejected" && cur.status === "rejected" && wl.status === "rejected") {
+    let s;
+    try { s = await get("/api/status"); } catch (e) {
       el.innerHTML = `<span class="empty">Couldn't load status. Is the app still running?</span>`;
       return;
     }
-    const courseCount = c.status === "fulfilled" ? (c.value.courses || []).length : 0;
-    const requiredCount = cur.status === "fulfilled" ? (cur.value.required_remaining || []).length : 0;
-    const wishlistCount = wl.status === "fulfilled" ? (wl.value.wishlist || []).length : 0;
-    const program = cur.status === "fulfilled" ? cur.value.program || "" : "";
-
-    if (!courseCount && !requiredCount) {
+    if (!s.sections && !s.progress) {
       el.innerHTML = `<span class="empty">No data loaded yet — head to <a href="/import" style="color:inherit;font-weight:700;">Import</a> to bring in your curriculum and this term's courses.</span>`;
       return;
     }
-
+    const chip = (icon, html, cls) => `<span class="status-chip${cls ? " " + cls : ""}"><span aria-hidden="true">${icon}</span> ${html}</span>`;
+    const n = (x) => (Math.round(Number(x) * 10) / 10).toString();
     const parts = [];
-    if (program) parts.push(`<span>${escapeHtml(program)}</span>`);
-    parts.push(`<span><strong>${courseCount}</strong> course section${courseCount === 1 ? "" : "s"} loaded</span>`);
-    parts.push(`<span><strong>${requiredCount}</strong> required course${requiredCount === 1 ? "" : "s"} remaining</span>`);
-    parts.push(`<span><strong>${wishlistCount}</strong> on wishlist</span>`);
-    el.innerHTML = parts.join("<span style=\"opacity:0.4\">·</span>");
+    if (s.progress) parts.push(chip("🎯", `<strong>${n(s.progress.done)} / ${n(s.progress.total)}</strong> credits · ${Math.round(s.progress.percent)}%`, "progress"));
+    if (s.program) parts.push(chip("💻", escapeHtml(s.program), "program"));
+    parts.push(chip("📚", `<strong>${s.sections}</strong> section${s.sections === 1 ? "" : "s"} this term`));
+    parts.push(chip("✅", `<strong>${s.required_left}</strong> required left`));
+    parts.push(chip("⭐", `<strong>${s.wishlist}</strong> on wishlist`));
+    el.innerHTML = parts.join("");
   } catch (e) {
     el.innerHTML = `<span class="empty">Couldn't load status.</span>`;
   }
@@ -181,12 +178,24 @@ function planKeyOf(sections) {
 }
 
 
-// Mobile navigation: the Menu button shows/hides the links below 960px.
+// Mobile navigation: the ☰ button shows/hides the menu below 960px (and turns into ✕).
 (function () {
   const btn = document.getElementById("nav-toggle"), links = document.getElementById("nav-links");
   if (!btn || !links) return;
   btn.addEventListener("click", () => {
     const open = links.classList.toggle("open");
     btn.setAttribute("aria-expanded", String(open));
+    btn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    btn.firstElementChild.textContent = open ? "✕" : "☰";
   });
+})();
+
+// Desktop user menu: click your name for "Signed in as … / Log out".
+(function () {
+  const btn = document.getElementById("user-btn"), menu = document.getElementById("user-menu");
+  if (!btn || !menu) return;
+  const set = (open) => { menu.hidden = !open; btn.setAttribute("aria-expanded", String(open)); };
+  btn.addEventListener("click", (e) => { e.stopPropagation(); set(menu.hidden); });
+  document.addEventListener("click", (e) => { if (!menu.hidden && !menu.contains(e.target)) set(false); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !menu.hidden) { set(false); btn.focus(); } });
 })();

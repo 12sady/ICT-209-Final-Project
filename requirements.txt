@@ -1,4 +1,5 @@
 flask
 pandas
 openpyxl
+pdfplumber
 # optional, only for the paid Claude option: anthropic

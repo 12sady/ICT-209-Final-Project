@@ -3,8 +3,9 @@ gpa.py
 ------
 Pure GPA maths (no Flask, no files) so it can be unit-tested.
 
-ASSUMPTION: the grade scale below is the common US 4.0 scale, NOT checked
-against AUPP's official scale. Edit GRADE_SCALE if AUPP's differs.
+Grade scale: AUPP's, read off a real AUPP grade report (its term GPAs only
+come out right with A- = 3.67, B+ = 3.33, B- = 2.67). C+/C-/D+ follow the
+same thirds pattern; confirm them with the registrar if they ever matter.
 
 Rules used:
   - A letter grade in GRADE_SCALE counts toward GPA (quality points = points x credits).
@@ -16,10 +17,10 @@ Rules used:
 """
 
 GRADE_SCALE = {
-    "A": 4.0, "A-": 3.7,
-    "B+": 3.3, "B": 3.0, "B-": 2.7,
-    "C+": 2.3, "C": 2.0, "C-": 1.7,
-    "D+": 1.3, "D": 1.0,
+    "A": 4.0, "A-": 3.67,
+    "B+": 3.33, "B": 3.0, "B-": 2.67,
+    "C+": 2.33, "C": 2.0, "C-": 1.67,
+    "D+": 1.33, "D": 1.0,
     "F": 0.0,
 }
 

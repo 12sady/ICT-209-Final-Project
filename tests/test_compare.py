@@ -100,5 +100,23 @@ class CompareTests(unittest.TestCase):
         self.assertEqual(compare.plan_key([x, y]), compare.plan_key([y, x]))
 
 
+class VerdictTests(unittest.TestCase):
+    def test_most_stars_wins_and_reasons_listed(self):
+        best = {"days_on_campus": {"winners": [0], "reason": "fewest days on campus"},
+                "earliest_start": {"winners": [2], "reason": "latest first class"},
+                "latest_end": {"winners": [0, 2], "reason": "finishes earliest"},
+                "total_wait": {"winners": [1, 2], "reason": "least time waiting between classes"},
+                "left_out": {"winners": [], "reason": "Different courses left out", "different": True}}
+        v = compare.verdict(best, 3)
+        self.assertEqual(v["scores"], [2, 1, 3])
+        self.assertEqual(v["winners"], [2])
+        self.assertEqual(v["reasons"][2], ["latest first class", "finishes earliest", "least time waiting between classes"])
+        self.assertEqual(v["rows_that_differ"], 5)
+
+    def test_ties_and_no_difference(self):
+        self.assertEqual(compare.verdict({"a": {"winners": [0], "reason": "x"}, "b": {"winners": [1], "reason": "y"}}, 2)["winners"], [0, 1])
+        self.assertEqual(compare.verdict({}, 2), {"scores": [0, 0], "winners": [], "reasons": {0: [], 1: []}, "rows_that_differ": 0})
+
+
 if __name__ == "__main__":
     unittest.main()

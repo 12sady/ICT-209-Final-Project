@@ -11,3 +11,6 @@ data/auth.json
 # Local AI settings and API key (never commit)
 ai-key.sh
 .env
+
+# Real grade reports / transcripts (personal data: ID, date of birth)
+private/

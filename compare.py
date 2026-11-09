@@ -124,3 +124,24 @@ def compare_plans(metrics, min_credits=12, max_credits=17):
         put("worst_risk", _winners([(RISK_RANK[m["worst_risk"]], m["risky_sections"]) for m in metrics], "min"),
             "safest seats (fewest sections likely to fill)")
     return out
+
+
+def verdict(best, n_plans):
+    """Which plan is best at the most rows ("Plan C fits you best").
+
+    best: the dict from compare_plans. Returns {"scores": [stars per plan],
+    "winners": [plan indices with the most stars] ([] if nobody won a row),
+    "reasons": {plan index: [reasons it won]}, "rows_that_differ": count}.
+    Ties are reported as ties, never broken by guessing."""
+    scores = [0] * n_plans
+    reasons = {i: [] for i in range(n_plans)}
+    differ = 0
+    for row in best.values():
+        if row.get("winners") or row.get("different"):
+            differ += 1
+        for i in row.get("winners", []):
+            scores[i] += 1
+            reasons[i].append(row["reason"])
+    top = max(scores) if scores else 0
+    winners = [i for i, s in enumerate(scores) if s == top] if top else []
+    return {"scores": scores, "winners": winners, "reasons": reasons, "rows_that_differ": differ}

@@ -14,7 +14,7 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
   only admin may write offerings/calendar/plans (403 JSON otherwise).
 - Frontend: `templates/*.html`, `static/*.js` (curriculum, browse, plan, compare, roadmap, gpa, dashboard,
   import, advisor, programs_admin, common), `static/style.css`.
-- New logic modules (pure, unit-tested): `gpa.py`, `compare.py`, `roadmap.py`, `progress.py`.
+- New logic modules (pure, unit-tested): `gpa.py`, `compare.py`, `roadmap.py`, `progress.py`, `grade_report.py`, `structure.py`.
 
 ## What exists
 - Curriculum page with admin-published sample plans for 16 majors; each student gets an editable copy.
@@ -29,11 +29,21 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
   or `ANTHROPIC_API_KEY` for Claude. Gemini 3 needs its tool-call "thought signature" (`extra_content`)
   echoed back unchanged or it returns HTTP 400: `OpenAICompatProvider.step` stores and re-sends it
   (`GeminiThoughtSignatureTest`). Not yet confirmed end to end with a full real conversation.
-  `ai-key.sh` and `.env` are git-ignored for local keys: never commit or print them.
+  `ai-key.sh` and `.env` are git-ignored for local keys: never commit or print them. `envfile.py` loads `.env`
+  (next to app.py) at startup in app.py and ai_check.py, without overriding variables already set; works on Windows
+  (the user is on Windows PowerShell, where ai-key.sh's `export` doesn't work). `.env.example` is the shareable template.
+  User now runs Groq (`https://api.groq.com/openai/v1`, model `openai/gpt-oss-120b`; llama-3.3-70b isn't available to
+  their key). Groq's Cloudflare blocks Python's default User-Agent (403 "error code: 1010"), so `ai.USER_AGENT` is sent;
+  403 1010 -> AIConnectionError, 401 -> AIAuthenticationError. Free tier ~8k tokens/min, and one question with a few
+  tool rounds can exceed it: on 429 `_post` waits per Retry-After / x-ratelimit-reset-tokens (`retry_wait`, max 40 s
+  total); TOOL_RESULT_LIMIT 4000 chars, MAX_MESSAGES 8; optional `AI_REASONING_EFFORT=low`. AI tools' `load()` applies
+  the program-structure overlay too.
 
 ## Built since (all five planned features + AI tools are done)
 - GPA (`gpa.py`, `/gpa`): grades in the student's requirements file as optional `grades` map;
-  grade scale is an ASSUMPTION (standard 4.0) in `GRADE_SCALE`; P/NP/W/I/AU excluded.
+  `GRADE_SCALE` is AUPP's (A- 3.67, B+ 3.33, B- 2.67...), confirmed against a real grade report: every term GPA
+  and the 411.03 total grade points match. C+/C-/D+ (2.33/1.67/1.33) follow the pattern but weren't on that report.
+  P/NP/W/I/AU excluded.
   `PUT /api/curriculum` always re-reads grades from disk so a stale Curriculum page can't wipe them.
 - Compare (`compare.py`, `/compare`): per-student `plan_choices.json` = up to 3 pins + one active plan,
   stored as {code, section} ids and re-resolved against current offerings. Seat risk is only compared
@@ -51,6 +61,38 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 - Tests: `python3 -m unittest` (pure logic + Flask test-client API tests in a temp dir; API tests skip if
   Flask is missing). Flask lives under /usr/local/bin/python3 (3.13) on this machine, not the default python3.
 
+- "Why this schedule?" (Plan page side card, `renderWhy` in static/plan.js): `scheduler.enumerate_plans(..., stats={})`
+  fills an account of the CSP/backtracking search without changing results (`test_search_stats.py`): sections removed
+  before search by reason (too_early / day_off / full, via `preference_reason`), search-tree steps, choices refused for
+  time clash / over credits (counted in pass 2 only), up to 5 example clashing pairs, valid plans, most courses that fit.
+  `/api/plans` returns it as `search` (+ max_credits, avoid_before, avoid_days). The card also explains the ranking
+  rules and which rule puts the shown plan above/below its neighbour in best-fit order.
+- Ask AI live steps: `ai.run_chat(..., on_event=)` emits thinking / tool / tool_done / wait events and returns `steps`
+  (name, label from `TOOL_LABELS`, input, ok, preview) for the "How I got this" list. `POST /api/ai/chat?stream=1`
+  streams NDJSON from a worker thread (`copy_current_request_context`; `g.user` must be set again inside the thread);
+  without `stream=1` it's the old JSON reply. Provider `on_wait` reports rate-limit pauses.
+- Header refresh (base.html + common.js + style.css end-of-file overrides): gradient 🎓 logo, page links (no icons) with
+  active pill + gradient underline, avatar user button with dropdown (Signed in as / Student|Admin / Log out); on phones
+  ☰/✕ toggle, 2-column link tiles and a user card. Below 1100px the name hides (avatar only). Status strip = chips from
+  `GET /api/status` (progress from program structure or sample plan, program, sections, required left, wishlist).
+- Ask AI look: gradient header with online dot (from /api/ai/status), welcome + 4 idea cards, avatar bubbles, animated
+  steps, tool chips (`TOOL_CHIPS` in advisor.js), rounded auto-growing input.
+- Program structure vs sample plan (`structure.py`, `data/program_structures.json`): the structure = graduation rules
+  (credits per category + which courses count), the sample plan (`program_plans.json`) = suggested semester order only.
+  Only `software-development` has a structure so far (courses from the user's SIS degree audit, 2023 cohort; targets
+  GE 31 / Major 44 / Core/Major 27 / Electives 18 = 120 from aupp.edu.kh). Other programs are unchanged.
+  `app._load_data()` overlays it on every read (`structure.overlay`): catalog categories/GE sub-groups from the
+  structure, missing structure courses added, `required` = all-required category (list credits == target), or the
+  plan's flag while a choice category is unfinished, else False. `structure.evaluate` caps each category at its
+  target (extra not counted); Enrichment / uncategorised audit rows / courses not in the structure never count.
+  Dashboard ring + Curriculum "Program structure" card + group headers use it; Roadmap still uses plan order.
+- Grade report import (`grade_report.py`, card on the Curriculum page, `static/grade_import.js`):
+  `POST /api/grade-report/preview` (multipart PDF, read in memory, never saved) -> rows matched to the catalog;
+  `POST /api/grade-report/apply` marks picked passed courses completed + sets semester and grade. Reads pdfplumber
+  word positions (plain text merges "B-" into the next line). Left column flows over all pages before the right one.
+  RG = in progress (skipped), P = completed but not in GPA, "*" = repeat (latest attempt kept), codes can wrap
+  ("ENGL 101" + "(ENR)"); unmatched courses get added to the catalog under "From grade report". Preview compares the
+  report's Cumulative GPA with the app's. Real reports go in `private/` (git-ignored); tests use made-up positions.
 - Curriculum "mark everything up to here" (`progress.courses_through`, `POST /api/curriculum/through`) and the admin
   demo student (`demo.py`, `POST /api/admin/demo-student`, button on the Import page).
 - Registration-day sheet (`sheet.py`, `/registration-sheet`, `GET /api/registration-sheet`); academic calendar gained an

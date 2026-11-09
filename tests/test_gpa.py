@@ -10,13 +10,13 @@ def e(credits, grade, semester=""):
 class TotalsTests(unittest.TestCase):
     def test_weighted_average(self):
         t = gpa.totals([e(3, "A"), e(3, "B"), e(4, "C+")])
-        self.assertAlmostEqual(t["quality_points"], 12 + 9 + 9.2)
-        self.assertAlmostEqual(t["gpa"], 30.2 / 10)
+        self.assertAlmostEqual(t["quality_points"], 12 + 9 + 9.32)
+        self.assertAlmostEqual(t["gpa"], 30.32 / 10)
 
     def test_ungraded_and_unknown_grades_ignored(self):
         t = gpa.totals([e(3, ""), e(3, None), e(3, "Z"), e(3, "A-")])
         self.assertEqual(t["gpa_credits"], 3)
-        self.assertAlmostEqual(t["gpa"], 3.7)
+        self.assertAlmostEqual(t["gpa"], 3.67)
 
     def test_pass_withdrawn_excluded_from_gpa(self):
         t = gpa.totals([e(3, "A"), e(3, "P"), e(3, "W"), e(3, "NP"), e(3, "I"), e(3, "AU")])

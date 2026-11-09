@@ -1,3 +1,9 @@
+// Grade points as AUPP writes them: 4.0, 3.67, 3.33 (not rounded to 3.7 / 3.3).
+function pts(p) {
+  const n = Number(p);
+  return Number.isInteger(n) ? n.toFixed(1) : String(Math.round(n * 100) / 100);
+}
+
 // GPA page: grade entry (autosaves), per-semester GPA, and two what-if tools.
 // All GPA arithmetic happens on the server (gpa.py); this file only displays it.
 
@@ -11,7 +17,7 @@ const fmtNum = (x) => (Math.round(Number(x) * 100) / 100).toString();
 function gradeSelect(current, extraClass) {
   const opts = ['<option value="">— no grade —</option>']
     .concat(G.grade_options.map((g) => {
-      const label = G.non_gpa[g] ? `${g} (${G.non_gpa[g]})` : `${g} · ${Number(G.scale[g]).toFixed(1)}`;
+      const label = G.non_gpa[g] ? `${g} (${G.non_gpa[g]})` : `${g} · ${pts(G.scale[g])}`;
       return `<option value="${g}" ${g === current ? "selected" : ""}>${label}</option>`;
     }));
   return `<select class="${extraClass || ""}" aria-label="Grade">${opts.join("")}</select>`;
@@ -30,28 +36,71 @@ function renderStats() {
          G.ungraded.length ? `${G.ungraded.length} still need a grade` : "All entered");
 }
 
+// Which semester groups are open (by name). The newest one starts open.
+let openSems = null;
+
+function semesterRow(sem) {
+  return G.semesters.find((r) => (r.semester === "No semester picked" ? "" : r.semester) === sem) || {};
+}
+
+// "15 cr · Term GPA 3.67 · Cumulative 3.52" on each semester's row.
+function semesterMeta(sem) {
+  const r = semesterRow(sem);
+  const credits = G.entries.filter((e) => (e.semester || "") === sem).reduce((a, e) => a + Number(e.credits || 0), 0);
+  const parts = [`${fmtNum(credits)} cr`, `Term GPA <strong>${fmtGpa(r.gpa)}</strong>`];
+  if (sem) parts.push(`Cumulative <strong>${fmtGpa(r.cumulative_gpa)}</strong>`);
+  return parts.join(" · ");
+}
+
 function renderSemesters() {
-  const rows = G.semesters.map((r) =>
-    `<tr><td>${escapeHtml(r.semester)}</td><td class="num">${fmtGpa(r.gpa)}</td>` +
-    `<td class="num">${fmtNum(r.gpa_credits)}</td><td class="num">${fmtNum(r.attempted)} / ${fmtNum(r.earned)}</td>` +
-    `<td class="num">${fmtGpa(r.cumulative_gpa)}</td></tr>`).join("");
+  // The semester table was merged into the group rows: just refresh their numbers.
   const onlyUnassigned = G.semesters.length === 1 && G.semesters[0].semester === "No semester picked";
   $("semester-note").hidden = !onlyUnassigned;
-  $("semester-table").innerHTML =
-    `<thead><tr><th>Semester</th><th class="num">GPA</th><th class="num">GPA credits</th><th class="num">Attempted / earned</th><th class="num">Cumulative after</th></tr></thead><tbody>${rows}</tbody>`;
+  document.querySelectorAll(".gpa-group").forEach((g) => {
+    g.querySelector(".group-credits").innerHTML = semesterMeta(g.dataset.sem);
+  });
+}
+
+function setGroupOpen(section, open) {
+  const sem = section.dataset.sem;
+  if (open) openSems.add(sem); else openSems.delete(sem);
+  const btn = section.querySelector(".group-toggle");
+  btn.setAttribute("aria-expanded", String(open));
+  btn.querySelector(".group-icon").textContent = open ? "−" : "+";
+  section.querySelector(".group-body").hidden = !open;
 }
 
 function renderGrades() {
   const bySem = {};
   G.entries.forEach((e) => { (bySem[e.semester || ""] = bySem[e.semester || ""] || []).push(e); });
   const order = G.semesters.map((r) => (r.semester === "No semester picked" ? "" : r.semester));
-  $("grades-by-semester").innerHTML = order.filter((s) => bySem[s]).map((sem) => {
-    const rows = bySem[sem].sort((a, b) => a.code.localeCompare(b.code)).map((e) =>
+  const sems = order.filter((s) => bySem[s]);
+  if (openSems === null) {
+    const dated = sems.filter((s) => s);
+    openSems = new Set(dated.length ? [dated[dated.length - 1]] : sems.slice(-1));
+  }
+  $("grades-by-semester").innerHTML = sems.map((sem) => {
+    const list = bySem[sem];
+    const rows = list.sort((a, b) => a.code.localeCompare(b.code)).map((e) =>
       `<tr data-code="${escapeHtml(e.code)}"><td class="code-cell">${escapeHtml(e.code)}</td>` +
       `<td class="wrap">${escapeHtml(e.name)}</td><td class="num">${fmtNum(e.credits)}</td><td>${gradeSelect(e.grade, "grade-select")}</td></tr>`).join("");
-    return `<h3 class="group-title">${sem ? escapeHtml(sem) : "No semester picked yet"}</h3>` +
-      `<div class="table-wrap"><table class="course-table"><thead><tr><th>Code</th><th>Course</th><th class="num">Credits</th><th>Grade</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    const open = openSems.has(sem);
+    const missing = list.filter((e) => !e.grade).length;
+    return `<div class="curriculum-group gpa-group" data-sem="${escapeHtml(sem)}">
+      <button type="button" class="group-toggle" aria-expanded="${open}">
+        <span class="group-icon" aria-hidden="true">${open ? "−" : "+"}</span>
+        <span class="group-name">${sem ? escapeHtml(sem) : "No semester picked yet"}</span>
+        <span class="curriculum-group-count">${list.length}</span>
+        ${missing ? `<span class="status-badge status-warn">${missing} without a grade</span>` : ""}
+        <span class="group-credits">${semesterMeta(sem)}</span>
+      </button>
+      <div class="group-body" ${open ? "" : "hidden"}>
+        <div class="table-wrap"><table class="course-table"><thead><tr><th>Code</th><th>Course</th><th class="num">Credits</th><th>Grade</th></tr></thead><tbody>${rows}</tbody></table></div>
+      </div></div>`;
   }).join("");
+  document.querySelectorAll(".gpa-group").forEach((section) => {
+    section.querySelector(".group-toggle").addEventListener("click", () => setGroupOpen(section, !openSems.has(section.dataset.sem)));
+  });
   document.querySelectorAll(".grade-select").forEach((sel) => {
     sel.addEventListener("change", () => saveGrade(sel.closest("tr").dataset.code, sel.value));
   });
@@ -129,7 +178,7 @@ async function runTarget() {
 }
 
 function renderScale() {
-  $("scale-box").innerHTML = Object.entries(G.scale).map(([g, p]) => `<span><strong>${g}</strong> ${Number(p).toFixed(1)}</span>`).join("") +
+  $("scale-box").innerHTML = Object.entries(G.scale).map(([g, p]) => `<span><strong>${g}</strong> ${pts(p)}</span>`).join("") +
     Object.entries(G.non_gpa).map(([g, n]) => `<span class="muted"><strong>${g}</strong> ${n} (not in GPA)</span>`).join("");
 }
 
@@ -155,6 +204,9 @@ async function init() {
   $("target-credits").value = planned || Math.min(15, G.max_credits);
   renderStats(); renderGrades(); renderSemesters(); renderPlanned(); renderScale(); runTarget();
 }
+
+$("open-all").addEventListener("click", () => document.querySelectorAll(".gpa-group").forEach((s) => setGroupOpen(s, true)));
+$("close-all").addEventListener("click", () => document.querySelectorAll(".gpa-group").forEach((s) => setGroupOpen(s, false)));
 
 ["target-gpa", "target-credits"].forEach((id) => $(id).addEventListener("input", () => {
   clearTimeout(whatifTimer); whatifTimer = setTimeout(runTarget, 200);

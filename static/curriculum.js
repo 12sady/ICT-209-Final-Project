@@ -17,11 +17,14 @@ let offeredCodes = null; // Set of codes offered this term, or null if nothing i
 // required categories first, then electives, unrecognized categories last.
 const _CATEGORY_ORDER = [
   "general education (required)",
+  "general education",
   "major",
   "core/major",
   "major electives",
   "electives",
-  "general education",
+  "enrichment (not counted)",
+  "other courses (not counted)",
+  "not in program structure",
 ];
 
 function categoryRank(category) {
@@ -176,12 +179,21 @@ function renderCurriculumGroups() {
     const isOpen = filtering || openGroups.has(label);
     const doneCr = courses.filter((c) => state.completed.includes(c.code)).reduce((a, c) => a + (Number(c.credits) || 0), 0);
     const totalCr = courses.reduce((a, c) => a + (Number(c.credits) || 0), 0);
+    // With a program structure, the header shows that category's real rule
+    // (e.g. 18 of the 51 listed elective credits), not the sum of its list.
+    const sp = !byPlan && state.structure_progress;
+    const row = sp && sp.rows.find((r) => r.category === label);
+    const creditsText = row
+      ? `${row.done} / ${row.total} cr counted${row.extra ? ` (+${row.extra} extra)` : ""}${row.all_required ? "" : ` · choose from ${totalCr} cr listed`}`
+      : (sp && (/\(not counted\)$/.test(label) || label === "Not in program structure"))
+        ? `${doneCr} cr completed · not counted`
+        : `${doneCr} / ${totalCr} cr completed`;
     section.innerHTML = `
       <button type="button" class="group-toggle" aria-expanded="${isOpen}">
         <span class="group-icon" aria-hidden="true">${isOpen ? "−" : "+"}</span>
         <span class="group-name">${escapeHtml(label)}</span>
         <span class="curriculum-group-count">${courses.length}</span>
-        <span class="group-credits">${doneCr} / ${totalCr} cr completed</span>
+        <span class="group-credits">${creditsText}</span>
       </button>
       <div class="group-body" ${isOpen ? "" : "hidden"}>
       <div class="table-wrap"><table class="course-table curr-table">
@@ -210,7 +222,7 @@ function renderCurriculumGroups() {
         </td>
         <td class="sem-cell">${isDone ? semesterSelectHtml(course.code) : '<span class="hint">—</span>'}</td>
         <td class="code-cell">${course.code}</td>
-        <td>${course.name || ""}</td>
+        <td>${escapeHtml(course.name || "")}${course.sub_category ? ` <span class="hint-inline">· ${escapeHtml(course.sub_category)}</span>` : ""}</td>
         <td class="num">${course.credits}</td>
         <td class="prereq-cell">${(course.hard_prereqs || []).map((p) => `<span class="nw">${escapeHtml(p)}</span>`).join(" ") || "—"}</td>
         <td class="nw">${planLabel(course) || '<span class="hint">—</span>'}</td>
@@ -292,7 +304,33 @@ function renderAll() {
   document.getElementById("c-min-credits").value = state.target_credits.min;
   document.getElementById("c-max-credits").value = state.target_credits.max;
   renderCompletedBySemester();
+  renderStructure();
   renderCurriculumGroups();
+}
+
+function renderStructure() {
+  const card = document.getElementById("structure-card");
+  const sp = state.structure_progress;
+  card.hidden = !sp;
+  if (!sp) return;
+  const cr = (x) => (Math.round(Number(x) * 10) / 10).toString();
+  const rows = sp.rows.map((r) => {
+    const left = r.total - r.done;
+    let todo;
+    if (r.complete) todo = statusBadge("Complete", "ok");
+    else if (r.all_required) todo = `Still need: ${r.left.map((c) => `<span class="nw">${escapeHtml(c.code)}</span>`).join(", ")}`;
+    else todo = `${cr(left)} more cr from this category's list`;
+    return `<tr><td><strong>${escapeHtml(r.category)}</strong>${r.all_required ? ' <span class="hint-inline">all required</span>' : ""}</td>
+      <td class="num">${cr(r.total)}</td><td class="num">${cr(r.done)}${r.extra ? ` <span class="hint-inline">(+${cr(r.extra)} extra)</span>` : ""}</td>
+      <td class="num">${cr(left)}</td><td>${todo}</td></tr>`;
+  }).join("");
+  document.getElementById("structure-table").innerHTML =
+    `<thead><tr><th>Category</th><th>Required</th><th>Counted</th><th>Left</th><th>What's left</th></tr></thead>
+     <tbody>${rows}<tr><td><strong>Total</strong></td><td class="num"><strong>${cr(sp.total)}</strong></td><td class="num"><strong>${cr(sp.done)}</strong></td><td class="num"><strong>${cr(sp.remaining)}</strong></td><td>${cr(sp.percent)}% done</td></tr></tbody>`;
+  const nc = (sp.not_counted || []).map((g) => `${escapeHtml(g.group.replace(/ \(not counted\)$/, ""))}: ${g.courses.map(escapeHtml).join(", ")}`);
+  document.getElementById("structure-notes").innerHTML =
+    (nc.length ? `Completed but not counted toward ${cr(sp.total)}: ${nc.join(" · ")}.<br>` : "") +
+    (sp.source ? `Source: ${escapeHtml(sp.source)}` : "");
 }
 
 async function loadCurriculum() {
@@ -347,6 +385,7 @@ document.getElementById("save-btn").addEventListener("click", async () => {
     body: JSON.stringify(state),
   });
   statusEl.textContent = res.ok ? "Saved." : "Something went wrong saving.";
+  if (res.ok && state.structure_progress) await loadCurriculum();   // refresh the structure counts
 });
 
 loadCurriculum();
@@ -379,7 +418,8 @@ function MS_STATUS(text) {
 function renderSlotsNote() {
   const el = document.getElementById("slots-note");
   const slots = state.elective_slots || [];
-  if (!slots.length) { el.hidden = true; return; }
+  // With a program structure, electives are counted by credits there instead.
+  if (!slots.length || state.structure_progress) { el.hidden = true; return; }
   const credits = slots.reduce((sum, x) => sum + (Number(x.credits) || 0), 0);
   el.hidden = false;
   el.textContent = `Your sample plan also has ${slots.length} open elective slot${slots.length === 1 ? "" : "s"} (${credits} credits) — ` +
