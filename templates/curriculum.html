@@ -19,6 +19,17 @@
     <div id="plan-preview"></div>
   </details>
 
+  <details class="card" id="audit-card">
+    <summary class="card-summary"><h2>Import my degree audit (PDF)</h2></summary>
+    <p class="hint">Your degree audit from SIS is private and differs per student, so this is the accurate way to get <em>your</em> curriculum: your categories (Major, Major Electives, General Education, Core/Major), the credits each needs, and which courses you have passed, with semester and grade. It replaces the sample plan. In SIS, open <strong>Degree Audit</strong>, save it as a PDF, upload it here, check what the app found, then confirm. The PDF itself is never stored, and your name, ID and date of birth are never read. Save any unsaved changes on this page first: importing reloads it.</p>
+    <div class="plan-pick">
+      <input type="file" id="da-file" accept="application/pdf,.pdf" aria-label="Degree audit PDF" />
+      <button type="button" id="da-read-btn" disabled>Read audit</button>
+      <span id="da-status" class="hint" role="status"></span>
+    </div>
+    <div id="da-preview"></div>
+  </details>
+
   <details class="card" id="grade-report-card">
     <summary class="card-summary"><h2>Import my grade report (PDF)</h2></summary>
     <p class="hint">In SIS, open <strong>Grade Report</strong> and save it as a PDF, then upload it here. The app reads your courses, terms and grades, shows you what it found, and only saves after you confirm. The PDF itself is never stored. Save any unsaved changes on this page first: importing reloads it.</p>
@@ -131,4 +142,5 @@
 {% block scripts %}
 <script src="{{ url_for('static', filename='curriculum.js') }}"></script>
 <script src="{{ url_for('static', filename='grade_import.js') }}"></script>
+<script src="{{ url_for('static', filename='audit_import.js') }}"></script>
 {% endblock %}

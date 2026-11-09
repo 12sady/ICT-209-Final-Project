@@ -15,7 +15,7 @@ Counting rules:
   - A completed course counts toward the category whose list it's in.
   - A category counts at most its required credits; anything above that is
     "extra" and doesn't count toward the 120 (or whatever the total is).
-  - If a category's listed courses add up exactly to its required credits
+  - If a category's listed courses add up to its required credits or less
     (e.g. Major: 14 courses = 44 credits), every course in it is required.
     Otherwise the student chooses (e.g. Electives: 18 of 51 listed credits).
   - Courses in "not_counted" groups (Enrichment, uncategorised audit rows)
@@ -65,7 +65,7 @@ def categories(st):
         courses = [dict(c, group=g.get("name") or "") for g in groups for c in g.get("courses", [])]
         listed = sum(_cr(c.get("credits")) for c in courses)
         out.append({"name": cat["name"], "credits": _cr(cat.get("credits")), "courses": courses,
-                    "all_required": abs(listed - _cr(cat.get("credits"))) < 1e-9})
+                    "all_required": listed <= _cr(cat.get("credits")) + 1e-9})
     return out
 
 

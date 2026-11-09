@@ -114,6 +114,17 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - The Import page no longer has the "Import curriculum" paste card (the sample plans on the Curriculum page replace it). The backend `/api/curriculum/parse` and `curriculum_parser.py` are still there, unused by the UI.
 
+- Degree audit import (`degree_audit.py`, card on the Curriculum page, `static/audit_import.js`, `POST /api/degree-audit/preview|apply`):
+  reads AUPP's SIS "Official Degree Audit" PDF by word positions (like the grade report; name/ID/date of birth never read). Columns
+  Category | code | name | credits | semester | grade | earned; cells wrap (number on next line, year on next line, "(Required)").
+  Category "M - Major" / "ME - Major Electives" / "GER - General Education (Required)" / "CM - Core/Major"; a BLANK category is a shaded
+  row = not counted in the credit totals. Last page summary gives credits needed per category and a cross-check. Apply (re-reads the
+  same upload, trusts nothing from the browser) rebuilds the curriculum from the audit, marks passed courses with semester + grade
+  (RG = in progress, skipped), and stores the student's own structure as `audit_structure` in their requirements file. `_program_structure`
+  prefers it over the program's official structure; PUT /api/curriculum carries it over; choosing a sample plan again drops it.
+  `structure.categories`: a category that lists fewer credits than it needs counts as all-required. Tested with made-up pages only
+  (`tests/test_degree_audit.py`); checked once against the user's real audit in a scratch folder (totals matched: 120 / 25, GE 25 of 31).
+
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.
 

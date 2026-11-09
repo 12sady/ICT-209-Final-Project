@@ -44,6 +44,7 @@ import auth
 import compare
 import demo
 import gpa
+import degree_audit
 import grade_report
 import programs as plans
 import progress
@@ -100,9 +101,10 @@ def pending_import_path():
 
 
 def _program_structure(req):
-    """The official program structure for the student's program, or None
-    (then everything keeps using the sample plan, as before)."""
-    return structure.get(req.get("program_id"))
+    """The student's own structure from an uploaded degree audit if they have
+    one, else the official structure for their program, or None (then
+    everything keeps using the sample plan, as before)."""
+    return req.get("audit_structure") or structure.get(req.get("program_id"))
 
 
 def _load_data():
@@ -1145,6 +1147,8 @@ def api_curriculum():
         # Grades are edited on the GPA page; the Curriculum page never owns them,
         # so a stale copy of this page can't wipe or overwrite them.
         existing, _ = _load_data()
+        if existing.get("audit_structure") and "audit_structure" not in body:
+            body["audit_structure"] = existing["audit_structure"]      # set by the audit upload, not by this page
         done = set(body.get("completed", []))
         grades = {c: g for c, g in (existing.get("grades") or {}).items() if c in done}
         if grades:
@@ -1332,6 +1336,56 @@ def api_grade_report_apply():
     return jsonify({"ok": True, **counts, "gpa": total["gpa"]})
 
 
+# ---------------------------------------------------------------------------
+# Degree audit PDF import (see degree_audit.py). Same rules as the grade report:
+# read in memory, never stored. Preview saves nothing; apply re-reads the same
+# file (so nothing the browser sends back is trusted) and rebuilds the student's
+# curriculum, categories, completed courses and grades from it.
+# ---------------------------------------------------------------------------
+
+def _read_audit_upload():
+    f = request.files.get("file")
+    if f is None or not f.filename:
+        return None, ("Choose your degree audit PDF first.", 400)
+    data = f.read(_MAX_PDF_BYTES + 1)
+    if len(data) > _MAX_PDF_BYTES:
+        return None, ("That file is over 5 MB; a degree audit is much smaller. Is it the right file?", 400)
+    if not data.startswith(b"%PDF"):
+        return None, ("That isn't a PDF. In SIS, open Degree Audit and save/print it as PDF.", 400)
+    try:
+        parsed = degree_audit.parse_pages(degree_audit.read_pdf(io.BytesIO(data)))
+    except ValueError as e:
+        return None, (str(e), 400)
+    finally:
+        del data
+    if not parsed["courses"]:
+        return None, ("No courses found. This reader only understands AUPP's SIS Official Degree Audit PDF "
+                      "(not a scanned photo).", 400)
+    return parsed, None
+
+
+@app.route("/api/degree-audit/preview", methods=["POST"])
+def api_degree_audit_preview():
+    parsed, err = _read_audit_upload()
+    if err:
+        return jsonify({"error": err[0]}), err[1]
+    return jsonify(degree_audit.summarize(parsed))
+
+
+@app.route("/api/degree-audit/apply", methods=["POST"])
+def api_degree_audit_apply():
+    parsed, err = _read_audit_upload()
+    if err:
+        return jsonify({"error": err[0]}), err[1]
+    req, _ = _load_data()
+    new_req, counts = degree_audit.apply(req, parsed)
+    new_req = structure.overlay(new_req, new_req["audit_structure"])
+    with open(requirements_path(), "w") as f:
+        json.dump(new_req, f, indent=2)
+    entries, _unknown, total = _gpa_summary(new_req)
+    return jsonify({"ok": True, **counts, "gpa": total["gpa"]})
+
+
 @app.route("/api/gpa/whatif", methods=["POST"])
 def api_gpa_whatif():
     """Nothing is saved: tries grades for the planned term, and/or works out
@@ -1426,6 +1480,7 @@ def api_curriculum_from_program():
         return jsonify({"error": "Pick a program plan first."}), 400
     requirements, _ = _load_data()
     new_req = plans.apply_program(requirements, prog)
+    new_req.pop("audit_structure", None)          # starting from a sample plan again replaces the audit's structure
     st = _program_structure(new_req)
     if st:
         new_req = structure.overlay(new_req, st)

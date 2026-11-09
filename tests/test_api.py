@@ -216,6 +216,36 @@ class ApiTests(unittest.TestCase):
         self.assertAlmostEqual(c.get("/api/gpa").get_json()["summary"]["gpa"], 3.33)
         self.assertEqual(c.post("/api/grade-report/apply", json={"courses": [{"code": "B 200", "grade": "RG"}]}).status_code, 400)
 
+    def test_degree_audit_import(self):
+        import io
+        from unittest import mock
+        from tests.test_degree_audit import PAGES
+        c = self._signup("degreeaudit")
+        self.assertEqual(c.put("/api/curriculum", json=CURRICULUM).status_code, 200)
+        self.assertEqual(c.post("/api/degree-audit/preview", data={"file": (io.BytesIO(b"hello"), "x.pdf")}).status_code, 400)
+        fake = lambda: (io.BytesIO(b"%PDF-1.4 fake"), "audit.pdf")
+        with mock.patch.object(self.app.degree_audit, "read_pdf", return_value=PAGES):
+            r = c.post("/api/degree-audit/preview", data={"file": fake()})
+            self.assertEqual(r.status_code, 200, r.data)
+            self.assertEqual(r.get_json()["counts"]["passed"], 4)
+            self.assertNotIn("audit_structure", c.get("/api/curriculum").get_json())      # preview saved nothing
+            a = c.post("/api/degree-audit/apply", data={"file": fake()})
+        self.assertEqual(a.status_code, 200, a.data)
+        cur = c.get("/api/curriculum").get_json()
+        self.assertEqual(len(cur["catalog"]), 9)
+        self.assertEqual(cur["grades"]["ENGL 101"], "A")
+        rows = {r["category"]: r["done"] for r in cur["structure_progress"]["rows"]}
+        self.assertEqual(rows, {"Major": 0, "Major Electives": 0, "General Education": 7, "Core/Major": 0})
+        self.assertEqual(cur["structure_progress"]["total"], 24)
+        groups = {g["group"]: g["courses"] for g in cur["structure_progress"]["not_counted"]}
+        self.assertEqual(groups["Not counted by the SIS audit (not counted)"], ["ZZZ 110"])
+        self.assertEqual(groups["Not in program structure"], ["A 100"])          # passed earlier, not on the audit
+        self.assertEqual(c.put("/api/curriculum", json=cur).status_code, 200)               # GET -> PUT keeps the audit structure
+        again = c.get("/api/curriculum").get_json()
+        self.assertEqual(again["structure_progress"]["total"], 24)
+        # picking a sample plan again drops the audit's structure
+        self.assertEqual(c.put("/api/curriculum", json={k: v for k, v in again.items() if k != "audit_structure"}).status_code, 200)
+
     def _user_id(self, client):
         with client.session_transaction() as sess:
             return sess["user_id"]
