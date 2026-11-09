@@ -58,16 +58,30 @@
         <td>${statusBadge(label, kind)}</td></tr>`;
     }).join("");
 
+    const catOpts = (sel) => d.categories.map((k) => `<option value="${escapeHtml(k.name)}" ${k.name === sel ? "selected" : ""}>${escapeHtml(k.name)}</option>`).join("")
+      + `<option value="" ${sel ? "" : "selected"}>Not counted</option>`;
+    const unc = (d.uncounted || []).length ? `
+      <h3>Courses SIS lists but doesn't count</h3>
+      <p class="hint">These are the shaded "-" rows. The courses are real; SIS just doesn't count them. I suggest where each one probably counts${d.sample_plan ? ` using your ${escapeHtml(d.sample_plan)} sample plan` : ""}. Change anything that's wrong, or leave "Not counted". You can change this later on the Curriculum page.</p>
+      <div class="table-wrap"><table class="course-table">
+        <thead><tr><th>Course</th><th>Taken</th><th>Counts toward</th><th>Why</th></tr></thead>
+        <tbody>${d.uncounted.map((u) => `<tr>
+          <td><strong>${escapeHtml(u.code)}</strong><br><span class="hint">${escapeHtml(u.name)} · ${u.credits} cr</span></td>
+          <td>${u.grade ? `${escapeHtml(u.term || "")} <strong>${escapeHtml(u.grade)}</strong>` : '<span class="hint">not taken</span>'}</td>
+          <td><select class="da-move" data-code="${escapeHtml(u.code)}" aria-label="Where ${escapeHtml(u.code)} counts">${catOpts(u.category)}</select></td>
+          <td class="hint">${escapeHtml(u.reason)}</td></tr>`).join("")}</tbody>
+      </table></div>` : "";
+
     box.innerHTML = `
       ${warn}
       <p class="hint"><strong>${escapeHtml(d.program || "Your degree")}</strong>${d.catalog_term ? `, catalog ${escapeHtml(d.catalog_term)}` : ""}.
         ${d.total_required != null ? `${d.total_required} credits to graduate, ${d.total_completed ?? 0} completed according to the audit. ` : ""}
-        Found ${c.courses} courses: ${c.passed} passed, ${c.in_progress} in progress, ${c.not_taken} not taken yet, ${c.not_counted} shaded "-" (not counted by SIS).
-        SIS can be wrong about these: if the school counts any of them, move them into a category after importing.</p>
+        Found ${c.courses} courses: ${c.passed} passed, ${c.in_progress} in progress, ${c.not_taken} not taken yet, ${c.not_counted} shaded "-" (SIS doesn't count these).</p>
       <div class="table-wrap"><table class="course-table">
         <thead><tr><th>Category</th><th>Credits needed</th><th>Listed</th><th>Courses</th><th>Passed credits</th></tr></thead>
         <tbody>${cats}</tbody>
       </table></div>
+      ${unc}
       <details><summary class="hint">Show all ${c.courses} courses the audit lists</summary>
         <div class="table-wrap"><table class="course-table">
           <thead><tr><th>Course</th><th>Category</th><th>Credits</th><th>Semester</th><th>Grade</th><th>Status</th></tr></thead>
@@ -89,6 +103,9 @@
     out.textContent = "Saving…";
     const fd = new FormData();
     fd.append("file", fileEl.files[0]);
+    const moves = {};
+    box.querySelectorAll("select.da-move").forEach((sel) => { moves[sel.dataset.code] = sel.value; });
+    fd.append("moves", JSON.stringify(moves));
     const res = await fetch("/api/degree-audit/apply", { method: "POST", body: fd });
     const data = await res.json();
     if (!res.ok) { out.textContent = data.error || "Something went wrong."; return; }

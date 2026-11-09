@@ -267,7 +267,7 @@ def category_names(parsed):
     return out
 
 
-def summarize(parsed):
+def summarize(parsed, plan_catalog=None, moves=None, with_suggestions=False):
     """Per-category numbers for the preview, plus counts and warnings."""
     warnings = list(parsed["warnings"])
     summary = parsed["summary"]
@@ -296,12 +296,86 @@ def summarize(parsed):
         "not_counted": len(shaded),
     }
     total = summary["total_required"]
-    return {"program": parsed["program"], "catalog_term": parsed["catalog_term"],
+    uncounted = []
+    if with_suggestions:
+        sug = suggest(parsed, plan_catalog, moves)
+        for c in shaded:
+            uncounted.append({"code": c["code"], "name": c["name"], "credits": c["credits"], "term": c["term"],
+                              "grade": c["grade"], "status": c["status"], **sug[c["code"]]})
+    return {"program": parsed["program"], "catalog_term": parsed["catalog_term"], "uncounted": uncounted,
             "total_required": _num(total) if total is not None else None,
             "total_completed": _num(summary["total_completed"]) if summary["total_completed"] is not None else None,
             "categories": cats, "counts": counts, "warnings": warnings,
             "courses": [{k: c[k] for k in ("code", "name", "credits", "category", "term", "grade", "status")}
                         for c in parsed["courses"]]}
+
+
+def match_program(programs, req_program_id, audit_program_name):
+    """The sample plan to take hints from: the student's own pick, else the one
+    whose name appears in the audit's degree name (longest name wins)."""
+    for p in programs:
+        if req_program_id and p.get("id") == req_program_id:
+            return p
+    best = None
+    name = (audit_program_name or "").lower()
+    for p in programs:
+        pn = (p.get("name") or "").lower()
+        if pn and pn in name and (best is None or len(pn) > len(best.get("name", ""))):
+            best = p
+    return best
+
+
+def suggest(parsed, plan_catalog, moves=None):
+    """Where each shaded ("-") course probably counts. {code: {"category", "reason", "source"}}.
+
+    SIS lists these courses but doesn't count them. A hint comes from, in order:
+      1. the student's own earlier choice (`moves`),
+      2. the sample plan: General Education -> General Education; a "(Compulsory)"
+         elective -> Core/Major; an approved or ordinary elective -> Major Electives;
+         Major -> Major, unless Major is already full.
+    An empty category means "no suggestion": it stays not counted until the student picks.
+    plan_catalog: {normalised code: catalog entry} built from the sample plan (programs.build_catalog).
+    """
+    cats = {c["name"].lower(): c["name"] for c in summarize(parsed)["categories"]}
+    full = {c["name"]: c["listed"] >= c["target"] for c in summarize(parsed)["categories"]}
+
+    def find(*wanted):
+        for w in wanted:
+            for low, name in cats.items():
+                if w in low:
+                    return name
+        return ""
+
+    ge = find("general education")
+    core = find("core/major", "core")
+    elective = find("elective")
+    major = cats.get("major", "")
+    out = {}
+    for c in parsed["courses"]:
+        if c["category"]:
+            continue
+        code = c["code"]
+        if moves and code in moves:
+            out[code] = {"category": moves[code], "reason": "Your earlier choice.", "source": "you"}
+            continue
+        hint = (plan_catalog or {}).get(grade_report._norm(code))
+        cat, why = "", "Not in your sample plan, so no suggestion."
+        if hint:
+            hc, req = hint.get("category"), hint.get("required")
+            if hc == "General Education (Required)" and ge:
+                cat, why = ge, "Your sample plan counts it as General Education."
+            elif hc == "Electives" and req and (core or elective):
+                cat, why = core or elective, "Your sample plan marks it a compulsory elective, which the audit files under Core/Major."
+            elif hc in ("Electives", "Major Electives") and elective:
+                cat, why = elective, "Your sample plan counts it as an elective."
+            elif hc == "Major" and major and not full.get(major):
+                cat, why = major, "Your sample plan counts it as Major."
+            elif hc == "Major":
+                why = "Your sample plan says Major, but your Major is already full, so I left it."
+            else:
+                why = "Your sample plan lists it, but I couldn't match its category."
+        out[code] = {"category": cat, "reason": why, "source": "sample plan" if cat else ""}
+    return out
 
 
 def to_structure(parsed):
@@ -394,6 +468,9 @@ def apply(req, parsed):
         base.setdefault("hard_prereqs", [])
         base.setdefault("soft_prereqs", [])
         catalog.append(base)
+
+    if req.get("audit_structure"):          # a re-upload: courses not on the audit were added by hand, keep them
+        catalog += [dict(c) for c in req.get("catalog", []) if grade_report._norm(c["code"]) not in audit_codes]
 
     passed = [c for c in parsed["courses"] if c["status"] == "completed"]
     completed = [c for c in req.get("completed", []) if grade_report._norm(c) not in audit_codes]

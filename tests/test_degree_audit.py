@@ -168,6 +168,57 @@ class MoveTest(unittest.TestCase):
         self.assertEqual(new["audit_moves"], req["audit_moves"])
 
 
+class SuggestTest(unittest.TestCase):
+    def setUp(self):
+        self.parsed = da.parse_pages(PAGES)          # one shaded course: ZZZ 110
+
+    def one(self, plan, moves=None):
+        return da.suggest(self.parsed, plan, moves)["ZZZ 110"]
+
+    def test_sample_plan_general_education(self):
+        got = self.one({"ZZZ110": {"category": "General Education (Required)", "required": True}})
+        self.assertEqual(got["category"], "General Education")
+        self.assertEqual(got["source"], "sample plan")
+
+    def test_compulsory_elective_goes_to_core_major(self):
+        self.assertEqual(self.one({"ZZZ110": {"category": "Electives", "required": True}})["category"], "Core/Major")
+
+    def test_plain_elective_goes_to_major_electives(self):
+        self.assertEqual(self.one({"ZZZ110": {"category": "Electives", "required": False}})["category"], "Major Electives")
+        self.assertEqual(self.one({"ZZZ110": {"category": "Major Electives", "required": False}})["category"], "Major Electives")
+
+    def test_major_only_when_it_has_room(self):
+        got = self.one({"ZZZ110": {"category": "Major", "required": True}})      # Major lists 8 of 8: full
+        self.assertEqual(got["category"], "")
+        self.assertIn("already full", got["reason"])
+
+    def test_no_hint_means_no_suggestion_and_earlier_choice_wins(self):
+        self.assertEqual(self.one({})["category"], "")
+        self.assertEqual(self.one({}, {"ZZZ 110": "General Education"})["category"], "General Education")
+        self.assertEqual(self.one({}, {"ZZZ 110": "General Education"})["source"], "you")
+
+    def test_summary_lists_only_shaded_courses_with_suggestions(self):
+        s = da.summarize(self.parsed, {"ZZZ110": {"category": "General Education (Required)"}}, None, with_suggestions=True)
+        self.assertEqual([u["code"] for u in s["uncounted"]], ["ZZZ 110"])
+        self.assertEqual(s["uncounted"][0]["category"], "General Education")
+        self.assertEqual(da.summarize(self.parsed)["uncounted"], [])             # not asked for: left out
+
+    def test_match_program_by_name_or_pick(self):
+        progs = [{"id": "biz", "name": "Business"}, {"id": "ba", "name": "Business Administration"}, {"id": "ai", "name": "Artificial Intelligence"}]
+        self.assertEqual(da.match_program(progs, "", "Bachelor of Science in Business Administration (AUPP)")["id"], "ba")
+        self.assertEqual(da.match_program(progs, "ai", "anything")["id"], "ai")
+        self.assertIsNone(da.match_program(progs, "", "Bachelor of Arts in Law"))
+
+    def test_reupload_keeps_courses_added_by_hand(self):
+        first, _ = da.apply({}, self.parsed)
+        first["catalog"].append({"code": "HAND 100", "name": "Added by me", "category": "Electives", "credits": 3, "required": False})
+        again, _ = da.apply(first, self.parsed)
+        self.assertIn("HAND 100", [c["code"] for c in again["catalog"]])
+        old_plan_req = {"catalog": [{"code": "OLD 100", "name": "Sample plan course", "category": "Major", "credits": 3}]}
+        fresh, _ = da.apply(old_plan_req, self.parsed)                              # first audit upload replaces the sample plan
+        self.assertNotIn("OLD 100", [c["code"] for c in fresh["catalog"]])
+
+
 class ApplyTest(unittest.TestCase):
     def test_apply_rebuilds_the_curriculum_from_the_audit(self):
         req = {"program": "Old", "completed": ["OLD 100", "COSC 111"], "completed_semesters": {"OLD 100": "Fall 2024"},

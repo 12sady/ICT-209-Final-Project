@@ -257,6 +257,34 @@ class ApiTests(unittest.TestCase):
         # picking a sample plan again drops the audit's structure
         self.assertEqual(c.put("/api/curriculum", json={k: v for k, v in again.items() if k != "audit_structure"}).status_code, 200)
 
+    def test_degree_audit_suggestions_and_choices(self):
+        import io
+        from unittest import mock
+        from tests.test_degree_audit import PAGES
+        c = self._signup("auditchoices")
+        self.assertEqual(c.put("/api/curriculum", json=CURRICULUM).status_code, 200)
+        fake = lambda: (io.BytesIO(b"%PDF-1.4 fake"), "audit.pdf")
+        with mock.patch.object(self.app.degree_audit, "read_pdf", return_value=PAGES):
+            pv = c.post("/api/degree-audit/preview", data={"file": fake()}).get_json()
+            self.assertEqual([u["code"] for u in pv["uncounted"]], ["ZZZ 110"])
+            self.assertEqual(pv["uncounted"][0]["category"], "")                      # no sample plan matches: no suggestion
+            bad = c.post("/api/degree-audit/apply", data={"file": fake(), "moves": "not json"})
+            self.assertEqual(bad.status_code, 400)
+            ok = c.post("/api/degree-audit/apply", data={"file": fake(), "moves": json.dumps({"ZZZ 110": "General Education", "NOPE 1": "Major"})})
+            self.assertEqual(ok.status_code, 200, ok.data)
+            cur = c.get("/api/curriculum").get_json()
+            ge = {r["category"]: r for r in cur["structure_progress"]["rows"]}["General Education"]
+            self.assertEqual((ge["done"], ge["extra"]), (7, 3))                      # the course now counts
+            cur["catalog"].append({"code": "HAND 100", "name": "By hand", "category": "Electives", "credits": 3, "required": False})
+            self.assertEqual(c.put("/api/curriculum", json=cur).status_code, 200)
+            # preview now remembers the choice; a re-upload keeps it and the hand-added course
+            pv2 = c.post("/api/degree-audit/preview", data={"file": fake()}).get_json()
+            self.assertEqual(pv2["uncounted"][0]["category"], "General Education")
+            self.assertEqual(c.post("/api/degree-audit/apply", data={"file": fake()}).status_code, 200)
+        again = c.get("/api/curriculum").get_json()
+        self.assertIn("HAND 100", [x["code"] for x in again["catalog"]])
+        self.assertEqual(again["audit_moves"]["ZZZ 110"], "General Education")
+
     def _user_id(self, client):
         with client.session_transaction() as sess:
             return sess["user_id"]

@@ -1372,7 +1372,14 @@ def api_degree_audit_preview():
     parsed, err = _read_audit_upload()
     if err:
         return jsonify({"error": err[0]}), err[1]
-    return jsonify(degree_audit.summarize(parsed))
+    req, _ = _load_data()
+    prog = degree_audit.match_program(plans.load_programs(), req.get("program_id"), parsed["program"])
+    plan_catalog = {}
+    if prog:
+        plan_catalog = {degree_audit.grade_report._norm(c["code"]): c for c in plans.build_catalog(prog)[0]}
+    out = degree_audit.summarize(parsed, plan_catalog, req.get("audit_moves"), with_suggestions=True)
+    out["sample_plan"] = prog["name"] if prog else None
+    return jsonify(out)
 
 
 @app.route("/api/degree-audit/apply", methods=["POST"])
@@ -1381,6 +1388,13 @@ def api_degree_audit_apply():
     if err:
         return jsonify({"error": err[0]}), err[1]
     req, _ = _load_data()
+    try:
+        posted = json.loads(request.form.get("moves") or "{}")
+    except ValueError:
+        posted = None
+    if not isinstance(posted, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in posted.items()):
+        return jsonify({"error": "Couldn't read your category choices. Read the audit again."}), 400
+    req = dict(req, audit_moves={**(req.get("audit_moves") or {}), **posted})      # unknown courses/categories are ignored
     new_req, counts = degree_audit.apply(req, parsed)
     new_req = structure.overlay(new_req, new_req["audit_structure"])
     with open(requirements_path(), "w") as f:

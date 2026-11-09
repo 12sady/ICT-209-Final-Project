@@ -125,6 +125,9 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
   SIS can leave out a course the school counts (shaded "-" row): `POST /api/degree-audit/move` + the panel in the Program structure card
   (`degree_audit.move_course`) move one course into a category; kept as `audit_moves` and re-applied on a new upload. PUT /api/curriculum
   always keeps the disk's `audit_structure`/`audit_moves` (a stale page can't undo them).
+  The audit preview suggests where each shaded course counts (`degree_audit.suggest`, from the student's sample plan: General Education ->
+  General Education, "(Compulsory)" elective -> Core/Major, other electives -> Major Electives, Major only if not full; the student's earlier
+  choice wins); the user confirms with dropdowns and the choices are posted as `moves` on apply. A re-upload keeps courses added by hand.
   `structure.categories`: a category that lists fewer credits than it needs counts as all-required. Tested with made-up pages only
   (`tests/test_degree_audit.py`); checked once against the user's real audit in a scratch folder (totals matched: 120 / 25, GE 25 of 31).
 
