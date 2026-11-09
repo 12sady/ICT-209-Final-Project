@@ -62,7 +62,8 @@
       ${warn}
       <p class="hint"><strong>${escapeHtml(d.program || "Your degree")}</strong>${d.catalog_term ? `, catalog ${escapeHtml(d.catalog_term)}` : ""}.
         ${d.total_required != null ? `${d.total_required} credits to graduate, ${d.total_completed ?? 0} completed according to the audit. ` : ""}
-        Found ${c.courses} courses: ${c.passed} passed, ${c.in_progress} in progress, ${c.not_taken} not taken yet, ${c.not_counted} shaded "-" (not counted).</p>
+        Found ${c.courses} courses: ${c.passed} passed, ${c.in_progress} in progress, ${c.not_taken} not taken yet, ${c.not_counted} shaded "-" (not counted by SIS).
+        SIS can be wrong about these: if the school counts any of them, move them into a category after importing.</p>
       <div class="table-wrap"><table class="course-table">
         <thead><tr><th>Category</th><th>Credits needed</th><th>Listed</th><th>Courses</th><th>Passed credits</th></tr></thead>
         <tbody>${cats}</tbody>
@@ -99,4 +100,40 @@
       + (data.gpa != null ? `. GPA now ${data.gpa.toFixed(2)}.` : ".");
     await loadCurriculum();
   }
+
+  // ---- Move a course SIS left out into a category (only for audit-based curricula) ----
+  window.renderAuditAdjust = () => {
+    const box = document.getElementById("audit-adjust");
+    const st = state.audit_structure;
+    box.hidden = !st;
+    if (!st) return;
+    const NOT = "Not counted";
+    const courses = [];
+    (st.not_counted || []).forEach((g) => g.courses.forEach((c) => courses.push({ ...c, where: NOT })));
+    (st.categories || []).forEach((k) => k.courses.forEach((c) => courses.push({ ...c, where: k.name })));
+    courses.sort((a, b) => (a.where === NOT ? 0 : 1) - (b.where === NOT ? 0 : 1) || a.code.localeCompare(b.code));
+    const courseSel = document.getElementById("aa-course");
+    const catSel = document.getElementById("aa-category");
+    const keep = courseSel.value;
+    courseSel.innerHTML = courses.map((c) =>
+      `<option value="${escapeHtml(c.code)}">${escapeHtml(c.code)} ${escapeHtml(c.name || "")} (now: ${escapeHtml(c.where)})</option>`).join("");
+    if (keep && courses.some((c) => c.code === keep)) courseSel.value = keep;
+    catSel.innerHTML = (st.categories || []).map((k) => `<option value="${escapeHtml(k.name)}">${escapeHtml(k.name)}</option>`).join("")
+      + `<option value="">${NOT}</option>`;
+  };
+
+  document.getElementById("aa-move-btn").addEventListener("click", async () => {
+    const out = document.getElementById("aa-status");
+    const code = document.getElementById("aa-course").value;
+    const category = document.getElementById("aa-category").value;
+    if (!code) return;
+    out.textContent = "Saving…";
+    const res = await fetch("/api/degree-audit/move", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code, category }),
+    });
+    const data = await res.json();
+    if (!res.ok) { out.textContent = data.error || "Something went wrong."; return; }
+    out.textContent = `Moved ${code}.`;
+    await loadCurriculum();
+  });
 })();

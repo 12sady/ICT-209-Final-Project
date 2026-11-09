@@ -27,6 +27,7 @@ positions, like grade_report.py. Layout (checked against a real audit):
     category. It is used to size each category and to cross-check our reading.
 """
 
+import copy
 import re
 
 import gpa
@@ -323,6 +324,54 @@ def to_structure(parsed):
     return st
 
 
+def move_course(st, code, category):
+    """A copy of the student's structure with one course moved to `category`
+    (a category name) or to the not-counted group (category empty/None).
+
+    SIS sometimes leaves a course out of a category that the school does count
+    (a shaded row on the audit); this lets the student correct that."""
+    st = copy.deepcopy(st)
+    key = grade_report._norm(code)
+    found = None
+    holders = [c["courses"] for c in st.get("categories", [])] + [g["courses"] for g in st.get("not_counted", [])]
+    for lst in holders:
+        for c in lst:
+            if grade_report._norm(c["code"]) == key:
+                found = dict(c)
+                lst.remove(c)
+                break
+        if found:
+            break
+    if not found:
+        raise ValueError(f"{code} isn't on your degree audit.")
+    name = (category or "").strip()
+    if name and name.lower() not in ("not counted", NOT_COUNTED_GROUP.lower()):
+        target = next((c for c in st.get("categories", []) if c["name"].lower() == name.lower()), None)
+        if target is None:
+            raise ValueError(f"'{category}' isn't a category on your audit.")
+        target["courses"].append(found)
+    else:
+        group = next((g for g in st.get("not_counted", []) if g["name"] == NOT_COUNTED_GROUP), None)
+        if group is None:
+            group = {"name": NOT_COUNTED_GROUP, "courses": []}
+            st.setdefault("not_counted", []).append(group)
+        group["courses"].append(found)
+    st["not_counted"] = [g for g in st.get("not_counted", []) if g["courses"]]
+    if not st["not_counted"]:
+        st.pop("not_counted")
+    return st
+
+
+def apply_moves(st, moves):
+    """Re-apply the student's earlier corrections ({code: category}) to a fresh structure."""
+    for code, category in (moves or {}).items():
+        try:
+            st = move_course(st, code, category)
+        except ValueError:
+            pass            # the course or category is no longer on the audit
+    return st
+
+
 def apply(req, parsed):
     """The student's requirements dict rebuilt from the audit (a copy is returned).
 
@@ -341,7 +390,7 @@ def apply(req, parsed):
         base = dict(old.get(grade_report._norm(c["code"])) or {})
         base.update(code=c["code"], name=c["name"] or base.get("name") or c["code"], credits=_num(c["credits"]),
                     category=_strip_required(c["category"]) or "", sub_category="")
-        base.setdefault("required", False)
+        base.setdefault("required", bool(c["category"]) and "elective" not in c["category"].lower())
         base.setdefault("hard_prereqs", [])
         base.setdefault("soft_prereqs", [])
         catalog.append(base)
@@ -357,8 +406,11 @@ def apply(req, parsed):
         grades[c["code"]] = gpa.normalize_grade(c["grade"]) or c["grade"]
 
     out = dict(req)
+    moves = dict(req.get("audit_moves") or {})
     out.update(catalog=catalog, completed=completed, completed_semesters=sems, grades=grades,
-               audit_structure=to_structure(parsed))
+               audit_structure=apply_moves(to_structure(parsed), moves))
+    if moves:
+        out["audit_moves"] = moves
     if parsed["program"]:
         out["program"] = parsed["program"]
     out["required_remaining"] = [c["code"] for c in catalog if c.get("required") and c["code"] not in set(completed)]

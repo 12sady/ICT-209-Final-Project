@@ -240,9 +240,20 @@ class ApiTests(unittest.TestCase):
         groups = {g["group"]: g["courses"] for g in cur["structure_progress"]["not_counted"]}
         self.assertEqual(groups["Not counted by the SIS audit (not counted)"], ["ZZZ 110"])
         self.assertEqual(groups["Not in program structure"], ["A 100"])          # passed earlier, not on the audit
-        self.assertEqual(c.put("/api/curriculum", json=cur).status_code, 200)               # GET -> PUT keeps the audit structure
+        # SIS left ZZZ 110 out ("-"); the school counts it as general education
+        self.assertEqual(c.post("/api/degree-audit/move", json={"code": "ZZZ 110", "category": "No such"}).status_code, 400)
+        self.assertEqual(c.post("/api/degree-audit/move", json={"code": "ZZZ 110", "category": "General Education"}).status_code, 200)
+        moved = c.get("/api/curriculum").get_json()
+        ge = {r["category"]: r for r in moved["structure_progress"]["rows"]}["General Education"]
+        self.assertEqual((ge["done"], ge["extra"]), (7, 3))
+        self.assertEqual(moved["audit_moves"], {"ZZZ 110": "General Education"})
+        self.assertEqual(c.put("/api/curriculum", json={k: v for k, v in moved.items() if k not in ("audit_structure", "audit_moves")}).status_code, 200)
+        kept = c.get("/api/curriculum").get_json()                                          # a stale page can't drop the move
+        self.assertEqual(kept["audit_moves"], {"ZZZ 110": "General Education"})
+        self.assertEqual(c.put("/api/curriculum", json=cur).status_code, 200)               # a stale page (before the move) saves
         again = c.get("/api/curriculum").get_json()
         self.assertEqual(again["structure_progress"]["total"], 24)
+        self.assertEqual(again["audit_moves"], {"ZZZ 110": "General Education"})            # ...and the move is still there
         # picking a sample plan again drops the audit's structure
         self.assertEqual(c.put("/api/curriculum", json={k: v for k, v in again.items() if k != "audit_structure"}).status_code, 200)
 

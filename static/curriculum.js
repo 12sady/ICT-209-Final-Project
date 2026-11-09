@@ -331,6 +331,7 @@ function renderStructure() {
   document.getElementById("structure-notes").innerHTML =
     (nc.length ? `Completed but not counted toward ${cr(sp.total)}: ${nc.join(" · ")}.<br>` : "") +
     (sp.source ? `Source: ${escapeHtml(sp.source)}` : "");
+  if (window.renderAuditAdjust) window.renderAuditAdjust();
 }
 
 async function loadCurriculum() {

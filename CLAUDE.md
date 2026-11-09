@@ -122,6 +122,9 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
   same upload, trusts nothing from the browser) rebuilds the curriculum from the audit, marks passed courses with semester + grade
   (RG = in progress, skipped), and stores the student's own structure as `audit_structure` in their requirements file. `_program_structure`
   prefers it over the program's official structure; PUT /api/curriculum carries it over; choosing a sample plan again drops it.
+  SIS can leave out a course the school counts (shaded "-" row): `POST /api/degree-audit/move` + the panel in the Program structure card
+  (`degree_audit.move_course`) move one course into a category; kept as `audit_moves` and re-applied on a new upload. PUT /api/curriculum
+  always keeps the disk's `audit_structure`/`audit_moves` (a stale page can't undo them).
   `structure.categories`: a category that lists fewer credits than it needs counts as all-required. Tested with made-up pages only
   (`tests/test_degree_audit.py`); checked once against the user's real audit in a scratch folder (totals matched: 120 / 25, GE 25 of 31).
 

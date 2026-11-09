@@ -137,6 +137,37 @@ class SummaryAndStructureTest(unittest.TestCase):
         self.assertEqual(ev["not_counted"], [{"group": da.NOT_COUNTED_GROUP + " (not counted)", "courses": ["ZZZ 110"]}])
 
 
+class MoveTest(unittest.TestCase):
+    def setUp(self):
+        self.st = da.to_structure(da.parse_pages(PAGES))
+
+    def cat(self, st, name):
+        return next(c for c in st["categories"] if c["name"] == name)
+
+    def test_move_a_shaded_course_into_a_category(self):
+        moved = da.move_course(self.st, "ZZZ 110", "General Education")
+        self.assertIn("ZZZ 110", [c["code"] for c in self.cat(moved, "General Education")["courses"]])
+        self.assertNotIn("not_counted", moved)                                     # the group is empty now, so it's dropped
+        self.assertIn("ZZZ 110", [c["code"] for g in self.st["not_counted"] for c in g["courses"]])   # input untouched
+        ev = structure.evaluate(moved, ["ENGL 101", "SMNR 101", "PSYC 101", "ZZZ 110"])
+        ge = {r["category"]: r for r in ev["rows"]}["General Education"]
+        self.assertEqual((ge["done"], ge["extra"]), (7, 3))                        # counts up to the 7 needed, the rest is extra
+
+    def test_move_back_to_not_counted_and_errors(self):
+        moved = da.move_course(self.st, "ENGL 101", "")
+        self.assertEqual([c["code"] for c in moved["not_counted"][0]["courses"]], ["ZZZ 110", "ENGL 101"])
+        with self.assertRaises(ValueError):
+            da.move_course(self.st, "NOPE 999", "Major")
+        with self.assertRaises(ValueError):
+            da.move_course(self.st, "ZZZ 110", "No such category")
+
+    def test_moves_survive_a_new_upload(self):
+        req = {"audit_moves": {"ZZZ 110": "General Education", "GONE 1": "Major"}}
+        new, _ = da.apply(req, da.parse_pages(PAGES))
+        self.assertIn("ZZZ 110", [c["code"] for c in self.cat(new["audit_structure"], "General Education")["courses"]])
+        self.assertEqual(new["audit_moves"], req["audit_moves"])
+
+
 class ApplyTest(unittest.TestCase):
     def test_apply_rebuilds_the_curriculum_from_the_audit(self):
         req = {"program": "Old", "completed": ["OLD 100", "COSC 111"], "completed_semesters": {"OLD 100": "Fall 2024"},

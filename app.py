@@ -1147,8 +1147,11 @@ def api_curriculum():
         # Grades are edited on the GPA page; the Curriculum page never owns them,
         # so a stale copy of this page can't wipe or overwrite them.
         existing, _ = _load_data()
-        if existing.get("audit_structure") and "audit_structure" not in body:
-            body["audit_structure"] = existing["audit_structure"]      # set by the audit upload, not by this page
+        for key in ("audit_structure", "audit_moves"):                # owned by the audit upload / move, never by this page,
+            if existing.get(key):                                      # so a stale copy of the page can't undo them
+                body[key] = existing[key]
+            else:
+                body.pop(key, None)
         done = set(body.get("completed", []))
         grades = {c: g for c, g in (existing.get("grades") or {}).items() if c in done}
         if grades:
@@ -1386,6 +1389,30 @@ def api_degree_audit_apply():
     return jsonify({"ok": True, **counts, "gpa": total["gpa"]})
 
 
+@app.route("/api/degree-audit/move", methods=["POST"])
+def api_degree_audit_move():
+    """The SIS audit can leave out a course the school actually counts (a shaded
+    '-' row). Move one course into a category (or back to not counted); it is
+    remembered and re-applied if the audit is uploaded again."""
+    body = request.get_json(silent=True) or {}
+    req, _ = _load_data()
+    st = req.get("audit_structure")
+    if not st:
+        return jsonify({"error": "Import your degree audit first."}), 400
+    code = str(body.get("code") or "").strip()
+    category = str(body.get("category") or "").strip()
+    try:
+        new_st = degree_audit.move_course(st, code, category or None)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    moves = dict(req.get("audit_moves") or {})
+    moves[code] = category
+    new_req = structure.overlay(dict(req, audit_structure=new_st, audit_moves=moves), new_st)
+    with open(requirements_path(), "w") as f:
+        json.dump(new_req, f, indent=2)
+    return jsonify({"ok": True})
+
+
 @app.route("/api/gpa/whatif", methods=["POST"])
 def api_gpa_whatif():
     """Nothing is saved: tries grades for the planned term, and/or works out
@@ -1481,6 +1508,7 @@ def api_curriculum_from_program():
     requirements, _ = _load_data()
     new_req = plans.apply_program(requirements, prog)
     new_req.pop("audit_structure", None)          # starting from a sample plan again replaces the audit's structure
+    new_req.pop("audit_moves", None)
     st = _program_structure(new_req)
     if st:
         new_req = structure.overlay(new_req, st)

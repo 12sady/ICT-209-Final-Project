@@ -77,6 +77,16 @@
     <p class="hint">The official rules to graduate: credits needed in each category. Any completed course on a category's list counts toward it, not only the one the sample plan suggests. This is separate from the sample course plan, which is just a suggested order. Updates when you save.</p>
     <div class="table-wrap"><table class="course-table" id="structure-table"></table></div>
     <p class="hint" id="structure-notes"></p>
+    <div id="audit-adjust" hidden>
+      <h3>Does the school count a course that SIS left out?</h3>
+      <p class="hint">SIS sometimes shows a course as not counted (a shaded "-" row) when the school actually counts it, for example as a general education course. Move it into the right category here. It is remembered, and applied again if you re-upload your audit. Save any unsaved changes on this page first: moving reloads it.</p>
+      <div class="plan-pick">
+        <select id="aa-course" aria-label="Course"></select>
+        <select id="aa-category" aria-label="Count it toward"></select>
+        <button type="button" id="aa-move-btn">Move</button>
+        <span id="aa-status" class="hint" role="status"></span>
+      </div>
+    </div>
   </section>
 
   <section class="card">
