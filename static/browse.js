@@ -148,8 +148,10 @@ function filteredCourses() {
 // One short chip saying where this course stands for the student (from /api/courses -> c.mine).
 function statusChip(c) {
   const m = c.mine;
-  if (!m || m.status === "not_in_curriculum") return "";
   const chip = (cls, text, why) => `<div><span class="status-chip st-${cls}"${why ? ` title="${escapeHtml(why)}"` : ""}>${text}</span></div>`;
+  if (!m || m.status === "not_in_curriculum") return "";
+  if (m.status === "outside_ok") return chip("ok", "Can take now · outside your curriculum", m.reason);
+  if (m.status === "outside_blocked") return chip("blocked", `Needs ${m.missing_prereqs.map(escapeHtml).join(", ")} · outside your curriculum`, m.reason);
   if (m.status === "completed") return chip("done", "Completed");
   if (m.status === "in_progress") return chip("progress", "In progress now", "You're taking this now. It counts as done for prerequisites and planning.");
   if (m.status === "blocked") return chip("blocked", `Needs ${m.missing_prereqs.map(escapeHtml).join(", ")}`);

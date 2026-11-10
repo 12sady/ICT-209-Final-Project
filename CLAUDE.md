@@ -137,6 +137,8 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - In-progress courses (Nov 2026): `in_progress` list in the requirements file (audit RG rows, grade-report RG rows, or the Curriculum status "In progress"). They count as DONE for prerequisites (`scheduler._done_for_planning`), the roadmap, the dashboard "available / bottlenecks / remaining required" and the AI snapshot, but NOT for credits/GPA/progress ring. `_load_data` drops codes that are completed. `/api/courses` adds `mine` per section via `_course_statuses` (completed / in_progress / blocked / not_needed / available / not_in_curriculum + recommended, rank 0 roadmap next term, 1 required, 2 elective); the Courses page shows chips, hides completed + in-progress + not-needed by default and has a "Recommended" filter.
 
+- Courses outside the degree audit (e.g. ICT 340) can still be taken as electives: `/api/courses` marks them `outside_ok` / `outside_blocked` using the registrar sheet's prerequisites (`_sheet_prereqs`, `_sheet_missing`; in-progress counts as done), and the wishlist status uses the same check. The sheet's prerequisites are otherwise display-only.
+
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.
 

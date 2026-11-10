@@ -30,6 +30,7 @@ import io
 import json
 import os
 import queue
+import re
 import secrets
 import threading
 from datetime import datetime, timedelta
@@ -1085,6 +1086,28 @@ def api_status():
     })
 
 
+_COURSE_CODE_RE = re.compile(r"^[A-Z]{2,5} \d{3}[A-Z]?$")
+
+
+def _sheet_prereqs(offerings):
+    """{code: [prerequisite codes]} from the registrar sheet (course codes only; text like "Year 3/4" is ignored)."""
+    out = {}
+    for s in offerings:
+        for p in s.get("prerequisites") or []:
+            if isinstance(p, str) and _COURSE_CODE_RE.match(p) and p not in out.setdefault(s["code"], []):
+                out[s["code"]].append(p)
+    return out
+
+
+def _sheet_missing(code, req, sheet):
+    """Prerequisites (from the sheet) the student hasn't finished or isn't taking now. For courses outside
+    their curriculum, whose prerequisites the curriculum doesn't know."""
+    if (req.get("preferences") or {}).get("ignore_prereqs"):
+        return []
+    have = set(req.get("completed", [])) | set(req.get("in_progress", []))
+    return [p for p in sheet.get(code, []) if p not in have]
+
+
 def _course_statuses(req, offerings):
     """Where each offered course stands for THIS student: {code: {status, missing_prereqs, category, required,
     recommended, rank, reason}}.
@@ -1110,6 +1133,7 @@ def _course_statuses(req, offerings):
     except Exception:
         app.logger.exception("course status: roadmap part failed")        # statuses still work without it
     out = {}
+    sheet = _sheet_prereqs(offerings)
     for code in {s["code"] for s in offerings}:
         c = catalog.get(code)
         info = {"status": "not_in_curriculum", "missing_prereqs": [], "category": "", "required": False,
@@ -1137,6 +1161,12 @@ def _course_statuses(req, offerings):
                     elif row is not None and not row["complete"]:
                         info.update(recommended=True, rank=2,
                                     reason=f"Counts toward {cat}: {row['total'] - row['done']:g} credits still needed")
+        else:
+            # Not on the degree audit (e.g. ICT 340): it can still be taken as an elective, so say whether its
+            # prerequisites (from the registrar sheet) are met, counting courses in progress as done.
+            miss = _sheet_missing(code, req, sheet)
+            info.update(status="outside_blocked" if miss else "outside_ok", missing_prereqs=miss,
+                        reason="Not on your degree audit. It may count as a free elective: check with your advisor.")
         out[code] = info
     return out
 
@@ -1164,10 +1194,14 @@ def api_wishlist():
 
     offered_codes = {s["code"] for s in offerings}
     counts, seats, mine = _wishlist_counts(), _seat_totals(offerings), set(wishlist)
+    in_catalog = {c["code"] for c in requirements.get("catalog", [])}
+    sheet = _sheet_prereqs(offerings)
     status = []
     for code in wishlist:
         if not prereqs_met(code, requirements):
             status.append({"code": code, "status": "blocked", "missing_prereqs": missing_prereqs(code, requirements)})
+        elif code not in in_catalog and _sheet_missing(code, requirements, sheet):
+            status.append({"code": code, "status": "blocked", "missing_prereqs": _sheet_missing(code, requirements, sheet)})
         elif code not in offered_codes:
             status.append({"code": code, "status": "not_offered", "missing_prereqs": []})
         else:
