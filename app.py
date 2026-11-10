@@ -11,7 +11,7 @@ Pages:
   GET  /gpa           Grades, GPA and what-if tools
   GET  /browse         Browse the course catalog, filter it, build your wishlist
   GET  /curriculum      Manage completed / required / prerequisite courses
-  GET  /import          Upload a registrar Excel sheet and map its columns
+  GET  /admin           (admin only) upload the registrar's Excel sheet, calendar, sample plans; /import redirects here
 
 API:
   GET  /api/plans
@@ -287,9 +287,19 @@ def gpa_page():
     return render_template("gpa.html", active="gpa")
 
 
+@app.route("/admin")
+def admin_page():
+    """Everything only the admin account can change (this term's courses, calendar, sample plans, demo student).
+    Students never see this page; what they edit lives on the page it affects (Curriculum, Courses, GPA...)."""
+    if not auth.is_admin(g.user):
+        return redirect(url_for("index"))
+    return render_template("admin.html", active="admin")
+
+
 @app.route("/import")
-def import_page():
-    return render_template("import.html", active="import")
+def import_page_legacy():
+    """The old address: bookmarks still work."""
+    return redirect(url_for("admin_page") if auth.is_admin(g.user) else url_for("index"))
 
 
 # ---------------------------------------------------------------------------
@@ -503,7 +513,7 @@ def _dashboard_payload():
     planned, planned_source = _planned_courses()
     wishlist = load_wishlist(wishlist_path())
     out = {
-        "username": g.user["username"], "program": req.get("program") or "",
+        "username": g.user["username"], "is_admin": auth.is_admin(g.user), "program": req.get("program") or "",
         "has_curriculum": bool(catalog), "completed_count": len(completed),
         "wishlist_count": len(wishlist), "offerings_count": len(offerings),
         "gpa": {"value": gpa_total["gpa"], "graded": sum(1 for e in entries if e["grade"]), "completed": len(entries)},

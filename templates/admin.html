@@ -1,45 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Import — Registration Planner{% endblock %}
+{% block title %}Admin — Registration Planner{% endblock %}
 {% block content %}
   <header class="page-header">
     <div>
-      <h1>Import</h1>
-      <p class="program">Bring in this term's course offerings and the academic calendar. Your own curriculum comes from a sample plan or your degree audit, on the Curriculum page.</p>
+      <h1>Admin</h1>
+      <p class="program">Only the admin account sees this page. Load this term's course offerings, the academic calendar and important dates, and the shared sample plans. Students edit their own curriculum, wishlist and grades on their own pages.</p>
     </div>
   </header>
 
-  <details class="card" id="rean-card">
-    <summary class="card-summary"><h2>Optional: add prerequisites from Rean</h2></summary>
-    <p class="hint">Your degree audit doesn't list prerequisites. If you want them, copy the curriculum table from Rean (or similar) and paste it below: it reads each course's category, credits and prerequisites. It only previews here; nothing changes until you click Apply, and courses already in your curriculum are updated, not duplicated. If you use a sample plan, prerequisites are already included.</p>
-    <textarea id="curr-paste-input" rows="6" placeholder="Course Code&#9;Course Name&#9;CATEGORY&#9;Sub-Category&#9;Credits&#9;Course requisites&#10;COSC 121&#9;Computer Science A&#9;Major&#9;&#9;3&#9;-"></textarea>
-    <button id="curr-parse-btn">Parse</button>
-    <div id="curr-parse-preview"></div>
-  </details>
 
-  <details class="card">
-    <summary class="card-summary"><h2>Update a single curriculum course</h2></summary>
-    <p class="hint">Changed prerequisites, a new elective, a different credit count? Add or fix one course here. Enter an existing code to update it.</p>
-    <div class="manual-grid">
-      <label>Code<input type="text" id="mc-code" placeholder="COSC 121" /></label>
-      <label class="wide">Course name<input type="text" id="mc-name" /></label>
-      <label>Category<input type="text" id="mc-category" list="mc-category-list" placeholder="e.g. Major Electives" /></label>
-      <datalist id="mc-category-list"></datalist>
-      <label>Credits<input type="number" id="mc-credits" value="3" min="0" step="0.5" /></label>
-      <label class="wide">Prerequisites (comma-separated codes)<input type="text" id="mc-prereqs" placeholder="COSC 111, MATH 177" /></label>
-      <label class="opt-check"><input type="checkbox" id="mc-required" /> Required for my degree</label>
-    </div>
-    <button id="mc-save-btn">Save course</button>
-    <span id="mc-status" class="hint"></span>
-  </details>
-
-  {% if not is_admin %}
-  <section class="card">
-    <h2>Managed by the admin</h2>
-    <p class="hint">The term's course offerings, the academic calendar (term dates and important dates) and the sample course plans are published by the admin account, so everyone sees the same data. You can pick a sample plan and edit <em>your own</em> curriculum on the <a href="{{ url_for('curriculum') }}">Curriculum</a> page.</p>
-  </section>
-  {% endif %}
-
-  <div id="admin-tools" {% if not is_admin %}hidden{% endif %}>
+  <div id="admin-tools">
   <details class="card" id="demo-card">
     <summary class="card-summary"><h2>Demo student (admin)</h2></summary>
     <p class="hint">Creates a ready-made account for showing the app to someone: Artificial Intelligence major, two years of completed courses with grades, a wishlist for this term and two pinned schedules, so every page is filled in. Each press makes a new account; the password is shown once.</p>
@@ -205,6 +175,6 @@
   </div>
 {% endblock %}
 {% block scripts %}
-<script src="{{ url_for('static', filename='import.js') }}"></script>
+<script src="{{ url_for('static', filename='admin.js') }}"></script>
 <script src="{{ url_for('static', filename='programs_admin.js') }}"></script>
 {% endblock %}

@@ -585,12 +585,31 @@ function fmtShortDate(iso) {
   return new Date(iso + "T00:00:00").toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
 }
 
+function renderImportantDates(cal) {
+  const box = document.getElementById("important-dates");
+  if (!box) return;
+  const events = (cal.events || []).slice();
+  const have = new Set(events.map((e) => `${e.start}|${e.end || e.start}`));
+  (cal.breaks || []).forEach((b) => { if (!have.has(`${b.start}|${b.end || b.start}`)) events.push({ name: b.name, start: b.start, end: b.end, kind: "break" }); });
+  box.hidden = !events.length;
+  if (!events.length) return;
+  events.sort((a, b) => a.start.localeCompare(b.start));
+  const noClass = (e) => e.kind === "holiday" || e.kind === "break" || /campus closed|no class/i.test(e.name || "");
+  const fmt = (iso) => new Date(iso + "T00:00:00").toLocaleDateString(undefined, { day: "numeric", month: "short" });
+  document.getElementById("important-dates-list").innerHTML = events.map((e) => {
+    const when = e.end && e.end !== e.start ? `${fmt(e.start)} – ${fmt(e.end)}` : fmt(e.start);
+    const tag = noClass(e) ? ' <span class="status-chip st-muted">no classes</span>' : e.kind === "deadline" ? ' <span class="status-chip st-blocked">deadline</span>' : e.kind === "exam" ? ' <span class="status-chip st-progress">exams</span>' : "";
+    return `<li><strong>${escapeHtml(when)}</strong> · ${escapeHtml(e.name)}${tag}</li>`;
+  }).join("");
+}
+
 async function loadCalendarNote() {
   const el = document.getElementById("calendar-note");
   if (!el) return;
   try {
     const data = await (await fetch("/api/academic-calendar")).json();
     const cal = data.calendar || {};
+    renderImportantDates(cal);
     if (cal.start && cal.end) {
       const brk = (cal.breaks || []).filter((b) => b.start <= cal.end && (b.end || b.start) >= cal.start).length;
       el.innerHTML = `Calendar export repeats each class weekly from <strong>${fmtShortDate(cal.start)}</strong> to <strong>${fmtShortDate(cal.end)}</strong>` +
@@ -598,7 +617,7 @@ async function loadCalendarNote() {
         `To import in Google Calendar: Settings → Import &amp; export.`;
     } else {
       el.innerHTML = `No academic calendar set yet, so exported classes repeat for 15 weeks from the next class day. ` +
-        `${data.can_edit ? 'Set the term dates on the <a href="/import">Import page</a>.' : "The admin can set the term dates on the Import page."}`;
+        `${data.can_edit ? 'Set the term dates on the <a href="/admin">Admin page</a>.' : "The admin can set the term dates on the Admin page."}`;
     }
   } catch (e) { el.textContent = ""; }
 }

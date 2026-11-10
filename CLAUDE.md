@@ -55,7 +55,7 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 - Dashboard (`progress.py`, `/` is now the dashboard; the old Plan page moved to `/plan`).
 - Design pass: nav with mobile Menu, contrast-checked colour tokens (course colours >= 4.5:1 with white),
   shared timetable renderer in `static/common.js` (`timetableHtml`) used by Plan and Compare, tables scroll
-  inside `.table-wrap`, print CSS for the Plan page. Curriculum page: collapsible sample-plan/completed cards, search + status filter, sticky Save bar, cards instead of a table on phones; category groups collapse like the SIS degree audit. Import page: secondary cards are collapsed `<details>`. No dark mode (skipped on purpose).
+  inside `.table-wrap`, print CSS for the Plan page. Curriculum page: collapsible sample-plan/completed cards, search + status filter, sticky Save bar, cards instead of a table on phones; category groups collapse like the SIS degree audit. Admin page (was Import): secondary cards are collapsed `<details>`. No dark mode (skipped on purpose).
 - AI tools added (read-only): get_gpa, gpa_what_if, gpa_target, get_roadmap, get_progress. No tool writes grades.
   Tested with fake models only.
 - Tests: `python3 -m unittest` (pure logic + Flask test-client API tests in a temp dir; API tests skip if
@@ -94,7 +94,7 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
   ("ENGL 101" + "(ENR)"); unmatched courses get added to the catalog under "From grade report". Preview compares the
   report's Cumulative GPA with the app's. Real reports go in `private/` (git-ignored); tests use made-up positions.
 - Curriculum "mark everything up to here" (`progress.courses_through`, `POST /api/curriculum/through`) and the admin
-  demo student (`demo.py`, `POST /api/admin/demo-student`, button on the Import page).
+  demo student (`demo.py`, `POST /api/admin/demo-student`, button on the Admin page).
 - Registration-day sheet (`sheet.py`, `/registration-sheet`, `GET /api/registration-sheet`); academic calendar gained an
   optional `registration_date`.
 - Advisor summary (`/advisor-summary`, `GET /api/advisor-summary`): composed from existing payloads (progress, GPA, roadmap, active plan).
@@ -112,7 +112,7 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - Course codes: computer science is `COSC` (never `CSCI`). The registrar sheet cross-lists some as "COSC 111/CSCI 111"; `excel_importer.normalize_code_prefix` maps CSCI -> COSC and keeps one row. HIST 131 is "World History from 1500 CE" (11 sample plans had a wrongly parsed title "Behavioral and Social Sciences", fixed). Students who already copied a plan keep their old titles until they press "Use this plan" again.
 
-- The Import page has an optional, collapsed "Add prerequisites from Rean" card (paste a Rean curriculum table; `/api/curriculum/parse`, `curriculum_parser.py`). It is for prerequisites the degree audit lacks; courses it adds that are not on the audit show under "Not in program structure". Decision (Nov 2026): keep the grade-report import too (its cumulative GPA is the cross-check) alongside the degree-audit import and sample plans.
+- The Curriculum page has an optional, collapsed "Add prerequisites from Rean" card (static/rean_import.js) (paste a Rean curriculum table; `/api/curriculum/parse`, `curriculum_parser.py`). It is for prerequisites the degree audit lacks; courses it adds that are not on the audit show under "Not in program structure". Decision (Nov 2026): keep the grade-report import too (its cumulative GPA is the cross-check) alongside the degree-audit import and sample plans.
 
 - Degree audit import (`degree_audit.py`, card on the Curriculum page, `static/audit_import.js`, `POST /api/degree-audit/preview|apply`):
   reads AUPP's SIS "Official Degree Audit" PDF by word positions (like the grade report; name/ID/date of birth never read). Columns
@@ -139,13 +139,15 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - Courses outside the degree audit (e.g. ICT 340) can still be taken as electives: `/api/courses` marks them `outside_ok` / `outside_blocked` using the registrar sheet's prerequisites (`_sheet_prereqs`, `_sheet_missing`; in-progress counts as done), and the wishlist status uses the same check. The sheet's prerequisites are otherwise display-only.
 
-- Calendar export: one repeating weekly VEVENT per class (RRULE, EXDATE for breaks, stable UIDs so re-importing updates instead of duplicating) plus the academic calendar's `events` (holiday / deadline / exam / term / other, edited in the Import page calendar card, seeded from the Spring 2027 PDF) as all-day free-time events; deadlines get two VALARM reminders. POST body flags: `include_calendar` (default true), `dates_only`. No direct Google/Outlook add (would need OAuth); the Plan page has import instructions.
+- Calendar export: one repeating weekly VEVENT per class (RRULE, EXDATE for breaks, stable UIDs so re-importing updates instead of duplicating) plus the academic calendar's `events` (holiday / deadline / exam / term / other, edited in the Admin page calendar card, seeded from the Spring 2027 PDF) as all-day free-time events; deadlines get two VALARM reminders. POST body flags: `include_calendar` (default true), `dates_only`. No direct Google/Outlook add (would need OAuth); the Plan page has import instructions.
 
 - Retakes (Nov 2026): a completed / in-progress course can still be wishlisted (the planner schedules it). Browse shows it with an "In progress now" / "Completed" chip, the button says "+ Add (retake)", the wishlist panel says "retake: taking it now / already completed", and the AI warns. Browse has a Status select (recommended / can take / in progress / completed / blocked / not needed) that overrides the hide checkboxes. Grade report import also remembers RG courses that are not in the curriculum yet (`grade_report.add_in_progress`, added under "From grade report").
 
 - Courses page has a Cards / Table toggle (remembered in localStorage `browse-view`, default Cards): a card per course listing all its sections (days, time, instructor, seats) with one wishlist button; the Table is one row per section. Filters apply to sections first, then cards group what is left; cards paginate 12 courses per page.
 
-- Academic calendar (Nov 2026): the Import page has ONE list, "Important dates" (no separate breaks list). A date means NO CLASSES if its type is Holiday or Break, or its name says "campus closed" / "no class" (`_is_no_class`); class meetings are skipped on those days in the .ics (EXDATE). `breaks` in the file is derived from those dates for older readers; older callers that send only `breaks` still work.
+- Academic calendar (Nov 2026): the Admin page has ONE list, "Important dates" (no separate breaks list). A date means NO CLASSES if its type is Holiday or Break, or its name says "campus closed" / "no class" (`_is_no_class`); class meetings are skipped on those days in the .ics (EXDATE). `breaks` in the file is derived from those dates for older readers; older callers that send only `breaks` still work.
+
+- No Import tab (Nov 2026): `/admin` (templates/admin.html, static/admin.js) is admin-only and the nav shows "Admin" only to the admin; non-admins are redirected, `/import` redirects too. Students edit things on the page they affect (Curriculum: sample plan, degree audit, grade report, Rean, Edit / + Add a course; Courses; GPA). The Plan page lists the important dates read-only.
 
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.

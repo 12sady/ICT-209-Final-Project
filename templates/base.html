@@ -24,7 +24,7 @@
         <a href="{{ url_for('compare_page') }}" {% if active=='compare' %}aria-current="page"{% endif %}>Compare</a>
         <a href="{{ url_for('roadmap_page') }}" {% if active=='roadmap' %}aria-current="page"{% endif %}>Roadmap</a>
         <a href="{{ url_for('gpa_page') }}" {% if active=='gpa' %}aria-current="page"{% endif %}>GPA</a>
-        <a href="{{ url_for('import_page') }}" {% if active=='import' %}aria-current="page"{% endif %}>Import</a>
+        {% if is_admin %}<a href="{{ url_for('admin_page') }}" {% if active=='admin' %}aria-current="page"{% endif %}>Admin</a>{% endif %}
       </div>
       {% if current_username %}
       {% set initial = current_username[:1]|upper %}

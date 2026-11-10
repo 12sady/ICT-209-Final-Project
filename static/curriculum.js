@@ -462,7 +462,7 @@ async function loadPrograms() {
   });
   if (data.current) select.value = data.current;
   if (!programList.length) {
-    document.getElementById("plan-hint").textContent = "No sample plans have been published yet. The admin can add them on the Import page.";
+    document.getElementById("plan-hint").textContent = "No sample plans have been published yet. The admin can add them on the Admin page.";
   }
   await showPlanPreview();
 }

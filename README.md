@@ -23,7 +23,7 @@ python3 app.py
 Open http://127.0.0.1:5050. Debug mode (auto-reload) is off by default; turn it on with
 `FLASK_DEBUG=1 python3 app.py`, and change the port with `PORT=5051 python3 app.py`. There's sample data pre-loaded so the app
 isn't empty on first run — replace it with your real courses via the
-**Import Courses** and **Curriculum** pages.
+**Admin** page (this term's courses and calendar, admin account only) and the **Curriculum** page (your own curriculum).
 
 (Port 5050, not the more usual 5000 — on macOS Monterey and later, 5000 is
 taken by AirPlay Receiver and you'll get a confusing "403 access denied"
@@ -42,14 +42,14 @@ python3 scheduler.py
 - **Curriculum** (`/curriculum`): pick your major's sample plan, then use **Mark everything up to here as
   completed** to tick every course up to a chosen sample-plan semester in one go (you confirm first; nothing
   is saved until Save curriculum). Courses outside the sample plan's order are never touched.
-- **Demo student** (admin only, Import page → "Demo student"): one press creates a filled-in account
+- **Demo student** (admin only, Admin page → "Demo student"): one press creates a filled-in account
   (AI major, two years completed with grades, a wishlist for this term, two pinned plans, one active) so
   every page has data. The random password is shown once. Each press makes a new `demo_student<N>` account.
   Grades are generated deterministically for the demo; they are not real.
 - **Registration-day sheet** (`/registration-sheet`, also linked from the Plan page): a one-page printout of your
   *active plan*: tick-box per course, section number, days/time, room, instructor, seats, the backup
   sections that still fit around the rest of the plan, and a small weekly timetable. If the admin fills in
-  **Registration opens** under Academic calendar (Import page), it shows a countdown. Use Print / Save as PDF.
+  **Registration opens** under Academic calendar (Admin page), it shows a countdown. Use Print / Save as PDF.
 - **Advisor summary** (`/advisor-summary`, linked from the Dashboard): one printable page for an academic advisor with
   credits done/left by category, cumulative and per-semester GPA, the roadmap to graduation (with its
   projection caveat), this term's active plan, and blank lines for questions. Print / Save as PDF uses your
@@ -237,7 +237,7 @@ nothing is saved to disk until you click **Save curriculum** at the
 bottom of the page. Multiple pasted tables (e.g. a core block and an
 electives block copied separately) are handled fine in one paste.
 
-**Import Courses** — upload the term's course offerings as an Excel file.
+**Admin** (admin account only; the nav shows it only to the admin) — upload the term's course offerings as an Excel file.
 Works with *any* column layout: it reads the header row, guesses which
 column is which (course code, section, days, times or a combined
 "meeting time" column, credits, instructor, seats), and lets you fix the
@@ -256,7 +256,7 @@ parsed.
 
 ## Adapting this to a real term
 
-1. **Import Courses**: upload your registrar's actual Excel sheet. Check
+1. **Admin**: upload your registrar's actual Excel sheet. Check
    the column mapping (it auto-guesses, but verify), preview the parsed
    rows, and confirm the import. If a row shows up as an error, that's
    usually a day or time format the importer hasn't seen yet — worth

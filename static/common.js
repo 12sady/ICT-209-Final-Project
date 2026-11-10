@@ -31,7 +31,7 @@ function escapeHtml(str) {
       return;
     }
     if (!s.sections && !s.progress) {
-      el.innerHTML = `<span class="empty">No data loaded yet — head to <a href="/import" style="color:inherit;font-weight:700;">Import</a> to bring in this term's courses, and pick a sample plan on the Curriculum page.</span>`;
+      el.innerHTML = `<span class="empty">No data loaded yet — pick a sample plan or import your degree audit on the <a href="/curriculum" style="color:inherit;font-weight:700;">Curriculum</a> page. The admin loads this term's courses.</span>`;
       return;
     }
     const chip = (icon, html, cls) => `<span class="status-chip${cls ? " " + cls : ""}"><span aria-hidden="true">${icon}</span> ${html}</span>`;

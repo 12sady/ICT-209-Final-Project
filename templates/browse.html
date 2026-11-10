@@ -92,7 +92,7 @@
       </div>
       <div id="course-empty" class="empty-state" hidden>
         <p>No courses loaded yet.</p>
-        <p>Head to <a href="/import">Import</a> to bring in this term's offerings.</p>
+        <p>{% if is_admin %}Load this term's offerings on the <a href="/admin">Admin</a> page.{% else %}The admin loads this term's offerings. Check back soon.{% endif %}</p>
       </div>
       <div id="course-cards" class="course-card-grid"></div>
       <div class="table-wrap" id="course-table-wrap"><table class="course-table" id="course-table">

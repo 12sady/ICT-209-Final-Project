@@ -21,13 +21,21 @@
 
   <details class="card" id="audit-card">
     <summary class="card-summary"><h2>Import my degree audit (PDF)</h2></summary>
-    <p class="hint">Your degree audit from SIS is private and differs per student, so this is the accurate way to get <em>your</em> curriculum: your categories (Major, Major Electives, General Education, Core/Major), the credits each needs, and which courses you have passed, with semester and grade. It replaces the sample plan. In SIS, open <strong>Degree Audit</strong>, save it as a PDF, upload it here, check what the app found, then confirm. The PDF itself is never stored, and your name, ID and date of birth are never read. The audit has no prerequisites: load your sample plan first, or add them from Rean (optional, on the <a href="{{ url_for('import_page') }}">Import</a> page). Save any unsaved changes on this page first: importing reloads it.</p>
+    <p class="hint">Your degree audit from SIS is private and differs per student, so this is the accurate way to get <em>your</em> curriculum: your categories (Major, Major Electives, General Education, Core/Major), the credits each needs, and which courses you have passed, with semester and grade. It replaces the sample plan. In SIS, open <strong>Degree Audit</strong>, save it as a PDF, upload it here, check what the app found, then confirm. The PDF itself is never stored, and your name, ID and date of birth are never read. The audit has no prerequisites: load your sample plan first, or add them from Rean (optional, the card below). Save any unsaved changes on this page first: importing reloads it.</p>
     <div class="plan-pick">
       <input type="file" id="da-file" accept="application/pdf,.pdf" aria-label="Degree audit PDF" />
       <button type="button" id="da-read-btn" disabled>Read audit</button>
       <span id="da-status" class="hint" role="status"></span>
     </div>
     <div id="da-preview"></div>
+  </details>
+
+  <details class="card" id="rean-card">
+    <summary class="card-summary"><h2>Optional: add prerequisites from Rean</h2></summary>
+    <p class="hint">Your degree audit doesn't list prerequisites. If you want them, copy the curriculum table from Rean (or similar) and paste it below: it reads each course's category, credits and prerequisites. It only previews here; nothing changes until you click Apply, and courses already in your curriculum are updated, not duplicated. If you use a sample plan, prerequisites are already included. Save any unsaved changes on this page first: applying reloads it.</p>
+    <textarea id="curr-paste-input" rows="6" placeholder="Course Code&#9;Course Name&#9;CATEGORY&#9;Sub-Category&#9;Credits&#9;Course requisites&#10;COSC 121&#9;Computer Science A&#9;Major&#9;&#9;3&#9;-"></textarea>
+    <button id="curr-parse-btn">Parse</button>
+    <div id="curr-parse-preview"></div>
   </details>
 
   <details class="card" id="grade-report-card">
@@ -153,4 +161,5 @@
 <script src="{{ url_for('static', filename='curriculum.js') }}"></script>
 <script src="{{ url_for('static', filename='grade_import.js') }}"></script>
 <script src="{{ url_for('static', filename='audit_import.js') }}"></script>
+<script src="{{ url_for('static', filename='rean_import.js') }}"></script>
 {% endblock %}

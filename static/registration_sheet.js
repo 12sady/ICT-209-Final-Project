@@ -13,7 +13,7 @@ function render(d) {
   } else {
     cd.hidden = false;
     cd.className = "countdown countdown-none";
-    cd.textContent = "No registration date is set. The admin can add one under Academic calendar on the Import page and a countdown will appear here.";
+    cd.textContent = "No registration date is set. The admin can add one under Academic calendar on the Admin page and a countdown will appear here.";
     $("sheet-countdown-print").textContent = "";
   }
 

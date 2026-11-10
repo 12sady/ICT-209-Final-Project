@@ -1,4 +1,4 @@
-// Admin editor for the shared sample course plans (Import page).
+// Admin editor for the shared sample course plans (Admin page).
 (function () {
   const $ = (id) => document.getElementById(id);
   const CATS = ["General Education", "Major", "Elective", "Dual Degree"];

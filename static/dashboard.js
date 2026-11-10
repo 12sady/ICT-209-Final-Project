@@ -15,7 +15,8 @@ function setupSteps(d) {
   return [
     [d.has_curriculum, "Choose your program's sample plan", "/curriculum", "Curriculum", "Loads your courses and prerequisites."],
     [d.completed_count > 0, "Mark the courses you've already completed", "/curriculum", "Curriculum", "So the app knows what's left."],
-    [d.offerings_count > 0, "Check this term's courses are loaded", "/import", "Import", "The admin account imports the registrar's sheet."],
+    [d.offerings_count > 0, "Check this term's courses are loaded", d.is_admin ? "/admin" : "/browse", d.is_admin ? "Admin" : "Courses",
+      d.is_admin ? "Upload the registrar's sheet on the Admin page." : "The admin loads the registrar's sheet. Ask them if the list is empty."],
     [d.wishlist_count > 0, "Add courses you want to take", "/browse", "Browse & Wishlist", "Your schedule is built from your wishlist."],
   ];
 }

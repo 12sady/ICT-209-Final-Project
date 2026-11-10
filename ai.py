@@ -125,11 +125,11 @@ Rules
 
 
 HOWTO_GUIDE = """How to use the app (the student cannot upload files or edit courses through this chat, so TELL them how, step by step, naming the exact page and button; no tool call needed)
-Pages in the top menu: Dashboard, Curriculum, Courses, Plan, Compare, Roadmap, GPA, Import. On a phone, tap Menu first.
+Pages in the top menu: Dashboard, Curriculum, Courses, Plan, Compare, Roadmap, GPA (and Admin, only for the admin account). On a phone, tap Menu first. Everything a student edits lives on the page it affects; there is no Import page.
 - Get a curriculum: Curriculum page > "Sample course plan" card > choose your program > "Use this plan". Or import your own degree audit (below).
 - Import the degree audit (best: it gives your real categories, courses, semesters and grades): in SIS open Degree Audit and save it as a PDF. Then Curriculum page > "Import my degree audit (PDF)" > Choose file > "Read audit". Check the table. The shaded "-" courses are ones SIS lists but does not count: each has a dropdown with a suggested category (from the sample plan), change it if the school counts it elsewhere. Then "Replace my curriculum with this audit" and confirm. Tip: load the sample plan first if you want prerequisites kept.
 - Import the grade report (completed courses, grades and a GPA check): in SIS open Grade Report and save as PDF. Curriculum page (load a curriculum first) > "Import my grade report (PDF)" > Choose file > "Read report". Untick any course you don't want, then "Import ticked courses" and confirm. It also compares the report's cumulative GPA with the app's.
-- Edit ONE course: Curriculum page > find it (search box above the list, or open its category group) > click "Edit" on its row > change the name, category, credits, prerequisites or plan year/term > "Apply" > then press "Save curriculum" at the bottom (changes are not saved until then). To add a missing course: "+ Add a course". To delete: "Remove" on its row (click twice), then Save curriculum. Import page > "Update a single curriculum course" does the same by typing a course code.
+- Edit ONE course: Curriculum page > find it (search box above the list, or open its category group) > click "Edit" on its row > change the name, category, credits, prerequisites or plan year/term > "Apply" > then press "Save curriculum" at the bottom (changes are not saved until then). To add a missing course: "+ Add a course". To delete: "Remove" on its row (click twice), then Save curriculum.
 - Mark a course in progress (you are taking it this term): Curriculum page > set its status to In progress. The degree audit marks its RG courses this way by itself. In-progress courses count as done for prerequisites, the roadmap and what you can take next, but not for credits or GPA.
 - Courses page layout: the Cards / Table switch above the list. Cards show one card per course with all its sections inside; Table has one row per section.
 - Find what to take next: Courses page > tick "Recommended for me only" (roadmap's next term first, then required courses, then electives). Each course shows a chip: Completed, In progress now, Needs <prerequisite>, Not needed (category complete), Can take now or Recommended.
@@ -137,9 +137,9 @@ Pages in the top menu: Dashboard, Curriculum, Courses, Plan, Compare, Roadmap, G
 - Mark a course completed: Curriculum page > set its status to Completed, pick the semester, then Save curriculum. To mark everything up to a semester: "Already finished some semesters?" > pick one > "Mark everything up to here as completed" > Save curriculum.
 - Enter or fix a grade: GPA page > pick the grade next to the course (it saves by itself). The GPA page also has what-if tools.
 - A course SIS doesn't count but the school does: Curriculum page > Program structure card > "Does the school count a course that SIS left out?" > pick the course and the category > Move.
-- Prerequisites from Rean (optional): Import page > "Optional: add prerequisites from Rean" > paste the table > Parse > Apply, then Save curriculum.
+- Prerequisites from Rean (optional): Curriculum page > "Optional: add prerequisites from Rean" card > paste the table > Parse > Apply.
 - Plan a term: Courses page > add courses to your wishlist (or ask me to) > Plan page shows clash-free schedules ranked best first > "Make this my active plan". Compare lets you pin up to 3 plans side by side. The Plan page exports a calendar (.ics) and there is a Registration-day sheet and an Advisor summary (print to PDF) from the Dashboard.
-- Only the admin account (the first one created) can upload course offerings, the academic calendar and sample plans (Import page). Everyone else sees them read-only.
+- Only the admin account (the first one created) can upload course offerings, the academic calendar and sample plans (the Admin page, which only the admin sees). Everyone else can read the important dates on the Plan page.
 If you are not sure a button exists, say so and point to the page instead of inventing one.
 """
 

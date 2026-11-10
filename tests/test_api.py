@@ -338,6 +338,32 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(again["C 300"]["status"], "blocked")
         self.assertEqual(again["C 300"]["missing_prereqs"], ["B 200"])
 
+    def test_admin_page_is_admin_only_and_import_tab_is_gone(self):
+        ok = self.admin.get("/admin")
+        self.assertEqual(ok.status_code, 200)
+        self.assertIn(b"Admin", ok.data)
+        self.assertIn(b'id="cal-card"', ok.data)                                   # calendar / important dates editor lives here
+        self.assertNotIn(b"curr-paste-input", ok.data)                             # the Rean box moved to the Curriculum page
+        self.assertNotIn(b"Update a single curriculum course", ok.data)            # redundant with Curriculum > Edit / + Add a course
+        r = self.student.get("/admin")
+        self.assertEqual(r.status_code, 302)                                        # students never get the admin page
+        self.assertTrue(r.headers["Location"].endswith("/"))
+        self.assertEqual(self.admin.get("/import").headers["Location"].split("/")[-1], "admin")     # old address still works
+        self.assertTrue(self.student.get("/import").headers["Location"].endswith("/"))
+
+    def test_nav_shows_admin_only_to_the_admin(self):
+        self.assertIn(b'href="/admin"', self.admin.get("/").data)
+        self.assertNotIn(b'href="/admin"', self.student.get("/").data)
+        self.assertNotIn(b">Import<", self.student.get("/").data)
+        self.assertTrue(self.admin.get("/api/dashboard").get_json()["is_admin"])
+        self.assertFalse(self.student.get("/api/dashboard").get_json()["is_admin"])
+
+    def test_curriculum_page_has_the_rean_box_and_the_plan_page_lists_important_dates(self):
+        html = self.student.get("/curriculum").data
+        self.assertIn(b"curr-paste-input", html)
+        self.assertIn(b"rean_import.js", html)
+        self.assertIn(b'id="important-dates"', self.student.get("/plan").data)
+
     def _user_id(self, client):
         with client.session_transaction() as sess:
             return sess["user_id"]
