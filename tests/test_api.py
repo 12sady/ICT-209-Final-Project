@@ -364,6 +364,34 @@ class ApiTests(unittest.TestCase):
         self.assertIn(b"rean_import.js", html)
         self.assertIn(b'id="important-dates"', self.student.get("/plan").data)
 
+    def test_plan_pdf_is_a_real_download(self):
+        keys = [{"code": "B 200", "section": "001"}, {"code": "E 100", "section": "001"}]
+        r = self.student.post("/api/plan/export/pdf", json={"sections": keys, "label": "2", "unmet_wishlist": ["C 300"]})
+        self.assertEqual(r.status_code, 200, r.data[:200])
+        self.assertEqual(r.mimetype, "application/pdf")
+        self.assertTrue(r.data.startswith(b"%PDF"))
+        self.assertIn("registration_plan_2.pdf", r.headers["Content-Disposition"])
+        self.assertEqual(json.loads(r.headers["X-Export-Info"])["sections"], 2)
+        # sections that are no longer offered are reported, not exported; none left -> a plain error
+        part = self.student.post("/api/plan/export/pdf", json={"sections": keys + [{"code": "GONE 999", "section": "001"}]})
+        self.assertEqual(json.loads(part.headers["X-Export-Info"])["missing"], ["GONE 999-001"])
+        none = self.student.post("/api/plan/export/pdf", json={"sections": [{"code": "GONE 999", "section": "001"}]})
+        self.assertEqual(none.status_code, 400)
+        self.assertIn("error", none.get_json())
+        self.assertEqual(self.student.post("/api/plan/export/pdf", json={}).status_code, 400)
+
+    def test_sheet_and_advisor_summary_download_as_pdf(self):
+        for url, name in (("/api/registration-sheet/pdf", "registration_day_sheet.pdf"), ("/api/advisor-summary/pdf", "advisor_summary.pdf")):
+            r = self.student.get(url)
+            self.assertEqual(r.status_code, 200, (url, r.data[:200]))
+            self.assertEqual(r.mimetype, "application/pdf")
+            self.assertTrue(r.data.startswith(b"%PDF"))
+            self.assertIn(name, r.headers["Content-Disposition"])
+        # an account without any curriculum still gets a readable PDF, not an error
+        fresh = self._signup("pdffresh")
+        self.assertEqual(fresh.get("/api/advisor-summary/pdf").status_code, 200)
+        self.assertEqual(fresh.get("/api/registration-sheet/pdf").status_code, 200)
+
     def _user_id(self, client):
         with client.session_transaction() as sess:
             return sess["user_id"]

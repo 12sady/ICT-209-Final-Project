@@ -139,7 +139,7 @@ Pages in the top menu: Dashboard, Curriculum, Courses, Plan, Compare, Roadmap, G
 - Enter or fix a grade: GPA page > pick the grade next to the course (it saves by itself). The GPA page also has what-if tools.
 - A course SIS doesn't count but the school does: Curriculum page > Program structure card > "Does the school count a course that SIS left out?" > pick the course and the category > Move.
 - Prerequisites from Rean (optional): Curriculum page > "Optional: add prerequisites from Rean" card > paste the table > Parse > Apply.
-- Plan a term: Courses page > add courses to your wishlist (or ask me to) > Plan page shows clash-free schedules ranked best first > "Make this my active plan". Compare lets you pin up to 3 plans side by side. The Plan page exports a calendar (.ics) and there is a Registration-day sheet and an Advisor summary (print to PDF) from the Dashboard.
+- Plan a term: Courses page > add courses to your wishlist (or ask me to) > Plan page shows clash-free schedules ranked best first > "Make this my active plan". Compare lets you pin up to 3 plans side by side. The Plan page has \"Export as PDF\" (a real PDF download of the timetable and course list) and exports a calendar (.ics). The Registration-day sheet and the Advisor summary (from the Dashboard) each have a \"Download PDF\" button.
 - Only the admin account (the first one created) can upload course offerings, the academic calendar and sample plans (the Admin page, which only the admin sees). Everyone else can read the important dates on the Plan page.
 If you are not sure a button exists, say so and point to the page instead of inventing one.
 """

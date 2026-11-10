@@ -2,4 +2,5 @@ flask
 pandas
 openpyxl
 pdfplumber
+fpdf2
 # optional, only for the paid Claude option: anthropic

@@ -153,6 +153,8 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - AI model speed (Nov 10 2026, measured with the user's key): gemini-3.6-flash was overloaded (HTTP 503) / >90 s per reply; gemini-3.1-flash-lite also 503; gemini-2.5-* are not available to this key (404); **gemini-3.5-flash-lite answered "What should I take next term?" in ~4 s**. Set AI_MODEL=gemini-3.5-flash-lite (env var; do not write keys to files). The advisor snapshot lists only courses offered this term under "Can take now".
 
+- PDF export (Nov 2026): "Export as PDF" (Plan page), the Registration-day sheet and the Advisor summary download REAL PDFs built on the server with fpdf2 (`pdf_export.py`; routes `/api/plan/export/pdf`, `/api/registration-sheet/pdf`, `/api/advisor-summary/pdf`). The old way (window.open + print dialog) is blocked in the Claude desktop app's browser pane (popups and `window.print` do not work there), so never rely on popups, confirm() or print() in the frontend. Core PDF fonts are Latin-1 only (`pdf_export._t` cleans text). The print CSS still exists for normal browsers.
+
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.
 

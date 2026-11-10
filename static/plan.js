@@ -630,81 +630,39 @@ function escapeHtml(str) {
   })[c]);
 }
 
-function buildPrintableHtml(plan, program) {
-  const rows = (plan.sections || [])
-    .map((s) => `
-      <tr>
-        <td>${escapeHtml(s.code)}</td>
-        <td>${escapeHtml(s.section || "")}</td>
-        <td>${escapeHtml(s.title || "")}</td>
-        <td>${escapeHtml((s.days || []).join(""))}</td>
-        <td>${s.start && s.end ? `${escapeHtml(s.start)}–${escapeHtml(s.end)}` : "Online / TBA"}</td>
-        <td>${escapeHtml(s.credits != null ? s.credits : "")}</td>
-        <td>${escapeHtml(s.location || "")}</td>
-        <td>${escapeHtml(s.instructor || "")}</td>
-      </tr>`)
-    .join("");
-
-  const notes = [];
-  if (plan.unmet_wishlist && plan.unmet_wishlist.length) {
-    notes.push(`<p><strong>Wishlist not in this plan:</strong> ${escapeHtml(plan.unmet_wishlist.join(", "))}</p>`);
-  }
-
-  return `<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Registration Plan ${escapeHtml(plan.label || "")}</title>
-<link rel="stylesheet" href="${location.origin}/static/style.css">
-<style>
-  body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #1a1a1a; margin: 32px; background: #fff; }
-  .tt { --row-h: 30px; margin-bottom: 20px; }
-  h1 { font-size: 20px; margin: 0 0 4px; }
-  .subtitle { color: #555; margin: 0 0 20px; font-size: 13px; }
-  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-  th, td { border: 1px solid #ccc; padding: 6px 8px; font-size: 12px; text-align: left; }
-  th { background: #f2f2f2; }
-  .notes p { font-size: 12px; margin: 4px 0; }
-  .no-print { margin-top: 24px; }
-  .no-print button {
-    font-size: 14px; padding: 8px 16px; cursor: pointer;
-    border: 1px solid #888; border-radius: 6px; background: #fff;
-  }
-  @media print { .no-print { display: none; } }
-</style>
-</head>
-<body>
-  <h1>Registration Plan ${escapeHtml(plan.label || "")}</h1>
-  <p class="subtitle">${escapeHtml(program || "")} · Total credits: ${escapeHtml(plan.total_credits)}</p>
-  ${timetableHtml(plan.sections, {})}
-  <table>
-    <thead><tr><th>Code</th><th>Sec</th><th>Title</th><th>Days</th><th>Time</th><th>Credits</th><th>Room</th><th>Instructor</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table>
-  <div class="notes">${notes.join("")}</div>
-  <div class="no-print">
-    <button onclick="window.print()">Print / Save as PDF</button>
-  </div>
-</body>
-</html>`;
-}
-
-function printActivePlan() {
+// "Export as PDF": the server builds a real PDF and it downloads like any file. (The old way opened a pop-up
+// window and used the print dialog, which embedded browsers such as the Claude app's block.)
+async function printActivePlan() {
   const statusEl = document.getElementById("export-status");
   if (!planData || !planData.plans.length) {
     statusEl.textContent = "No plan to export yet.";
     return;
   }
   const plan = planData.plans[activeIndex];
-  const html = buildPrintableHtml(plan, planData.program);
-  const win = window.open("", "_blank");
-  if (!win) {
-    statusEl.textContent = "Your browser blocked the popup — allow popups for this page and try again.";
-    return;
+  statusEl.textContent = "Building the PDF…";
+  try {
+    const res = await fetch("/api/plan/export/pdf", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sections: keysOfPlan(plan), label: plan.label, unmet_wishlist: plan.unmet_wishlist || [] }),
+    });
+    if (!res.ok) {
+      let detail = "";
+      try { detail = (await res.json()).error || ""; } catch (e) { /* not JSON */ }
+      statusEl.textContent = detail || `The PDF export failed (${res.status}).`;
+      return;
+    }
+    const url = URL.createObjectURL(await res.blob());
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `registration_plan_${plan.label}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    statusEl.textContent = `Downloaded registration_plan_${plan.label}.pdf: the timetable and course list for Plan ${plan.label}.`;
+  } catch (e) {
+    statusEl.textContent = "Couldn't reach the server to build the PDF. Is the app still running?";
   }
-  win.document.write(html);
-  win.document.close();
-  statusEl.textContent = "Opened a printable page in a new tab — use its Print button (or Ctrl/Cmd+P) and choose \"Save as PDF\".";
 }
 
 async function downloadActivePlan() {

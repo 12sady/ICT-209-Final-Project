@@ -42,5 +42,5 @@ function render(d) {
   $("sheet-missing").textContent = d.plan.missing.length ? `No longer offered, left off this sheet: ${d.plan.missing.join(", ")}.` : "";
 }
 
-$("sheet-print").addEventListener("click", () => window.print());
+$("sheet-print").addEventListener("click", () => downloadServerPdf("/api/registration-sheet/pdf", "registration_day_sheet.pdf", $("sheet-pdf-status")));
 (async () => { render(await (await fetch("/api/registration-sheet")).json()); })();

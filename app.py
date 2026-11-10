@@ -46,6 +46,7 @@ import compare
 import demo
 import gpa
 import degree_audit
+import pdf_export
 import grade_report
 import programs as plans
 import progress
@@ -367,6 +368,29 @@ def api_plan_alternates():
     return jsonify({"alternates": find_alternates(sections, offerings, requirements)})
 
 
+@app.route("/api/plan/export/pdf", methods=["POST"])
+def api_plan_export_pdf():
+    """A real PDF of a plan (timetable + course table), built on the server from the CURRENT offerings, so
+    "Export as PDF" is a plain download that works everywhere (no pop-up window, no print dialog)."""
+    body = request.get_json(silent=True) or {}
+    requirements, offerings = _load_data()
+    found, missing = _resolve_sections(_clean_keys(body.get("sections")), offerings)
+    if not found:
+        return jsonify({"error": "Nothing to export: none of those sections are offered right now."}), 400
+    label = re.sub(r"[^A-Za-z0-9_-]+", "_", str(body.get("label") or "plan"))[:40] or "plan"
+    try:
+        data = pdf_export.plan_pdf(found, program=requirements.get("program") or "", term=_load_calendar().get("term") or "",
+                                   label=str(body.get("label") or "")[:20],
+                                   unmet=[str(c)[:20] for c in (body.get("unmet_wishlist") or [])][:20])
+    except Exception as e:
+        app.logger.exception("PDF export failed")
+        return jsonify({"error": f"Couldn't build the PDF: {type(e).__name__}"}), 500
+    resp = Response(data, mimetype="application/pdf")
+    resp.headers["Content-Disposition"] = f'attachment; filename="registration_plan_{label}.pdf"'
+    resp.headers["X-Export-Info"] = json.dumps({"sections": len(found), "missing": [f"{m['code']}-{m['section']}" for m in missing]})
+    return resp
+
+
 @app.route("/api/plan/export/ics", methods=["POST"])
 def api_plan_export_ics():
     body = request.get_json(silent=True) or {}
@@ -463,6 +487,32 @@ def api_registration_sheet():
 # Advisor-ready summary: progress + GPA + roadmap + active plan in one printable page.
 # Built only from numbers the app already computes elsewhere.
 # ---------------------------------------------------------------------------
+
+def _pdf_download(data, filename):
+    resp = Response(data, mimetype="application/pdf")
+    resp.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return resp
+
+
+@app.route("/api/registration-sheet/pdf")
+def api_registration_sheet_pdf():
+    """The registration-day sheet as a real PDF download (same numbers as the page)."""
+    try:
+        return _pdf_download(pdf_export.sheet_pdf(api_registration_sheet().get_json()), "registration_day_sheet.pdf")
+    except Exception as e:
+        app.logger.exception("sheet PDF failed")
+        return jsonify({"error": f"Couldn't build the PDF: {type(e).__name__}"}), 500
+
+
+@app.route("/api/advisor-summary/pdf")
+def api_advisor_summary_pdf():
+    """The advisor summary as a real PDF download (same numbers as the page)."""
+    try:
+        return _pdf_download(pdf_export.advisor_pdf(api_advisor_summary().get_json()), "advisor_summary.pdf")
+    except Exception as e:
+        app.logger.exception("advisor summary PDF failed")
+        return jsonify({"error": f"Couldn't build the PDF: {type(e).__name__}"}), 500
+
 
 @app.route("/api/advisor-summary")
 def api_advisor_summary():

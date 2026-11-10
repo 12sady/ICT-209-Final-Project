@@ -49,10 +49,10 @@ python3 scheduler.py
 - **Registration-day sheet** (`/registration-sheet`, also linked from the Plan page): a one-page printout of your
   *active plan*: tick-box per course, section number, days/time, room, instructor, seats, the backup
   sections that still fit around the rest of the plan, and a small weekly timetable. If the admin fills in
-  **Registration opens** under Academic calendar (Admin page), it shows a countdown. Use Print / Save as PDF.
+  **Registration opens** under Academic calendar (Admin page), it shows a countdown. Press Download PDF (a real PDF file, built by the app).
 - **Advisor summary** (`/advisor-summary`, linked from the Dashboard): one printable page for an academic advisor with
   credits done/left by category, cumulative and per-semester GPA, the roadmap to graduation (with its
-  projection caveat), this term's active plan, and blank lines for questions. Print / Save as PDF uses your
+  projection caveat), this term's active plan, and blank lines for questions. Download PDF gives you a real PDF file, and the page also prints with your
   browser's print dialog, so nothing extra is installed.
 - **Dashboard** (`/`): degree progress ring (credits done / left), progress by category,
   current GPA, this term's planned credits, estimated graduation term (from the

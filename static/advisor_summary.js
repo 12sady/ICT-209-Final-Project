@@ -45,5 +45,5 @@ function render(d) {
     : `<tbody><tr><td class="sub">No active plan chosen yet (choose one on the Plan page).</td></tr></tbody>`;
 }
 
-$("adv-print").addEventListener("click", () => window.print());
+$("adv-print").addEventListener("click", () => downloadServerPdf("/api/advisor-summary/pdf", "advisor_summary.pdf", $("adv-pdf-status")));
 (async () => { render(await (await fetch("/api/advisor-summary")).json()); })();

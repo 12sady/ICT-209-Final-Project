@@ -148,6 +148,30 @@ function describeIcsExport(info) {
   return msg;
 }
 
+// Download a PDF the server builds (works in every browser, unlike pop-up print windows).
+async function downloadServerPdf(url, filename, statusEl) {
+  if (statusEl) statusEl.textContent = "Building the PDF…";
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      let detail = "";
+      try { detail = (await res.json()).error || ""; } catch (e) { /* not JSON */ }
+      if (statusEl) statusEl.textContent = detail || `The PDF export failed (${res.status}).`;
+      return false;
+    }
+    const href = URL.createObjectURL(await res.blob());
+    const a = document.createElement("a");
+    a.href = href; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(href), 2000);
+    if (statusEl) statusEl.textContent = `Downloaded ${filename}.`;
+    return true;
+  } catch (e) {
+    if (statusEl) statusEl.textContent = "Couldn't reach the server to build the PDF. Is the app still running?";
+    return false;
+  }
+}
+
 async function downloadPlanIcs(plan, label) {
   let res;
   try {
