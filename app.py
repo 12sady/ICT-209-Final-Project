@@ -1910,7 +1910,7 @@ def _advisor_context():
                          + "; ".join(f"{r['category']} {r['done']:g}/{r['total']:g}" for r in p["rows"]))
             left = [c for c in requirements.get("required_remaining", []) if c not in set(requirements.get("in_progress", []))]
             lines.append(f"Required courses left ({len(left)}): " + (", ".join(left[:20]) + (" ..." if len(left) > 20 else "") or "none"))
-            lines.append("Can take now: " + (", ".join(c["code"] for c in d["available"][:10]) or "none"))
+            lines.append("Can take now (offered this term): " + (", ".join(c["code"] for c in d["available"] if c.get("offered"))[:400] or "none"))
             lines.append(f"Estimated graduation: {d['graduation']['term'] or 'unknown'}; GPA: "
                          f"{d['gpa']['value'] if d['gpa']['value'] is not None else 'no grades yet'}; "
                          f"planned credits this term: {d['planned']['credits']:g}")

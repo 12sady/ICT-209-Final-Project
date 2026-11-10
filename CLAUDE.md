@@ -151,6 +151,8 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - Choosing between many plans (Nov 2026): the Plan page has a "Recommended plans" panel (top 3 or 5, each best at something different: best fit, fewest days, fewest gaps, sleep in, earliest finish...) and filters (free days, first class no earlier than, last class ends by, days on campus, waiting time, keep all wishlist courses, list size), all client-side over the planner's plans (`planMetrics`, `planMatches`, `computePicks` in plan.js; filters persist in localStorage `plan-helper`); if nothing matches it shows everything with a note. More sorts: earliest finish, shortest longest day, fewest classes before 9:00, fewest crowded sections. The AI's `get_best_plans` takes the same filters and `sort_by` (`app._choose_plans`, `_plan_metrics`; tests/test_plan_choice.py) and its prompt says to recommend 1-3 plans when there are many.
 
+- AI model speed (Nov 10 2026, measured with the user's key): gemini-3.6-flash was overloaded (HTTP 503) / >90 s per reply; gemini-3.1-flash-lite also 503; gemini-2.5-* are not available to this key (404); **gemini-3.5-flash-lite answered "What should I take next term?" in ~4 s**. Set AI_MODEL=gemini-3.5-flash-lite (env var; do not write keys to files). The advisor snapshot lists only courses offered this term under "Can take now".
+
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.
 

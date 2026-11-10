@@ -620,11 +620,11 @@ def explain_error(exc, prov_name=None, base_url=None, model=None):
                 "so shorter questions go through more easily. A local model (Ollama) has no such limit.")
     if isinstance(exc, AIOverloadedError):
         return ("The AI model is overloaded right now. This is on the service's side, not yours.",
-                "Try again in a minute. If it keeps happening, switch AI_MODEL to another model (for Gemini: gemini-3.6-flash).")
+                "Try again in a minute. If it keeps happening, switch AI_MODEL to another model (for Gemini: gemini-3.5-flash-lite is fast and was not overloaded).")
     if isinstance(exc, AITimeoutError):
         return (f"The AI didn't answer within {REQUEST_TIMEOUT} seconds.",
                 "The model is slow or busy right now. Try again, or switch AI_MODEL to a faster one "
-                "(Gemini: gemini-3.6-flash, not gemini-3.8-flash), or set AI_REASONING_EFFORT=low.")
+                "(Gemini: gemini-3.5-flash-lite answered in about 4 seconds when gemini-3.6-flash was overloaded), or set AI_REASONING_EFFORT=low.")
     if isinstance(exc, AIConnectionError):
         if "CERTIFICATE_VERIFY_FAILED" in str(exc):
             return ("Python can't verify the service's security certificate (this is not an internet or key problem).",
