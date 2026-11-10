@@ -101,7 +101,7 @@
       };
     });
     if (!picked.length) { out.textContent = "Tick at least one course."; return; }
-    if (!confirm(`Mark ${picked.length} course${picked.length === 1 ? "" : "s"} completed and save their grades?`)) return;
+    if (!(await askConfirm(`Mark ${picked.length} course${picked.length === 1 ? "" : "s"} completed and save their grades?`, "Import"))) return;
     out.textContent = "Saving…";
     const res = await fetch("/api/grade-report/apply", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ courses: picked }),

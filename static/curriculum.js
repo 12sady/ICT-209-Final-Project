@@ -492,9 +492,9 @@ document.getElementById("plan-select").addEventListener("change", showPlanPrevie
 document.getElementById("plan-use-btn").addEventListener("click", async () => {
   if (!selectedProgram) return;
   const status = document.getElementById("plan-status");
-  if (state.catalog.length && !confirm(
+  if (state.catalog.length && !(await askConfirm(
     `Replace your current course list with the ${selectedProgram.name} sample plan?\n\n` +
-    `Your completed courses and their semesters are kept. Courses you added or edited by hand in your current list will be replaced.`)) return;
+    `Your completed courses and their semesters are kept. Courses you added or edited by hand in your current list will be replaced.`, "Use this plan"))) return;
   status.textContent = "Loading…";
   const res = await fetch("/api/curriculum/from-program", {
     method: "POST",
@@ -626,7 +626,7 @@ document.getElementById("mt-btn").addEventListener("click", async () => {
   const fresh = data.codes.filter((c) => inPage.has(c) && !state.completed.includes(c));
   if (!fresh.length) { status.textContent = `Nothing new: everything up to Year ${year} · ${term} is already marked completed.`; return; }
   const credits = fresh.reduce((a, c) => a + creditsOf(c), 0);
-  if (!confirm(`Mark ${fresh.length} course${fresh.length === 1 ? "" : "s"} (${credits} credits) as completed, everything in the sample plan up to Year ${year} · ${term}?\n\nCourses you already completed stay as they are. You can undo any of them in the table, and nothing is saved until you press Save curriculum.`)) return;
+  if (!(await askConfirm(`Mark ${fresh.length} course${fresh.length === 1 ? "" : "s"} (${credits} credits) as completed, everything in the sample plan up to Year ${year} · ${term}?\n\nCourses you already completed stay as they are. You can undo any of them in the table, and nothing is saved until you press Save curriculum.`, "Mark completed"))) return;
   state.completed.push(...fresh);
   renderAll();
   MS_STATUS(`Marked ${fresh.length} course${fresh.length === 1 ? "" : "s"} completed. Pick their semesters if you like, then press Save curriculum.`);

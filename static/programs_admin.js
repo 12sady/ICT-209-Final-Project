@@ -156,7 +156,7 @@
 
   $("pe-del-btn").addEventListener("click", async () => {
     if (!current) return;
-    if (!confirm(`Delete the "${current.name}" plan? Students who already started from it keep their own copy.`)) return;
+    if (!(await askConfirm(`Delete the "${current.name}" plan? Students who already started from it keep their own copy.`, "Delete plan"))) return;
     const res = await fetch(`/api/programs/${encodeURIComponent(current.id)}`, { method: "DELETE" });
     if (res.ok) { current = null; await loadList(""); $("pe-status").textContent = "Deleted."; }
   });

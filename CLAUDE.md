@@ -131,6 +131,8 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
   `structure.categories`: a category that lists fewer credits than it needs counts as all-required. Tested with made-up pages only
   (`tests/test_degree_audit.py`); checked once against the user's real audit in a scratch folder (totals matched: 120 / 25, GE 25 of 31).
 
+- Never use `window.confirm()` in the frontend: the Claude desktop app's browser pane blocks pop-up dialogs, so it silently returns false and the button looks dead. Use `await askConfirm(message, okLabel)` from `static/common.js` (in-page dialog, Esc/backdrop cancel).
+
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.
 

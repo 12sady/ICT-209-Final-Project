@@ -99,7 +99,7 @@
 
   async function apply() {
     const out = document.getElementById("da-apply-status");
-    if (!confirm("Replace your curriculum with the one from this audit? Your passed courses, semesters and grades come from the audit.")) return;
+    if (!(await askConfirm("Replace your curriculum with the one from this audit? Your passed courses, semesters and grades come from the audit.", "Replace my curriculum"))) return;
     out.textContent = "Saving…";
     const fd = new FormData();
     fd.append("file", fileEl.files[0]);

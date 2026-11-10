@@ -199,3 +199,44 @@ function planKeyOf(sections) {
   document.addEventListener("click", (e) => { if (!menu.hidden && !menu.contains(e.target)) set(false); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !menu.hidden) { set(false); btn.focus(); } });
 })();
+
+
+// In-page replacement for window.confirm(). Some embedded browsers (e.g. the Claude desktop app's
+// browser pane) block pop-up dialogs, so confirm() silently answers "no" and the button seems dead.
+// Usage: if (!(await askConfirm("Are you sure?", "Yes, do it"))) return;
+window.askConfirm = function (message, okLabel) {
+  return new Promise((resolve) => {
+    const prev = document.activeElement;
+    const overlay = document.createElement("div");
+    overlay.className = "confirm-overlay";
+    overlay.innerHTML = `<div class="confirm-box" role="alertdialog" aria-modal="true" aria-label="Please confirm">
+        <p class="confirm-msg"></p>
+        <div class="confirm-actions">
+          <button type="button" class="secondary confirm-no">Cancel</button>
+          <button type="button" class="confirm-yes"></button>
+        </div></div>`;
+    overlay.querySelector(".confirm-msg").textContent = message;
+    overlay.querySelector(".confirm-yes").textContent = okLabel || "Continue";
+    const done = (answer) => {
+      document.removeEventListener("keydown", onKey, true);
+      overlay.remove();
+      if (prev && prev.focus) prev.focus();
+      resolve(answer);
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") { e.stopPropagation(); done(false); }
+      else if (e.key === "Tab") {                       // keep focus inside the dialog
+        const b = [...overlay.querySelectorAll("button")];
+        const i = b.indexOf(document.activeElement);
+        e.preventDefault();
+        b[(i + (e.shiftKey ? b.length - 1 : 1)) % b.length].focus();
+      }
+    };
+    overlay.querySelector(".confirm-no").addEventListener("click", () => done(false));
+    overlay.querySelector(".confirm-yes").addEventListener("click", () => done(true));
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) done(false); });
+    document.addEventListener("keydown", onKey, true);
+    document.body.appendChild(overlay);
+    overlay.querySelector(".confirm-yes").focus();
+  });
+};

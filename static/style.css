@@ -1255,3 +1255,12 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
 .compare-empty .hint { max-width: 460px; margin: 0 auto 16px; }
 .compare-empty-btn { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; padding: 9px 18px; border-radius: 10px; }
 .compare-empty-btn:hover { background: var(--accent-dark); }
+
+
+/* In-page confirm dialog (askConfirm in common.js) */
+.confirm-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center;
+  padding: 16px; background: rgba(15, 23, 42, 0.45); }
+.confirm-box { width: min(480px, 100%); background: #fff; border-radius: 14px; padding: 20px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35); }
+.confirm-msg { margin: 0 0 16px; white-space: pre-line; line-height: 1.5; color: #1f2937; }
+.confirm-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
