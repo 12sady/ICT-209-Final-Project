@@ -1274,3 +1274,8 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
 .st-muted { background: #f3f4f6; color: #4b5563; }
 .st-ok { background: #dcfce7; color: #166534; }
 .st-rec { background: #4f46e5; color: #ffffff; }
+
+.prq { white-space: nowrap; }
+.prq-done { color: #166534; }
+.prq-in_progress { color: #7c4a03; }
+.prq-missing { color: #991b1b; font-weight: 600; }

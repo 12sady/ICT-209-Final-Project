@@ -316,6 +316,8 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(by["B 200"]["status"], "in_progress")
         self.assertEqual(by["C 300"]["status"], "available")                     # its prerequisite B 200 is being taken now
         self.assertTrue(by["C 300"]["recommended"])
+        self.assertEqual(by["C 300"]["prereqs"], [{"code": "B 200", "state": "in_progress"}])      # one marked prerequisite list
+        self.assertEqual(by["B 200"]["prereqs"], [{"code": "A 100", "state": "done"}])
         self.assertEqual(by["E 100"]["status"], "available")
         wl = c.post("/api/wishlist", json={"code": "C 300"}).get_json()["wishlist"]
         self.assertEqual(wl[0]["status"], "ok")                                   # wishlist no longer says "needs prereq"

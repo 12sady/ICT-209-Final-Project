@@ -145,16 +145,33 @@ function filteredCourses() {
   return rows;
 }
 
+// ONE prerequisite line: each prerequisite marked done (✓), in progress (◐, counts as done for planning) or missing (✗).
+// If the registrar's sheet lists different ones than your curriculum, that is shown underneath.
+function prereqLine(c) {
+  const m = c.mine;
+  if (!m || !m.prereqs) {
+    return (c.prerequisites || []).length ? `<div class="hint-inline">Prereq: ${c.prerequisites.map(escapeHtml).join(", ")}</div>` : "";
+  }
+  const mark = { done: "✓", in_progress: "◐", missing: "✗" };
+  const title = { done: "completed", in_progress: "in progress now: counts as done for planning", missing: "not done yet" };
+  const items = m.prereqs.map((p) => `<span class="prq prq-${p.state}" title="${title[p.state]}">${escapeHtml(p.code)} ${mark[p.state]}</span>`).join(", ");
+  let html = m.prereqs.length ? `<div class="hint-inline">Prerequisites: ${items}</div>` : "";
+  if (m.sheet_prereqs && m.sheet_prereqs.length) {
+    html += `<div class="hint-inline">Registrar sheet lists: ${m.sheet_prereqs.map(escapeHtml).join(", ")}</div>`;
+  }
+  return html;
+}
+
 // One short chip saying where this course stands for the student (from /api/courses -> c.mine).
 function statusChip(c) {
   const m = c.mine;
   const chip = (cls, text, why) => `<div><span class="status-chip st-${cls}"${why ? ` title="${escapeHtml(why)}"` : ""}>${text}</span></div>`;
   if (!m || m.status === "not_in_curriculum") return "";
   if (m.status === "outside_ok") return chip("ok", "Can take now · outside your curriculum", m.reason);
-  if (m.status === "outside_blocked") return chip("blocked", `Needs ${m.missing_prereqs.map(escapeHtml).join(", ")} · outside your curriculum`, m.reason);
+  if (m.status === "outside_blocked") return chip("blocked", "Prerequisite missing · outside your curriculum", m.reason);
   if (m.status === "completed") return chip("done", "Completed");
   if (m.status === "in_progress") return chip("progress", "In progress now", "You're taking this now. It counts as done for prerequisites and planning.");
-  if (m.status === "blocked") return chip("blocked", `Needs ${m.missing_prereqs.map(escapeHtml).join(", ")}`);
+  if (m.status === "blocked") return chip("blocked", "Prerequisite missing");
   if (m.status === "not_needed") return chip("muted", "Not needed", m.reason);
   if (m.recommended) return chip("rec", "★ Recommended", m.reason) + `<div class="hint-inline">${escapeHtml(m.reason)}</div>`;
   return chip("ok", "Can take now");
@@ -227,7 +244,7 @@ function renderTable() {
     tr.innerHTML = `
       <td class="col-add"></td>
       <td class="course-cell"><span class="code-cell">${c.code}</span> <span class="hint-inline">sec ${c.section}</span><div>${deptCell}</div></td>
-      <td class="wrap">${c.title}${curriculumTag(c.code)}${statusChip(c)}${(c.prerequisites || []).length ? `<div class="hint-inline">Prereq: ${c.prerequisites.map(escapeHtml).join(", ")}</div>` : ""}</td>
+      <td class="wrap">${c.title}${curriculumTag(c.code)}${statusChip(c)}${prereqLine(c)}</td>
       <td class="when-cell">${timeText(c)}</td>
       <td class="num">${c.credits}</td>
       <td class="wrap">${c.instructor || "—"}</td>

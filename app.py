@@ -1202,13 +1202,24 @@ def _course_statuses(req, offerings):
         app.logger.exception("course status: roadmap part failed")        # statuses still work without it
     out = {}
     sheet = _sheet_prereqs(offerings)
+    have = done | prog
+
+    def prereq_states(codes):
+        return [{"code": p, "state": "done" if p in done else "in_progress" if p in prog else "missing"} for p in codes]
+
     for code in {s["code"] for s in offerings}:
         c = catalog.get(code)
         info = {"status": "not_in_curriculum", "missing_prereqs": [], "category": "", "required": False,
-                "recommended": False, "rank": 9, "reason": ""}
+                "recommended": False, "rank": 9, "reason": "", "prereqs": prereq_states(sheet.get(code, [])), "sheet_prereqs": []}
         if c is not None:
             cat = (c.get("category") or "").strip()
             info.update(category=cat, required=bool(c.get("required")))
+            # One prerequisite list: the curriculum's (what the status below is based on). If the registrar sheet
+            # lists something different, say so, so the two never look like contradicting "Prereq" and "Needs" lines.
+            mine_list = list(c.get("hard_prereqs") or [])
+            info["prereqs"] = prereq_states(mine_list)
+            if sorted(set(sheet.get(code, []))) != sorted(set(mine_list)):
+                info["sheet_prereqs"] = list(sheet.get(code, []))
             row = rows.get(cat)
             if code in done:
                 info["status"] = "completed"
