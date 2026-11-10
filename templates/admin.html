@@ -77,9 +77,12 @@
 
   <section class="card step-card" style="margin-top: 20px;">
     <span class="step-badge">1</span>
-    <h2>Upload</h2>
-    <input type="file" id="file-input" accept=".xlsx,.xls" />
-    <button id="upload-btn">Upload</button>
+    <h2>Upload the term's course schedule (Excel)</h2>
+    <p class="hint"><strong>What to upload:</strong> the registrar's <strong>course schedule for the term</strong> as an Excel file (<code>.xlsx</code>), one row per class section, for example "Spring 2027 Undergraduate Tentative Schedule". It should have columns like course code, section, title, days and time, credits, instructor, and optionally room, seats and prerequisites. The app guesses the columns and lets you fix them in the next steps; nothing is saved until you confirm at the very end.</p>
+    <p class="hint"><strong>Not here:</strong> a student's degree audit or grade report (those go on the Curriculum page) and the academic calendar PDF (its dates are typed into the Academic calendar card above).</p>
+    <p class="hint"><strong>Which mode?</strong> A new term: choose <em>Replace everything</em> above. Rooms or seats updated, or another faculty's schedule added: choose <em>Update</em>. Currently loaded: see "Current offerings" at the bottom of this page.</p>
+    <input type="file" id="file-input" accept=".xlsx,.xls" aria-label="Course schedule Excel file" />
+    <button id="upload-btn">Upload schedule</button>
     <p id="upload-status" class="hint"></p>
   </section>
 
