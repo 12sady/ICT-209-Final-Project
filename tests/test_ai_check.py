@@ -69,7 +69,7 @@ class RunTests(NoNetworkMixin, unittest.TestCase):
     def test_ping_failures_give_plain_fixes(self):
         cases = [
             (ai.AIAuthenticationError("HTTP 401"), "rejected your API key", "AI_API_KEY"),
-            (ai.AIRateLimitError("HTTP 429"), "over its limit", "Wait a minute"),
+            (ai.AIRateLimitError("HTTP 429"), "too fast for its free tier", "Wait a minute"),
             (ai.AIConnectionError("boom"), "Couldn't reach example.com", "internet"),
             (ai.AIError("HTTP 404 {\"error\":\"model not found\"}"), "doesn't know the model", "ollama list"),
             (ai.AIError("HTTP 400 tools not supported"), "rejected the request", "tool"),
@@ -123,7 +123,7 @@ class RunTests(NoNetworkMixin, unittest.TestCase):
                 raise ai.AIRateLimitError("429")
         out = Out()
         self.assertEqual(ai_check.run(Boom(), IMPLS(), cfg(), out), 1)
-        self.assertIn("over its limit", out.text)
+        self.assertIn("too fast for its free tier", out.text)
 
     def test_key_is_never_printed(self):
         with mock.patch.dict(os.environ, {"AI_BASE_URL": "https://example.com/v1", "AI_MODEL": "m1", "AI_API_KEY": KEY}):
@@ -281,6 +281,108 @@ class GeminiThoughtSignatureTest(unittest.TestCase):
         ai.run_chat([{"role": "user", "content": "hi"}], "ctx", {"t": lambda a: {"ok": 1}}, prov=prov)
         assistant = [m for m in sent[1]["messages"] if m["role"] == "assistant"][0]
         self.assertNotIn("extra_content", assistant["tool_calls"][0])
+
+
+class SpeedAndErrorTests(unittest.TestCase):
+    """Timeouts, overloaded models, daily quotas, reasoning effort, compact tool results."""
+
+    def _http_error(self, code, body=b"{}", headers=None):
+        return urllib.error.HTTPError("https://x/v1/chat/completions", code, "err", headers or {}, io.BytesIO(body))
+
+    def prov(self, base="https://api.example.com/v1"):
+        return ai.OpenAICompatProvider(base_url=base, api_key="k", model="m")
+
+    def test_timeout_is_named_not_reported_as_unreachable(self):
+        with mock.patch("urllib.request.urlopen", side_effect=urllib.error.URLError(TimeoutError("timed out"))):
+            with self.assertRaises(ai.AITimeoutError) as cm:
+                self.prov()._post_once({})
+        what, fix = ai.explain_error(cm.exception, "openai", "https://api.example.com/v1", "m")
+        self.assertIn(f"{ai.REQUEST_TIMEOUT} seconds", what)
+        self.assertIn("AI_REASONING_EFFORT", fix)
+
+    def test_503_is_overloaded_on_their_side(self):
+        with mock.patch("urllib.request.urlopen", side_effect=self._http_error(503)):
+            with self.assertRaises(ai.AIOverloadedError) as cm:
+                self.prov()._post_once({})
+        what, _fix = ai.explain_error(cm.exception, "openai", "https://api.example.com/v1", "m")
+        self.assertIn("overloaded", what)
+
+    def test_daily_quota_does_not_wait_and_says_so(self):
+        body = b'{"error":{"message":"Quota exceeded for metric ... PerDay ..."}}'
+        slept = []
+        with mock.patch("urllib.request.urlopen", side_effect=self._http_error(429, body, {"retry-after": "5"})), \
+                mock.patch.object(ai, "_sleep", slept.append):
+            with self.assertRaises(ai.AIRateLimitError) as cm:
+                self.prov()._post({})
+        self.assertEqual(slept, [])
+        self.assertTrue(cm.exception.daily)
+        what, fix = ai.explain_error(cm.exception, "openai", "https://x/v1", "m")
+        self.assertIn("daily", what)
+        self.assertIn("won't help", fix)
+
+    def test_per_minute_limit_names_the_wait(self):
+        what, fix = ai.explain_error(ai.AIRateLimitError("HTTP 429", seconds=24), "openai", "https://x/v1", "m")
+        self.assertIn("too fast", what)
+        self.assertIn("24 seconds", fix)
+
+    def test_reasoning_effort_defaults(self):
+        with mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("AI_REASONING_EFFORT", None)
+            self.assertEqual(self.prov("https://generativelanguage.googleapis.com/v1beta/openai")._effort(), "low")
+            self.assertEqual(self.prov("https://api.groq.com/openai/v1")._effort(), "low")
+            self.assertEqual(self.prov("http://localhost:11434/v1")._effort(), "")             # Ollama: leave it alone
+        with mock.patch.dict(os.environ, {"AI_REASONING_EFFORT": "off"}):
+            self.assertEqual(self.prov("https://api.groq.com/openai/v1")._effort(), "")
+        with mock.patch.dict(os.environ, {"AI_REASONING_EFFORT": "high"}):
+            self.assertEqual(self.prov("http://localhost:11434/v1")._effort(), "high")
+
+    def test_a_service_that_rejects_reasoning_effort_is_retried_without_it(self):
+        p = self.prov("https://api.groq.com/openai/v1")
+        sent = []
+
+        def fake_post(payload):
+            sent.append("reasoning_effort" in payload)
+            if "reasoning_effort" in payload:
+                raise ai.AIError("HTTP 400 unknown field reasoning_effort")
+            return {"choices": [{"message": {"content": "hi"}}]}
+        with mock.patch.dict(os.environ, {}, clear=False), mock.patch.object(p, "_post", fake_post):
+            os.environ.pop("AI_REASONING_EFFORT", None)
+            self.assertEqual(p.step(["sys"], [{"role": "user", "content": "x"}], tools=[]), ("hi", []))
+            p.step(["sys"], [{"role": "user", "content": "x"}], tools=[])
+        self.assertEqual(sent, [True, False, False])                  # tried once, then remembered
+
+    def test_tool_results_are_compact_json(self):
+        self.assertEqual(ai._clip({"a": [1, 2], "b": "x"}), '{"a":[1,2],"b":"x"}')
+
+    def test_fewer_tool_rounds_and_prompt_uses_the_snapshot(self):
+        self.assertLessEqual(ai.MAX_TOOL_ROUNDS, 4)
+        self.assertIn("snapshot", ai.SYSTEM_PROMPT.lower())
+
+
+class HowToGuideTests(unittest.TestCase):
+    def test_guide_covers_the_questions_students_ask(self):
+        for needle in ("Import my grade report (PDF)", "Import my degree audit (PDF)", "Edit ONE course", "Save curriculum", "GPA page"):
+            self.assertIn(needle, ai.HOWTO_GUIDE)
+
+    def test_guide_is_only_sent_for_how_to_questions(self):
+        ask = lambda t: [{"role": "user", "content": t}]
+        self.assertTrue(ai.wants_howto(ask("How do I upload my grade report?")))
+        self.assertTrue(ai.wants_howto(ask("I want to edit one course")))
+        self.assertTrue(ai.wants_howto(ask("where is the degree audit import")))
+        self.assertFalse(ai.wants_howto(ask("Can I graduate by Spring 2028?")))
+        self.assertFalse(ai.wants_howto(ask("What GPA do I need for a 3.8?")))
+
+    def test_run_chat_adds_the_guide_only_when_asked(self):
+        seen = []
+
+        class Fake:
+            def step(self, system, convo, tools=None):
+                seen.append(system)
+                return "ok", []
+        ai.run_chat([{"role": "user", "content": "How do I upload my grade report?"}], "snap", {}, prov=Fake())
+        ai.run_chat([{"role": "user", "content": "What should I take next term?"}], "snap", {}, prov=Fake())
+        self.assertIn(ai.HOWTO_GUIDE, seen[0])
+        self.assertNotIn(ai.HOWTO_GUIDE, seen[1])
 
 
 if __name__ == "__main__":

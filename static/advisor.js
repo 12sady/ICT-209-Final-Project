@@ -15,6 +15,8 @@
     { icon: "📈", text: "What GPA do I need this term to reach a 3.8?" },
     { icon: "🗓️", text: "What should I take next term?" },
     { icon: "⏰", text: "No classes before 10am and keep Fridays free" },
+    { icon: "📄", text: "How do I upload my grade report?" },
+    { icon: "✏️", text: "How do I edit just one course?" },
   ];
 
   // Short chip name + icon for each tool, shown under an answer.

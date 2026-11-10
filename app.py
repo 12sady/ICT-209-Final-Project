@@ -1610,6 +1610,21 @@ def _advisor_context():
         f"Wishlist: {', '.join(wishlist) or 'empty'}",
         f"Offerings loaded: {len(offerings)} sections",
     ]
+    # Put the common answers in the snapshot so most questions need no tool round at all (each round is a slow model call).
+    try:
+        d = _dashboard_payload()
+        if d["has_curriculum"]:
+            p = d["progress"]
+            lines.append(f"Degree progress: {p['done']:g} of {p['total']:g} credits ({p['percent']}%); "
+                         + "; ".join(f"{r['category']} {r['done']:g}/{r['total']:g}" for r in p["rows"]))
+            left = list(requirements.get("required_remaining", []))
+            lines.append(f"Required courses left ({len(left)}): " + (", ".join(left[:20]) + (" ..." if len(left) > 20 else "") or "none"))
+            lines.append("Can take now: " + (", ".join(c["code"] for c in d["available"][:10]) or "none"))
+            lines.append(f"Estimated graduation: {d['graduation']['term'] or 'unknown'}; GPA: "
+                         f"{d['gpa']['value'] if d['gpa']['value'] is not None else 'no grades yet'}; "
+                         f"planned credits this term: {d['planned']['credits']:g}")
+    except Exception:
+        app.logger.exception("advisor snapshot: dashboard part failed")      # the chat still works without it
     return "\n".join(lines)
 
 
@@ -1936,7 +1951,7 @@ def api_ai_chat():
 
 def _ai_error_text(e):
     """Plain-language cause + how to fix it (same wording as `python3 ai_check.py`); never includes a key."""
-    if isinstance(e, (ai.AIAuthenticationError, ai.AIRateLimitError, ai.AIConnectionError, ai.AIError)):
+    if isinstance(e, (ai.AIAuthenticationError, ai.AIRateLimitError, ai.AIConnectionError, ai.AIOverloadedError, ai.AIError)):
         what, fix = ai.explain_error(e)
         return f"{what} {fix}"
     app.logger.exception("AI chat failed")   # never echo secrets

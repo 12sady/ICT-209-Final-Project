@@ -285,6 +285,24 @@ class ApiTests(unittest.TestCase):
         self.assertIn("HAND 100", [x["code"] for x in again["catalog"]])
         self.assertEqual(again["audit_moves"]["ZZZ 110"], "General Education")
 
+    def test_advisor_snapshot_holds_progress_so_most_questions_need_no_tool(self):
+        from unittest import mock
+        c = self._signup("snapshot")
+        self.assertEqual(c.put("/api/curriculum", json=CURRICULUM).status_code, 200)
+        seen = []
+
+        def fake_run_chat(messages, context_text, tools, **kw):
+            seen.append(context_text)
+            return {"reply": "ok", "actions": [], "steps": []}
+        with mock.patch.object(self.app.ai, "status", return_value={"available": True}), \
+                mock.patch.object(self.app.ai, "run_chat", fake_run_chat):
+            r = c.post("/api/ai/chat", json={"messages": [{"role": "user", "content": "how am I doing?"}]})
+        self.assertEqual(r.status_code, 200, r.data)
+        ctx = seen[0]
+        self.assertIn("Degree progress:", ctx)
+        self.assertIn("Required courses left (", ctx)
+        self.assertIn("Estimated graduation:", ctx)
+
     def _user_id(self, client):
         with client.session_transaction() as sess:
             return sess["user_id"]
@@ -511,7 +529,7 @@ class ApiTests(unittest.TestCase):
             r = c.post("/api/ai/chat?stream=1", json={"messages": [{"role": "user", "content": "hi"}]})
             lines = [json.loads(l) for l in r.get_data(as_text=True).splitlines() if l.strip()]
         self.assertEqual(lines[-1]["type"], "error")
-        self.assertIn("over its limit", lines[-1]["error"])
+        self.assertIn("too fast for its free tier", lines[-1]["error"])
 
 
 if __name__ == "__main__":

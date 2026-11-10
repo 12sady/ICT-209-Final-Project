@@ -33,6 +33,7 @@ stored in the code or data files):
 import json
 import os
 import re
+import socket
 import time
 import urllib.error
 import urllib.request
@@ -40,10 +41,11 @@ from collections import defaultdict
 
 MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5-5")
 MAX_TOKENS = 1200
-MAX_TOOL_ROUNDS = 6          # tool-call rounds per message, then it must answer
+MAX_TOOL_ROUNDS = 4          # tool-call rounds per message, then it must answer (each round is a slow model call)
 MAX_MESSAGES = 8             # most recent turns sent to the model (fewer = fewer tokens per request)
 MAX_CHARS = 4000             # per message
 TOOL_RESULT_LIMIT = 4000     # characters of a tool result handed back to the model (~1,000 tokens)
+REQUEST_TIMEOUT = 90         # seconds to wait for ONE model reply before telling the student it is slow
 
 # Free tiers limit tokens per minute (Groq gpt-oss-120b: about 8,000). When the
 # service says "too many" (HTTP 429) we wait the time it asks for and try again,
@@ -104,7 +106,11 @@ What you can do
 - Turn plain-English requests ("no classes before 10, keep Fridays free, I want ITM 360") into actual settings by calling tools: add_to_wishlist, remove_from_wishlist, set_preferences. Then call get_best_plans and tell the student what the planner found.
 - Explain schedules: why the top plan ranks first, the trade-offs between plans, which courses are risky because seats fill fast or many students want them.
 - Suggest what to take next, using get_curriculum_status (required courses that are available now, blocked by a prerequisite, or not offered this term).
+- The snapshot below already holds the student's progress, courses left, what they can take now, estimated graduation term and GPA. If it answers the question, answer straight from it with no tool call: tools are slow. Call a tool only for details it lacks (search sections, a what-if, a grade target, a roadmap for a different start or credit limit) or to change the wishlist/preferences.
 - Answer GPA and graduation questions from real data: get_gpa, gpa_what_if ("if I get these grades..."), gpa_target ("what do I need for a 3.8?"), get_roadmap (use graduate_by for "can I graduate by Spring 2028?") and get_progress. These only calculate; you cannot enter or change grades.
+
+
+How-to questions: if the student asks how to do something in the app (upload a file, edit a course, ...), a "How to use the app" guide follows. Explain with exact page and button names; you cannot upload or edit those things for them.
 
 Rules
 - Facts about courses, sections, times, seats, prerequisites and demand must come from tool results. Never invent a course code, time, instructor or seat count. If a tool doesn't return it, say you don't know.
@@ -116,6 +122,32 @@ Rules
 - Course demand ("popular", "high demand") means how many students in this app have the course on their wishlist; it's a heads-up, not an official enrollment figure.
 - If asked about something unrelated to planning their studies, answer in one line and steer back.
 """
+
+
+HOWTO_GUIDE = """How to use the app (the student cannot upload files or edit courses through this chat, so TELL them how, step by step, naming the exact page and button; no tool call needed)
+Pages in the top menu: Dashboard, Curriculum, Courses, Plan, Compare, Roadmap, GPA, Import. On a phone, tap Menu first.
+- Get a curriculum: Curriculum page > "Sample course plan" card > choose your program > "Use this plan". Or import your own degree audit (below).
+- Import the degree audit (best: it gives your real categories, courses, semesters and grades): in SIS open Degree Audit and save it as a PDF. Then Curriculum page > "Import my degree audit (PDF)" > Choose file > "Read audit". Check the table. The shaded "-" courses are ones SIS lists but does not count: each has a dropdown with a suggested category (from the sample plan), change it if the school counts it elsewhere. Then "Replace my curriculum with this audit" and confirm. Tip: load the sample plan first if you want prerequisites kept.
+- Import the grade report (completed courses, grades and a GPA check): in SIS open Grade Report and save as PDF. Curriculum page (load a curriculum first) > "Import my grade report (PDF)" > Choose file > "Read report". Untick any course you don't want, then "Import ticked courses" and confirm. It also compares the report's cumulative GPA with the app's.
+- Edit ONE course: Curriculum page > find it (search box above the list, or open its category group) > click "Edit" on its row > change the name, category, credits, prerequisites or plan year/term > "Apply" > then press "Save curriculum" at the bottom (changes are not saved until then). To add a missing course: "+ Add a course". To delete: "Remove" on its row (click twice), then Save curriculum. Import page > "Update a single curriculum course" does the same by typing a course code.
+- Mark a course completed: Curriculum page > set its status to Completed, pick the semester, then Save curriculum. To mark everything up to a semester: "Already finished some semesters?" > pick one > "Mark everything up to here as completed" > Save curriculum.
+- Enter or fix a grade: GPA page > pick the grade next to the course (it saves by itself). The GPA page also has what-if tools.
+- A course SIS doesn't count but the school does: Curriculum page > Program structure card > "Does the school count a course that SIS left out?" > pick the course and the category > Move.
+- Prerequisites from Rean (optional): Import page > "Optional: add prerequisites from Rean" > paste the table > Parse > Apply, then Save curriculum.
+- Plan a term: Courses page > add courses to your wishlist (or ask me to) > Plan page shows clash-free schedules ranked best first > "Make this my active plan". Compare lets you pin up to 3 plans side by side. The Plan page exports a calendar (.ics) and there is a Registration-day sheet and an Advisor summary (print to PDF) from the Dashboard.
+- Only the admin account (the first one created) can upload course offerings, the academic calendar and sample plans (Import page). Everyone else sees them read-only.
+If you are not sure a button exists, say so and point to the page instead of inventing one.
+"""
+
+_HOWTO_WORDS = re.compile(
+    r"\bhow (do|can|to|should)|\bwhere\b|\bupload|\bimport|\bedit|\bchange (a|my|the) course|\bsave\b|\bbutton|\bclick|\bnavigate|\bfind the|\badd a course|\bremove|\bdelete|\bmark .*complete|\bgrade report|\bdegree audit|\bsteps?\b", re.I)
+
+
+def wants_howto(messages):
+    """True when the latest question (or the one before it) asks how to do something in the app, so the
+    long how-to guide is only sent then: it costs tokens on every request, and free tiers are token-limited."""
+    recent = [m["content"] for m in messages[-3:] if m.get("role") == "user"]
+    return any(_HOWTO_WORDS.search(t) for t in recent)
 
 
 TOOLS = [
@@ -249,10 +281,25 @@ class AIAuthenticationError(Exception):
 
 
 class AIRateLimitError(Exception):
-    pass
+    """seconds: how long the service asked us to wait (None if unknown).
+    daily: the free DAILY allowance is used up, so waiting a minute won't help."""
+    def __init__(self, message="HTTP 429", seconds=None, daily=False):
+        super().__init__(message)
+        self.seconds = seconds
+        self.daily = daily
 
 
 class AIConnectionError(Exception):
+    pass
+
+
+class AITimeoutError(AIConnectionError):
+    """The service accepted the request but didn't answer in time."""
+    pass
+
+
+class AIOverloadedError(Exception):
+    """HTTP 503 / 529: the model is overloaded on the service's side."""
     pass
 
 
@@ -379,12 +426,26 @@ class OpenAICompatProvider:
     calling: Ollama (local), Google Gemini's OpenAI-compatible endpoint, Groq,
     OpenRouter, and so on. Uses only the standard library."""
 
-    def __init__(self, base_url=None, api_key=None, model=None, timeout=180):
+    def __init__(self, base_url=None, api_key=None, model=None, timeout=REQUEST_TIMEOUT):
         self.base_url = (base_url or os.environ.get("AI_BASE_URL", "")).rstrip("/")
         self.api_key = api_key if api_key is not None else os.environ.get("AI_API_KEY", "")
         self.model = model or os.environ.get("AI_MODEL", "")
         self.timeout = timeout
         self.on_wait = None      # optional callable(seconds), told before a rate-limit pause
+        self._effort_rejected = False      # the service refused reasoning_effort once: stop sending it
+
+    def _effort(self):
+        """Reasoning effort to ask for. AI_REASONING_EFFORT wins ("off" disables it). Otherwise "low" for
+        Google and Groq, whose default "thinking" makes every reply (and every tool round) slow."""
+        if self._effort_rejected:
+            return ""
+        env = os.environ.get("AI_REASONING_EFFORT", "").strip().lower()
+        if env in ("off", "none", "no", "0", "false"):
+            return ""
+        if env:
+            return env
+        host = _host(self.base_url).lower()
+        return "low" if ("googleapis.com" in host or "groq.com" in host) else ""
 
     def _auth_headers(self):
         """One credential only. Google's OpenAI-style route insists on the Bearer header (tested: the
@@ -399,7 +460,7 @@ class OpenAICompatProvider:
             except _RetryAfter as r:
                 wait = r.seconds
                 if attempt == RATE_LIMIT_RETRIES or waited + wait > RATE_LIMIT_MAX_WAIT:
-                    raise AIRateLimitError("HTTP 429")
+                    raise AIRateLimitError("HTTP 429", seconds=wait)
                 if self.on_wait:
                     self.on_wait(wait)
                 _sleep(wait)
@@ -430,15 +491,22 @@ class OpenAICompatProvider:
                 if "1010" in detail:      # firewall blocked the request, the key is not the problem
                     raise AIConnectionError("HTTP 403 blocked by the service's firewall (error 1010)")
                 raise AIAuthenticationError(f"HTTP 403 {detail}".strip())
-            if e.code == 429:
-                raise _RetryAfter(retry_wait(e.headers))
             detail = ""
             try:
-                detail = e.read().decode("utf-8", "replace")[:300]
+                detail = e.read().decode("utf-8", "replace")[:600]
             except Exception:
                 pass
-            raise AIError(f"HTTP {e.code} {detail}")
+            if e.code == 429:
+                if re.search(r"per ?day|daily|requestsperday", detail, re.I):
+                    raise AIRateLimitError("HTTP 429 daily quota", daily=True)      # waiting a minute won't help
+                raise _RetryAfter(retry_wait(e.headers))
+            if e.code in (503, 529):
+                raise AIOverloadedError(f"HTTP {e.code}")
+            raise AIError(f"HTTP {e.code} {detail[:300]}")
         except (urllib.error.URLError, TimeoutError, OSError) as e:
+            if isinstance(e, (TimeoutError, socket.timeout)) or isinstance(getattr(e, "reason", None), (TimeoutError, socket.timeout)) \
+                    or "timed out" in str(e).lower():
+                raise AITimeoutError(str(e))
             raise AIConnectionError(str(e))
 
     def step(self, system_blocks, convo, tools=None):
@@ -464,12 +532,21 @@ class OpenAICompatProvider:
                     msgs.append({"role": "tool", "tool_call_id": r["id"], "content": r["content"]})
         use = TOOLS if tools is None else tools
         payload = {"model": self.model, "messages": msgs, "max_tokens": MAX_TOKENS}
-        effort = os.environ.get("AI_REASONING_EFFORT", "").strip()
-        if effort:                               # e.g. "low" for gpt-oss / Gemini: faster, fewer tokens
+        effort = self._effort()
+        if effort:                               # "low": much faster for Gemini / gpt-oss (they "think" first)
             payload["reasoning_effort"] = effort
         if use:
             payload["tools"] = [{"type": "function", "function": {"name": t["name"], "description": t["description"], "parameters": t["input_schema"]}} for t in use]
-        data = self._post(payload)
+        try:
+            data = self._post(payload)
+        except AIError as e:
+            # Some models/services reject reasoning_effort (HTTP 400). Retry once without it and remember.
+            if "reasoning_effort" in payload and re.search(r"HTTP 400", str(e)) and re.search(r"reasoning|effort", str(e), re.I):
+                self._effort_rejected = True
+                payload.pop("reasoning_effort")
+                data = self._post(payload)
+            else:
+                raise
         try:
             msg = data["choices"][0]["message"]
         except (KeyError, IndexError, TypeError):
@@ -518,9 +595,22 @@ def explain_error(exc, prov_name=None, base_url=None, model=None):
                 f"Check that {keyvar} holds the right key for this service (copy it again, no spaces or quotes), "
                 "that it hasn't expired, and restart the app after changing it.")
     if isinstance(exc, AIRateLimitError):
-        return ("The AI service says you are over its limit, or it is busy.",
-                "Wait a minute and try again. Free tiers allow only a few requests per minute and per day. "
-                "A local model (Ollama) has no such limit.")
+        if getattr(exc, "daily", False):
+            return ("You've used up this AI model's free daily allowance.",
+                    "Waiting a minute won't help. It resets within a day (Gemini: around midnight Pacific time). "
+                    "Meanwhile switch AI_MODEL to another model, use a different free service, or run Ollama locally (no limit).")
+        secs = getattr(exc, "seconds", None)
+        wait = f"about {int(round(secs))} seconds" if secs else "a minute"
+        return ("The AI service says you are asking too fast for its free tier.",
+                f"Wait {wait} and ask again. Questions that need several steps use more of the limit, "
+                "so shorter questions go through more easily. A local model (Ollama) has no such limit.")
+    if isinstance(exc, AIOverloadedError):
+        return ("The AI model is overloaded right now. This is on the service's side, not yours.",
+                "Try again in a minute. If it keeps happening, switch AI_MODEL to another model (for Gemini: gemini-3.6-flash).")
+    if isinstance(exc, AITimeoutError):
+        return (f"The AI didn't answer within {REQUEST_TIMEOUT} seconds.",
+                "The model is slow or busy right now. Try again, or switch AI_MODEL to a faster one "
+                "(Gemini: gemini-3.6-flash, not gemini-3.8-flash), or set AI_REASONING_EFFORT=low.")
     if isinstance(exc, AIConnectionError):
         if "CERTIFICATE_VERIFY_FAILED" in str(exc):
             return ("Python can't verify the service's security certificate (this is not an internet or key problem).",
@@ -558,7 +648,7 @@ def make_provider():
 
 
 def _clip(result):
-    text = json.dumps(result, ensure_ascii=False, default=str)
+    text = json.dumps(result, ensure_ascii=False, default=str, separators=(",", ":"))
     if len(text) > TOOL_RESULT_LIMIT:
         text = text[:TOOL_RESULT_LIMIT] + " ... (truncated; narrow the search for more)"
     return text
@@ -606,6 +696,8 @@ def run_chat(messages, context_text, impls, prov=None, client=None, on_event=Non
     convo = [{"role": m["role"], "content": m["content"]} for m in messages]
     actions, steps = [], []
     system = [SYSTEM_PROMPT, "Current snapshot of this student (use tools for details):\n" + context_text]
+    if wants_howto(messages):
+        system.append(HOWTO_GUIDE)
 
     for rnd in range(MAX_TOOL_ROUNDS + 1):
         emit({"type": "thinking", "round": rnd + 1})

@@ -133,6 +133,8 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - Never use `window.confirm()` in the frontend: the Claude desktop app's browser pane blocks pop-up dialogs, so it silently returns false and the button looks dead. Use `await askConfirm(message, okLabel)` from `static/common.js` (in-page dialog, Esc/backdrop cancel).
 
+- Ask AI speed/errors (Nov 2026): snapshot in `_advisor_context` now holds progress, courses left, can-take-now, graduation estimate and GPA so most questions need no tool round; MAX_TOOL_ROUNDS 4; reasoning_effort defaults to "low" for Google/Groq hosts (AI_REASONING_EFFORT=off disables; a 400 about it is retried without); REQUEST_TIMEOUT 90 s (AITimeoutError); daily 429 quota is not retried (AIRateLimitError.daily); 503/529 = AIOverloadedError. `ai.HOWTO_GUIDE` (step-by-step "how do I upload / edit a course") is only added to the prompt when `wants_howto(messages)`; keep it in sync with the real page and button names. The chat itself cannot upload files or edit courses.
+
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.
 
