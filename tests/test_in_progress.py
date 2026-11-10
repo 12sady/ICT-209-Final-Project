@@ -19,6 +19,34 @@ class InProgressPrereqTest(unittest.TestCase):
         self.assertFalse(scheduler.prereqs_met("C 300", old))
 
 
+class WishlistAndPlannerTest(unittest.TestCase):
+    req = {"completed": ["A 100"], "in_progress": ["B 200"], "prereqs": {"C 300": ["B 200"]}}
+    offerings = [{"code": c} for c in ("A 100", "B 200", "C 300")]
+
+    def test_a_wishlisted_retake_is_still_planned(self):
+        # Adding a finished / in-progress course is allowed (a deliberate retake); the wishlist flags it.
+        slots, _, blocked, none = scheduler.build_slots(self.req, ["A 100", "B 200", "C 300"], self.offerings)
+        self.assertEqual([s["label"] for s in slots], ["A 100", "B 200", "C 300"])
+        self.assertEqual((blocked, none), ([], []))
+
+
+class GradeReportInProgressTest(unittest.TestCase):
+    def test_current_courses_not_in_the_curriculum_are_added_as_in_progress(self):
+        import grade_report
+        req = {"completed": ["DONE 100"], "in_progress": [],
+               "catalog": [{"code": "KNOWN 100", "name": "k", "category": "Major", "credits": 3, "required": True}]}
+        new, added = grade_report.add_in_progress(req, [
+            {"code": "KNOWN 100", "name": "k", "credits": 3},
+            {"code": "NEW 200", "name": "A new one", "credits": 3},
+            {"code": "DONE 100", "name": "already done", "credits": 3},
+            {"code": "", "name": "no code"}])
+        self.assertEqual(added, 1)
+        self.assertEqual(new["in_progress"], ["KNOWN 100", "NEW 200"])
+        extra = next(c for c in new["catalog"] if c["code"] == "NEW 200")
+        self.assertEqual((extra["category"], extra["credits"], extra["required"]), (grade_report.EXTRA_CATEGORY, 3, False))
+        self.assertEqual(len(new["catalog"]), 2)                                  # the known and the finished ones are not duplicated
+
+
 try:
     import app as app_module
 except ImportError:  # Flask missing

@@ -10,7 +10,7 @@
 
   const STATUS = {
     completed: ["Passed", "ok"],
-    in_progress: ["In progress (RG), skipped", "muted"],
+    in_progress: ["In progress (RG): remembered as taking now", "muted"],
     not_passed: ["Not passed, skipped", "warn"],
     unknown_grade: ["Unknown grade, skipped", "warn"],
   };
@@ -100,12 +100,16 @@
         add: r.code ? null : { name: r.name, credits: r.credits },
       };
     });
-    if (!picked.length) { out.textContent = "Tick at least one course."; return; }
-    if (!(await askConfirm(`Mark ${picked.length} course${picked.length === 1 ? "" : "s"} completed and save their grades?`, "Import"))) return;
+    const hasRg = rows.some((r) => r.status === "in_progress");
+    if (!picked.length && !hasRg) { out.textContent = "Tick at least one course."; return; }
+    const rgN = rows.filter((r) => r.status === "in_progress").length;
+    if (!(await askConfirm(`Mark ${picked.length} course${picked.length === 1 ? "" : "s"} completed and save their grades?`
+      + (rgN ? ` ${rgN} course${rgN === 1 ? "" : "s"} you are taking now will be remembered as in progress.` : ""), "Import"))) return;
     out.textContent = "Saving…";
     const res = await fetch("/api/grade-report/apply", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ courses: picked, in_progress: rows.filter((r) => r.status === "in_progress" && r.code).map((r) => r.code) }),
+      body: JSON.stringify({ courses: picked, in_progress: rows.filter((r) => r.status === "in_progress" && r.code).map((r) => r.code),
+        in_progress_add: rows.filter((r) => r.status === "in_progress" && !r.code).map((r) => ({ code: r.report_code, name: r.name, credits: r.credits })) }),
     });
     const data = await res.json();
     if (!res.ok) { out.textContent = data.error || "Something went wrong."; return; }

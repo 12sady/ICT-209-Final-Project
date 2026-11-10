@@ -120,6 +120,7 @@ function currentFilters() {
     hideCompleted: document.getElementById("f-hide-completed") ? document.getElementById("f-hide-completed").checked : false,
     hideNotNeeded: document.getElementById("f-hide-notneeded") ? document.getElementById("f-hide-notneeded").checked : false,
     recommended: document.getElementById("f-recommended") ? document.getElementById("f-recommended").checked : false,
+    status: document.getElementById("f-status") ? document.getElementById("f-status").value : "",
     inCurriculum: document.getElementById("f-in-curriculum") ? document.getElementById("f-in-curriculum").checked : false,
   };
 }
@@ -134,8 +135,17 @@ function filteredCourses() {
     if (f.risk && (c.risk || "unknown") !== f.risk) return false;
     if (f.department && c.department !== f.department) return false;
     const st = c.mine && c.mine.status;
-    if (f.hideCompleted && (completedCodes.has(c.code) || st === "completed" || st === "in_progress")) return false;
-    if (f.hideNotNeeded && st === "not_needed") return false;
+    if (f.status) {                          // an explicit status choice wins over the "hide" checkboxes
+      const m = c.mine || {};
+      const ok = f.status === "recommended" ? m.recommended
+        : f.status === "can" ? (st === "available" || st === "outside_ok")
+        : f.status === "blocked" ? (st === "blocked" || st === "outside_blocked")
+        : st === f.status;
+      if (!ok) return false;
+    } else {
+      if (f.hideCompleted && (completedCodes.has(c.code) || st === "completed" || st === "in_progress")) return false;
+      if (f.hideNotNeeded && st === "not_needed") return false;
+    }
     if (f.recommended && !(c.mine && c.mine.recommended)) return false;
     if (f.inCurriculum && !catalogByCode[c.code]) return false;
     return true;
@@ -254,12 +264,15 @@ function renderTable() {
     const btnCell = tr.querySelector(".col-add");
     const btn = document.createElement("button");
     btn.setAttribute("aria-label", `${inWishlist ? "Already on wishlist:" : "Add to wishlist:"} ${c.code} section ${c.section}`);
+    const mst = c.mine && c.mine.status;
     if (inWishlist) {
       btn.textContent = "✓ Added";
       btn.className = "secondary";
       btn.disabled = true;
     } else {
-      btn.textContent = "+ Add";
+      const retake = mst === "in_progress" || mst === "completed";
+      btn.textContent = retake ? "+ Add (retake)" : "+ Add";
+      if (retake) btn.title = mst === "completed" ? "You already completed this course: adding it means a retake." : "You are taking this course now: adding it means a retake.";
       btn.onclick = () => addToWishlist(c.code);
     }
     btnCell.appendChild(btn);
@@ -309,7 +322,7 @@ function renderWishlist() {
   currentWishlist.forEach((w) => {
     const row = document.createElement("div");
     row.className = "wl-item";
-    const statusLabel = { ok: "ready", blocked: "needs prereq", not_offered: "not offered" }[w.status] || w.status;
+    const statusLabel = { ok: "ready", blocked: "needs prereq", not_offered: "not offered", in_progress: "retake: taking it now", completed: "retake: already completed" }[w.status] || w.status;
     row.innerHTML = `
       <span>${w.code} <span class="wl-status ${w.status}">${statusLabel}</span>${othersBadge(w.demand)}</span>
     `;
@@ -341,7 +354,7 @@ async function removeFromWishlist(code) {
 // Phones: the filter panel hides behind a "Filters" button; the badge counts the active filters.
 function updateFilterBadge() {
   const f = currentFilters();
-  const n = [f.search, f.day, f.time, f.instructor, f.risk, f.department].filter(Boolean).length + (f.hideCompleted ? 1 : 0) + (f.hideNotNeeded ? 1 : 0) + (f.recommended ? 1 : 0) + (f.inCurriculum ? 1 : 0);
+  const n = [f.search, f.day, f.time, f.instructor, f.risk, f.department, f.status].filter(Boolean).length + (f.hideCompleted ? 1 : 0) + (f.hideNotNeeded ? 1 : 0) + (f.recommended ? 1 : 0) + (f.inCurriculum ? 1 : 0);
   const badge = document.getElementById("filters-badge");
   badge.hidden = n === 0;
   badge.textContent = String(n);
@@ -353,7 +366,7 @@ document.getElementById("filters-toggle").addEventListener("click", () => {
   document.getElementById("filters-toggle").setAttribute("aria-expanded", String(open));
 });
 
-["f-search", "f-day", "f-time", "f-instructor", "f-risk", "f-department", "f-hide-completed", "f-hide-notneeded", "f-recommended", "f-in-curriculum"].forEach((id) => {
+["f-search", "f-day", "f-time", "f-instructor", "f-risk", "f-department", "f-status", "f-hide-completed", "f-hide-notneeded", "f-recommended", "f-in-curriculum"].forEach((id) => {
   const el = document.getElementById(id);
   if (!el) return;
   const handler = () => {

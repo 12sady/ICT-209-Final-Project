@@ -1267,7 +1267,7 @@ def api_wishlist():
     if request.method == "POST":
         body = request.get_json(silent=True) or {}
         code = (body.get("code") or "").strip()
-        if code and code not in wishlist:
+        if code and code not in wishlist:       # completed / in-progress courses are allowed (a retake); the status flags them
             wishlist.append(code)
             save_wishlist(wishlist, wishlist_path())
 
@@ -1276,8 +1276,13 @@ def api_wishlist():
     in_catalog = {c["code"] for c in requirements.get("catalog", [])}
     sheet = _sheet_prereqs(offerings)
     status = []
+    finished, taking = set(requirements.get("completed", [])), set(requirements.get("in_progress", []))
     for code in wishlist:
-        if not prereqs_met(code, requirements):
+        if code in finished:
+            status.append({"code": code, "status": "completed", "missing_prereqs": []})
+        elif code in taking:
+            status.append({"code": code, "status": "in_progress", "missing_prereqs": []})
+        elif not prereqs_met(code, requirements):
             status.append({"code": code, "status": "blocked", "missing_prereqs": missing_prereqs(code, requirements)})
         elif code not in in_catalog and _sheet_missing(code, requirements, sheet):
             status.append({"code": code, "status": "blocked", "missing_prereqs": _sheet_missing(code, requirements, sheet)})
@@ -1499,12 +1504,14 @@ def api_grade_report_preview():
 
 @app.route("/api/grade-report/apply", methods=["POST"])
 def api_grade_report_apply():
-    picked = (request.get_json(silent=True) or {}).get("courses")
-    if not isinstance(picked, list) or not picked:
+    body = request.get_json(silent=True) or {}
+    picked = body.get("courses")
+    has_rg = bool(body.get("in_progress") or body.get("in_progress_add"))
+    if not isinstance(picked, list) or (not picked and not has_rg):
         return jsonify({"error": "Tick at least one course to import."}), 400
     req, _ = _load_data()
     try:
-        new_req, counts = grade_report.apply(req, picked)
+        new_req, counts = grade_report.apply(req, picked) if picked else (dict(req), {"added_to_curriculum": 0, "newly_completed": 0, "grades_set": 0})
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     st = _program_structure(new_req)
@@ -1512,6 +1519,10 @@ def api_grade_report_apply():
         new_req = structure.overlay(new_req, st)
     # Courses the report shows as "RG" (registered, in progress): remembered so they count as done for what's next.
     reported = (request.get_json(silent=True) or {}).get("in_progress")
+    extra_rg = (request.get_json(silent=True) or {}).get("in_progress_add")
+    if isinstance(extra_rg, list):          # RG courses that aren't in the curriculum yet: add them, as in progress
+        new_req, n_new = grade_report.add_in_progress(new_req, [x for x in extra_rg if isinstance(x, dict)][:60])
+        counts["in_progress_added"] = n_new
     if isinstance(reported, list):
         known = {c["code"] for c in new_req.get("catalog", [])}
         done = set(new_req.get("completed", []))
@@ -1897,7 +1908,7 @@ def _advisor_tools():
         return {"wishlist": items}
 
     def add(args):
-        _, off = load()
+        req_now, off = load()
         offered = {s["code"] for s in off}
         wl = load_wishlist(wl_path)
         added, skipped = [], []
@@ -1913,6 +1924,9 @@ def _advisor_tools():
                 added.append(code)
         save_wishlist(wl, wl_path)
         res = {"added": added, "skipped": skipped, "wishlist": wl}
+        retakes = [c for c in added if c in set(req_now.get("completed", [])) | set(req_now.get("in_progress", []))]
+        if retakes:           # tell the student plainly, so an accidental add gets noticed
+            res["warning"] = ", ".join(retakes) + (" is" if len(retakes) == 1 else " are") + " already completed or in progress, so this would be a retake."
         if added:
             res["summary"] = "Added to your wishlist: " + ", ".join(added)
         return res

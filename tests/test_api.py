@@ -321,6 +321,13 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(by["E 100"]["status"], "available")
         wl = c.post("/api/wishlist", json={"code": "C 300"}).get_json()["wishlist"]
         self.assertEqual(wl[0]["status"], "ok")                                   # wishlist no longer says "needs prereq"
+        # A course taken now / already completed can still be added (a retake) but is flagged as such.
+        self.assertEqual(c.post("/api/wishlist", json={"code": "B 200"}).status_code, 200)
+        self.assertEqual(c.post("/api/wishlist", json={"code": "A 100"}).status_code, 200)
+        flags = {w["code"]: w["status"] for w in c.get("/api/wishlist").get_json()["wishlist"]}
+        self.assertEqual(flags, {"C 300": "ok", "B 200": "in_progress", "A 100": "completed"})
+        c.delete("/api/wishlist/B%20200")
+        c.delete("/api/wishlist/A%20100")
         dash = c.get("/api/dashboard").get_json()
         self.assertIn("C 300", [a["code"] for a in dash["available"]])
         self.assertEqual(dash["in_progress_count"], 1)

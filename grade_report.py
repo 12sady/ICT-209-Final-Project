@@ -262,6 +262,36 @@ def match(parsed, catalog):
 EXTRA_CATEGORY = "From grade report"
 
 
+def add_in_progress(req, items):
+    """Courses the report shows as in progress (RG) that are NOT in the curriculum yet: add them under
+    EXTRA_CATEGORY and remember them as in progress. items: [{"code", "name", "credits"}].
+    Returns (new_req, number_added_to_the_catalog)."""
+    out = dict(req)
+    catalog = [dict(c) for c in req.get("catalog", [])]
+    known = {_norm(c["code"]) for c in catalog}
+    in_progress = list(req.get("in_progress", []))
+    done = {_norm(c) for c in req.get("completed", [])}
+    added = 0
+    for it in items or []:
+        code = str((it or {}).get("code") or "").strip()
+        if not code or _norm(code) in done:
+            continue
+        if _norm(code) not in known:
+            try:
+                credits = float(it.get("credits") or 0)
+            except (TypeError, ValueError):
+                credits = 0
+            catalog.append({"code": code, "name": str(it.get("name") or "")[:200], "category": EXTRA_CATEGORY, "sub_category": "",
+                            "credits": (int(credits) if credits.is_integer() else credits) if credits > 0 else 3,
+                            "required": False, "hard_prereqs": [], "soft_prereqs": []})
+            known.add(_norm(code))
+            added += 1
+        if code not in in_progress:
+            in_progress.append(code)
+    out.update(catalog=catalog, in_progress=in_progress)
+    return out, added
+
+
 def apply(req, picked):
     """Merge picked rows into a requirements dict (a copy is returned).
 

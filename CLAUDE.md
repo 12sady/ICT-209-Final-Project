@@ -141,6 +141,8 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - Calendar export: one repeating weekly VEVENT per class (RRULE, EXDATE for breaks, stable UIDs so re-importing updates instead of duplicating) plus the academic calendar's `events` (holiday / deadline / exam / term / other, edited in the Import page calendar card, seeded from the Spring 2027 PDF) as all-day free-time events; deadlines get two VALARM reminders. POST body flags: `include_calendar` (default true), `dates_only`. No direct Google/Outlook add (would need OAuth); the Plan page has import instructions.
 
+- Retakes (Nov 2026): a completed / in-progress course can still be wishlisted (the planner schedules it). Browse shows it with an "In progress now" / "Completed" chip, the button says "+ Add (retake)", the wishlist panel says "retake: taking it now / already completed", and the AI warns. Browse has a Status select (recommended / can take / in progress / completed / blocked / not needed) that overrides the hide checkboxes. Grade report import also remembers RG courses that are not in the curriculum yet (`grade_report.add_in_progress`, added under "From grade report").
+
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.
 
