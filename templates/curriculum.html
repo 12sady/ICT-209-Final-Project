@@ -21,7 +21,7 @@
 
   <details class="card" id="audit-card">
     <summary class="card-summary"><h2>Import my degree audit (PDF)</h2></summary>
-    <p class="hint">Your degree audit from SIS is private and differs per student, so this is the accurate way to get <em>your</em> curriculum: your categories (Major, Major Electives, General Education, Core/Major), the credits each needs, and which courses you have passed, with semester and grade. It replaces the sample plan. In SIS, open <strong>Degree Audit</strong>, save it as a PDF, upload it here, check what the app found, then confirm. The PDF itself is never stored, and your name, ID and date of birth are never read. Save any unsaved changes on this page first: importing reloads it.</p>
+    <p class="hint">Your degree audit from SIS is private and differs per student, so this is the accurate way to get <em>your</em> curriculum: your categories (Major, Major Electives, General Education, Core/Major), the credits each needs, and which courses you have passed, with semester and grade. It replaces the sample plan. In SIS, open <strong>Degree Audit</strong>, save it as a PDF, upload it here, check what the app found, then confirm. The PDF itself is never stored, and your name, ID and date of birth are never read. The audit has no prerequisites: load your sample plan first, or add them from Rean (optional, on the <a href="{{ url_for('import_page') }}">Import</a> page). Save any unsaved changes on this page first: importing reloads it.</p>
     <div class="plan-pick">
       <input type="file" id="da-file" accept="application/pdf,.pdf" aria-label="Degree audit PDF" />
       <button type="button" id="da-read-btn" disabled>Read audit</button>

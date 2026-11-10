@@ -112,7 +112,7 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - Course codes: computer science is `COSC` (never `CSCI`). The registrar sheet cross-lists some as "COSC 111/CSCI 111"; `excel_importer.normalize_code_prefix` maps CSCI -> COSC and keeps one row. HIST 131 is "World History from 1500 CE" (11 sample plans had a wrongly parsed title "Behavioral and Social Sciences", fixed). Students who already copied a plan keep their old titles until they press "Use this plan" again.
 
-- The Import page no longer has the "Import curriculum" paste card (the sample plans on the Curriculum page replace it). The backend `/api/curriculum/parse` and `curriculum_parser.py` are still there, unused by the UI.
+- The Import page has an optional, collapsed "Add prerequisites from Rean" card (paste a Rean curriculum table; `/api/curriculum/parse`, `curriculum_parser.py`). It is for prerequisites the degree audit lacks; courses it adds that are not on the audit show under "Not in program structure". Decision (Nov 2026): keep the grade-report import too (its cumulative GPA is the cross-check) alongside the degree-audit import and sample plans.
 
 - Degree audit import (`degree_audit.py`, card on the Curriculum page, `static/audit_import.js`, `POST /api/degree-audit/preview|apply`):
   reads AUPP's SIS "Official Degree Audit" PDF by word positions (like the grade report; name/ID/date of birth never read). Columns
