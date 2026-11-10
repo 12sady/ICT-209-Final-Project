@@ -115,6 +115,8 @@ def _load_data():
     st = _program_structure(req)
     if st and req.get("catalog"):
         req = structure.overlay(req, st)
+    done = set(req.get("completed", []))
+    req["in_progress"] = [c for c in req.get("in_progress", []) if c not in done]      # finished ones are no longer "in progress"
     return req, offerings
 
 
@@ -516,16 +518,18 @@ def _dashboard_payload():
         out["structure"] = True
     else:
         out["progress"] = progress.category_progress(catalog, completed, req.get("elective_slots", []))
-    out["available"] = progress.available_now(catalog, completed, prereqs, offered)
-    out["bottlenecks"] = progress.bottlenecks(catalog, completed, prereqs)
+    planning = list(completed) + list(req.get("in_progress", []))          # in-progress courses count as done for what's next
+    out["in_progress_count"] = len(req.get("in_progress", []))
+    out["available"] = progress.available_now(catalog, planning, prereqs, offered)
+    out["bottlenecks"] = progress.bottlenecks(catalog, planning, prereqs)
     rm = _roadmap_payload()
     out["graduation"] = {
         "term": rm["roadmap"]["graduation_term"], "terms": len(rm["roadmap"]["terms"]),
         "risks": [r["text"] for r in rm["roadmap"]["risks"]], "real_offerings_term": rm["roadmap"]["real_offerings_term"],
         "remaining_courses": rm["roadmap"]["remaining_courses"],
     }
-    out["remaining_required"] = (len(out["progress"]["remaining_required"]) if st
-                                 else len(progress.remaining_required(catalog, completed)))
+    out["remaining_required"] = (len(structure.evaluate(st, planning)["remaining_required"]) if st
+                                 else len(progress.remaining_required(catalog, planning)))
     return out
 
 
@@ -580,7 +584,8 @@ def _roadmap_inputs(st=None):
         "req": req, "settings": st, "start": start, "max_credits": float(max_credits), "include_summer": include_summer,
         "offered_first": offered_first,
         "kwargs": dict(
-            catalog=req.get("catalog", []), completed=set(req.get("completed", [])), prereqs=req.get("prereqs", {}),
+            catalog=req.get("catalog", []), completed=set(req.get("completed", [])) | set(req.get("in_progress", [])),
+            prereqs=req.get("prereqs", {}),
             slots=req.get("elective_slots", []), start_term=start, max_credits=float(max_credits),
             include_summer=include_summer, same_season=bool(st["same_season"]),
             overrides=st["overrides"], offered_first=offered_first),
@@ -1080,11 +1085,68 @@ def api_status():
     })
 
 
+def _course_statuses(req, offerings):
+    """Where each offered course stands for THIS student: {code: {status, missing_prereqs, category, required,
+    recommended, rank, reason}}.
+
+    status: completed | in_progress | blocked (a prerequisite is missing) | not_needed (its category is
+    already complete) | available | not_in_curriculum. In-progress courses count as done for prerequisites,
+    because they will be finished before the next term.
+    recommended: available AND still needed AND (on the roadmap's next term, or required, or an elective
+    whose category still needs credits). rank 0 = on the roadmap's next term, 1 = required, 2 = elective.
+    """
+    catalog = {c["code"]: c for c in req.get("catalog", [])}
+    done, prog = set(req.get("completed", [])), set(req.get("in_progress", []))
+    st = _program_structure(req)
+    rows = {}
+    if st:
+        rows = {r["category"]: r for r in structure.evaluate(st, list(done | prog))["rows"]}
+    next_term, next_codes = "", set()
+    try:
+        road = _roadmap_payload()["roadmap"]
+        if road["terms"]:
+            next_term = road["terms"][0]["label"]
+            next_codes = {c["code"] for c in road["terms"][0]["courses"] if c.get("code")}
+    except Exception:
+        app.logger.exception("course status: roadmap part failed")        # statuses still work without it
+    out = {}
+    for code in {s["code"] for s in offerings}:
+        c = catalog.get(code)
+        info = {"status": "not_in_curriculum", "missing_prereqs": [], "category": "", "required": False,
+                "recommended": False, "rank": 9, "reason": ""}
+        if c is not None:
+            cat = (c.get("category") or "").strip()
+            info.update(category=cat, required=bool(c.get("required")))
+            row = rows.get(cat)
+            if code in done:
+                info["status"] = "completed"
+            elif code in prog:
+                info["status"] = "in_progress"
+            else:
+                miss = missing_prereqs(code, req)
+                if miss:
+                    info.update(status="blocked", missing_prereqs=miss)
+                elif row is not None and row["complete"]:
+                    info.update(status="not_needed", reason=f"{cat} is already complete")
+                else:
+                    info["status"] = "available"
+                    if code in next_codes:
+                        info.update(recommended=True, rank=0, reason=f"On your roadmap for {next_term}")
+                    elif c.get("required"):
+                        info.update(recommended=True, rank=1, reason=f"Required ({cat}), prerequisites met")
+                    elif row is not None and not row["complete"]:
+                        info.update(recommended=True, rank=2,
+                                    reason=f"Counts toward {cat}: {row['total'] - row['done']:g} credits still needed")
+        out[code] = info
+    return out
+
+
 @app.route("/api/courses")
 def api_courses():
-    _, offerings = _load_data()
+    req, offerings = _load_data()
     counts, seats, mine = _wishlist_counts(), _seat_totals(offerings), _my_wishlist()
-    courses = [dict(c, demand=_demand(c["code"], counts, seats, mine)) for c in offerings]
+    status = _course_statuses(req, offerings) if req.get("catalog") else {}
+    courses = [dict(c, demand=_demand(c["code"], counts, seats, mine), mine=status.get(c["code"])) for c in offerings]
     return jsonify({"courses": courses})
 
 
@@ -1146,6 +1208,8 @@ def api_curriculum():
             ]
         # Grades are edited on the GPA page; the Curriculum page never owns them,
         # so a stale copy of this page can't wipe or overwrite them.
+        done_now = set(body.get("completed", []))
+        body["in_progress"] = [c for c in (body.get("in_progress") or []) if isinstance(c, str) and c not in done_now]
         existing, _ = _load_data()
         for key in ("audit_structure", "audit_moves"):                # owned by the audit upload / move, never by this page,
             if existing.get(key):                                      # so a stale copy of the page can't undo them
@@ -1333,6 +1397,14 @@ def api_grade_report_apply():
     st = _program_structure(new_req)
     if st:
         new_req = structure.overlay(new_req, st)
+    # Courses the report shows as "RG" (registered, in progress): remembered so they count as done for what's next.
+    reported = (request.get_json(silent=True) or {}).get("in_progress")
+    if isinstance(reported, list):
+        known = {c["code"] for c in new_req.get("catalog", [])}
+        done = set(new_req.get("completed", []))
+        extra = [c for c in reported if isinstance(c, str) and c in known and c not in done]
+        new_req["in_progress"] = list(dict.fromkeys(list(new_req.get("in_progress", [])) + extra))
+        counts["in_progress"] = len(extra)
     with open(requirements_path(), "w") as f:
         json.dump(new_req, f, indent=2)
     entries, _unknown, total = _gpa_summary(new_req)
@@ -1617,7 +1689,7 @@ def _advisor_context():
             p = d["progress"]
             lines.append(f"Degree progress: {p['done']:g} of {p['total']:g} credits ({p['percent']}%); "
                          + "; ".join(f"{r['category']} {r['done']:g}/{r['total']:g}" for r in p["rows"]))
-            left = list(requirements.get("required_remaining", []))
+            left = [c for c in requirements.get("required_remaining", []) if c not in set(requirements.get("in_progress", []))]
             lines.append(f"Required courses left ({len(left)}): " + (", ".join(left[:20]) + (" ..." if len(left) > 20 else "") or "none"))
             lines.append("Can take now: " + (", ".join(c["code"] for c in d["available"][:10]) or "none"))
             lines.append(f"Estimated graduation: {d['graduation']['term'] or 'unknown'}; GPA: "

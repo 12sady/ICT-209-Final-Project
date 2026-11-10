@@ -90,13 +90,19 @@ def prereqs_met(code, requirements):
     the prereq courses."""
     if requirements.get("preferences", {}).get("ignore_prereqs"):
         return True
-    completed = set(requirements.get("completed", []))
+    completed = _done_for_planning(requirements)
     needed = requirements.get("prereqs", {}).get(code, [])
     return all(p in completed for p in needed)
 
 
+def _done_for_planning(requirements):
+    """Completed courses PLUS the ones in progress: by the time the student registers for the next
+    term they will be finished, so they count as satisfied prerequisites (and need no second seat)."""
+    return set(requirements.get("completed", [])) | set(requirements.get("in_progress", []))
+
+
 def missing_prereqs(code, requirements):
-    completed = set(requirements.get("completed", []))
+    completed = _done_for_planning(requirements)
     return [p for p in requirements.get("prereqs", {}).get(code, []) if p not in completed]
 
 

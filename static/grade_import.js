@@ -104,7 +104,8 @@
     if (!(await askConfirm(`Mark ${picked.length} course${picked.length === 1 ? "" : "s"} completed and save their grades?`, "Import"))) return;
     out.textContent = "Saving…";
     const res = await fetch("/api/grade-report/apply", {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ courses: picked }),
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ courses: picked, in_progress: rows.filter((r) => r.status === "in_progress" && r.code).map((r) => r.code) }),
     });
     const data = await res.json();
     if (!res.ok) { out.textContent = data.error || "Something went wrong."; return; }

@@ -484,7 +484,10 @@ def apply(req, parsed):
 
     out = dict(req)
     moves = dict(req.get("audit_moves") or {})
-    out.update(catalog=catalog, completed=completed, completed_semesters=sems, grades=grades,
+    in_progress = [c["code"] for c in parsed["courses"] if c["status"] == "in_progress"]
+    keep = [c for c in req.get("in_progress", []) if grade_report._norm(c) not in audit_codes]
+    out.update(in_progress=keep + [c for c in in_progress if c not in completed],
+               catalog=catalog, completed=completed, completed_semesters=sems, grades=grades,
                audit_structure=apply_moves(to_structure(parsed), moves))
     if moves:
         out["audit_moves"] = moves

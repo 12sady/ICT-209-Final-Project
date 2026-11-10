@@ -4,6 +4,7 @@ let state = {
   semester: "",
   completed: [],
   completed_semesters: {},
+  in_progress: [],
   required_remaining: [],
   catalog: [],
   prereqs: {},
@@ -44,11 +45,15 @@ function courseStatus(course) {
   if (state.completed.includes(course.code)) {
     return statusBadge("Completed", "ok");
   }
+  if ((state.in_progress || []).includes(course.code)) {
+    return statusBadge("In progress now", "warn");
+  }
   if (!course.required) {
     const offered = offeredCodes === null || offeredCodes.has(course.code);
     return statusBadge(offered ? "Elective · offered" : "Elective · not offered", "muted");
   }
-  const missing = (course.hard_prereqs || []).filter((p) => !state.completed.includes(p));
+  // A prerequisite you are taking right now counts: it will be finished before the next term.
+  const missing = (course.hard_prereqs || []).filter((p) => !state.completed.includes(p) && !(state.in_progress || []).includes(p));
   if (missing.length) {
     return statusBadge(`Blocked — needs ${missing.join(", ")}`, "danger");
   }
@@ -212,11 +217,13 @@ function renderCurriculumGroups() {
     const tbody = section.querySelector("tbody");
     courses.forEach((course) => {
       const isDone = state.completed.includes(course.code);
+      const isProg = !isDone && (state.in_progress || []).includes(course.code);
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>
           <select class="status-select">
-            <option value="not_done" ${isDone ? "" : "selected"}>Not yet</option>
+            <option value="not_done" ${isDone || isProg ? "" : "selected"}>Not yet</option>
+            <option value="in_progress" ${isProg ? "selected" : ""}>In progress</option>
             <option value="done" ${isDone ? "selected" : ""}>Completed</option>
           </select>
         </td>
@@ -248,6 +255,7 @@ function renderCurriculumGroups() {
         clearTimeout(armed);
         state.catalog = state.catalog.filter((c) => c.code !== course.code);
         state.completed = state.completed.filter((c) => c !== course.code);
+        state.in_progress = (state.in_progress || []).filter((c) => c !== course.code);
         delete state.completed_semesters[course.code];
         renderAll();
         MS_STATUS("Removed " + course.code + ". Press Save curriculum to keep this.");
@@ -255,11 +263,13 @@ function renderCurriculumGroups() {
       actions.append(editBtn, delBtn);
       const select = tr.querySelector(".status-select");
       select.addEventListener("change", () => {
+        state.in_progress = (state.in_progress || []).filter((c) => c !== course.code);
         if (select.value === "done") {
           if (!state.completed.includes(course.code)) state.completed.push(course.code);
         } else {
           state.completed = state.completed.filter((c) => c !== course.code);
           delete state.completed_semesters[course.code];
+          if (select.value === "in_progress") state.in_progress.push(course.code);
         }
         renderCompletedBySemester();
         // A completion change can affect any course gated on this one as a
@@ -348,6 +358,7 @@ async function loadCurriculum() {
     semester: data.semester || "",
     completed: data.completed || [],
     completed_semesters: data.completed_semesters || {},
+    in_progress: data.in_progress || [],
     required_remaining: data.required_remaining || [],
     catalog: data.catalog || [],
     prereqs: data.prereqs || {},

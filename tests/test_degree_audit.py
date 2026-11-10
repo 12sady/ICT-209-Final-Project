@@ -241,6 +241,7 @@ class ApplyTest(unittest.TestCase):
         self.assertEqual(new["program"], "Bachelor of Science in Testing")
         self.assertEqual(new["audit_structure"]["total_credits"], 24)
         self.assertEqual(counts, {"courses": 9, "completed": 4, "in_progress": 1, "not_counted": 1})
+        self.assertEqual(new["in_progress"], ["COSC 111"])                       # RG: remembered, counts as done for what's next
 
 
 if __name__ == "__main__":

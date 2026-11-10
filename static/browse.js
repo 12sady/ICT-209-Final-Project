@@ -118,23 +118,44 @@ function currentFilters() {
     risk: document.getElementById("f-risk").value,
     department: document.getElementById("f-department") ? document.getElementById("f-department").value : "",
     hideCompleted: document.getElementById("f-hide-completed") ? document.getElementById("f-hide-completed").checked : false,
+    hideNotNeeded: document.getElementById("f-hide-notneeded") ? document.getElementById("f-hide-notneeded").checked : false,
+    recommended: document.getElementById("f-recommended") ? document.getElementById("f-recommended").checked : false,
     inCurriculum: document.getElementById("f-in-curriculum") ? document.getElementById("f-in-curriculum").checked : false,
   };
 }
 
 function filteredCourses() {
   const f = currentFilters();
-  return allCourses.filter((c) => {
+  const rows = allCourses.filter((c) => {
     if (f.search && !(`${c.code} ${c.title}`.toLowerCase().includes(f.search))) return false;
     if (f.day && !c.days.includes(f.day)) return false;
     if (f.time && (c.online || timeBucket(c.start) !== f.time)) return false;
     if (f.instructor && c.instructor !== f.instructor) return false;
     if (f.risk && (c.risk || "unknown") !== f.risk) return false;
     if (f.department && c.department !== f.department) return false;
-    if (f.hideCompleted && completedCodes.has(c.code)) return false;
+    const st = c.mine && c.mine.status;
+    if (f.hideCompleted && (completedCodes.has(c.code) || st === "completed" || st === "in_progress")) return false;
+    if (f.hideNotNeeded && st === "not_needed") return false;
+    if (f.recommended && !(c.mine && c.mine.recommended)) return false;
     if (f.inCurriculum && !catalogByCode[c.code]) return false;
     return true;
   });
+  // Recommended view: what to take first (roadmap's next term, then required, then electives).
+  if (f.recommended) rows.sort((a, b) => (a.mine.rank - b.mine.rank) || a.code.localeCompare(b.code) || String(a.section).localeCompare(String(b.section)));
+  return rows;
+}
+
+// One short chip saying where this course stands for the student (from /api/courses -> c.mine).
+function statusChip(c) {
+  const m = c.mine;
+  if (!m || m.status === "not_in_curriculum") return "";
+  const chip = (cls, text, why) => `<div><span class="status-chip st-${cls}"${why ? ` title="${escapeHtml(why)}"` : ""}>${text}</span></div>`;
+  if (m.status === "completed") return chip("done", "Completed");
+  if (m.status === "in_progress") return chip("progress", "In progress now", "You're taking this now. It counts as done for prerequisites and planning.");
+  if (m.status === "blocked") return chip("blocked", `Needs ${m.missing_prereqs.map(escapeHtml).join(", ")}`);
+  if (m.status === "not_needed") return chip("muted", "Not needed", m.reason);
+  if (m.recommended) return chip("rec", "★ Recommended", m.reason) + `<div class="hint-inline">${escapeHtml(m.reason)}</div>`;
+  return chip("ok", "Can take now");
 }
 
 function demandBadge(demand) {
@@ -204,7 +225,7 @@ function renderTable() {
     tr.innerHTML = `
       <td class="col-add"></td>
       <td class="course-cell"><span class="code-cell">${c.code}</span> <span class="hint-inline">sec ${c.section}</span><div>${deptCell}</div></td>
-      <td class="wrap">${c.title}${curriculumTag(c.code)}${(c.prerequisites || []).length ? `<div class="hint-inline">Prereq: ${c.prerequisites.map(escapeHtml).join(", ")}</div>` : ""}</td>
+      <td class="wrap">${c.title}${curriculumTag(c.code)}${statusChip(c)}${(c.prerequisites || []).length ? `<div class="hint-inline">Prereq: ${c.prerequisites.map(escapeHtml).join(", ")}</div>` : ""}</td>
       <td class="when-cell">${timeText(c)}</td>
       <td class="num">${c.credits}</td>
       <td class="wrap">${c.instructor || "—"}</td>
@@ -301,7 +322,7 @@ async function removeFromWishlist(code) {
 // Phones: the filter panel hides behind a "Filters" button; the badge counts the active filters.
 function updateFilterBadge() {
   const f = currentFilters();
-  const n = [f.search, f.day, f.time, f.instructor, f.risk, f.department].filter(Boolean).length + (f.hideCompleted ? 1 : 0) + (f.inCurriculum ? 1 : 0);
+  const n = [f.search, f.day, f.time, f.instructor, f.risk, f.department].filter(Boolean).length + (f.hideCompleted ? 1 : 0) + (f.hideNotNeeded ? 1 : 0) + (f.recommended ? 1 : 0) + (f.inCurriculum ? 1 : 0);
   const badge = document.getElementById("filters-badge");
   badge.hidden = n === 0;
   badge.textContent = String(n);
@@ -313,7 +334,7 @@ document.getElementById("filters-toggle").addEventListener("click", () => {
   document.getElementById("filters-toggle").setAttribute("aria-expanded", String(open));
 });
 
-["f-search", "f-day", "f-time", "f-instructor", "f-risk", "f-department", "f-hide-completed", "f-in-curriculum"].forEach((id) => {
+["f-search", "f-day", "f-time", "f-instructor", "f-risk", "f-department", "f-hide-completed", "f-hide-notneeded", "f-recommended", "f-in-curriculum"].forEach((id) => {
   const el = document.getElementById(id);
   if (!el) return;
   const handler = () => {

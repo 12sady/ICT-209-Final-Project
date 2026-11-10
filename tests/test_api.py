@@ -303,6 +303,32 @@ class ApiTests(unittest.TestCase):
         self.assertIn("Required courses left (", ctx)
         self.assertIn("Estimated graduation:", ctx)
 
+    def test_in_progress_courses_count_as_done_for_prerequisites_and_recommendations(self):
+        c = self._signup("inprogress")
+        cur = json.loads(json.dumps(CURRICULUM))
+        cur["in_progress"] = ["B 200", "A 100"]                 # A 100 is also completed: it must stop being "in progress"
+        self.assertEqual(c.put("/api/curriculum", json=cur).status_code, 200)
+        saved = c.get("/api/curriculum").get_json()
+        self.assertEqual(saved["in_progress"], ["B 200"])
+        by = {}
+        for s in c.get("/api/courses").get_json()["courses"]:
+            by.setdefault(s["code"], s["mine"])
+        self.assertEqual(by["B 200"]["status"], "in_progress")
+        self.assertEqual(by["C 300"]["status"], "available")                     # its prerequisite B 200 is being taken now
+        self.assertTrue(by["C 300"]["recommended"])
+        self.assertEqual(by["E 100"]["status"], "available")
+        wl = c.post("/api/wishlist", json={"code": "C 300"}).get_json()["wishlist"]
+        self.assertEqual(wl[0]["status"], "ok")                                   # wishlist no longer says "needs prereq"
+        dash = c.get("/api/dashboard").get_json()
+        self.assertIn("C 300", [a["code"] for a in dash["available"]])
+        self.assertEqual(dash["in_progress_count"], 1)
+        # without it, C 300 is blocked
+        cur["in_progress"] = []
+        self.assertEqual(c.put("/api/curriculum", json=cur).status_code, 200)
+        again = {s["code"]: s["mine"] for s in c.get("/api/courses").get_json()["courses"]}
+        self.assertEqual(again["C 300"]["status"], "blocked")
+        self.assertEqual(again["C 300"]["missing_prereqs"], ["B 200"])
+
     def _user_id(self, client):
         with client.session_transaction() as sess:
             return sess["user_id"]

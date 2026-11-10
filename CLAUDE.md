@@ -135,6 +135,8 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - Ask AI speed/errors (Nov 2026): snapshot in `_advisor_context` now holds progress, courses left, can-take-now, graduation estimate and GPA so most questions need no tool round; MAX_TOOL_ROUNDS 4; reasoning_effort defaults to "low" for Google/Groq hosts (AI_REASONING_EFFORT=off disables; a 400 about it is retried without); REQUEST_TIMEOUT 90 s (AITimeoutError); daily 429 quota is not retried (AIRateLimitError.daily); 503/529 = AIOverloadedError. `ai.HOWTO_GUIDE` (step-by-step "how do I upload / edit a course") is only added to the prompt when `wants_howto(messages)`; keep it in sync with the real page and button names. The chat itself cannot upload files or edit courses.
 
+- In-progress courses (Nov 2026): `in_progress` list in the requirements file (audit RG rows, grade-report RG rows, or the Curriculum status "In progress"). They count as DONE for prerequisites (`scheduler._done_for_planning`), the roadmap, the dashboard "available / bottlenecks / remaining required" and the AI snapshot, but NOT for credits/GPA/progress ring. `_load_data` drops codes that are completed. `/api/courses` adds `mine` per section via `_course_statuses` (completed / in_progress / blocked / not_needed / available / not_in_curriculum + recommended, rank 0 roadmap next term, 1 required, 2 elective); the Courses page shows chips, hides completed + in-progress + not-needed by default and has a "Recommended" filter.
+
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.
 
