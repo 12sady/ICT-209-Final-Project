@@ -4,7 +4,10 @@ let currentWishlist = [];
 let completedCodes = new Set();
 let catalogByCode = {}; // code -> curriculum entry (empty if no curriculum loaded)
 let currentPage = 1;
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 25;          // sections per page in the table
+const CARD_PAGE_SIZE = 12;     // courses per page in the card view
+let viewMode = "cards";        // "cards": one card per course listing all its sections; "table": one row per section
+try { viewMode = localStorage.getItem("browse-view") === "table" ? "table" : "cards"; } catch (e) { /* storage blocked: keep the default */ }
 const DEPT_PALETTE = ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"];
 
 // Best-effort default faculty filter based on the student's program name --
@@ -217,21 +220,105 @@ function seatsText(c) {
   return `${Math.round(c.seats_available)}/${Math.round(c.seats_total)}`;
 }
 
+function setViewMode(mode) {
+  viewMode = mode;
+  try { localStorage.setItem("browse-view", mode); } catch (e) { /* ignore */ }
+  currentPage = 1;
+  renderTable();
+}
+
+// One card per course: all its sections listed inside, instead of one separate row for each section.
+function groupByCourse(results) {
+  const groups = new Map();
+  results.forEach((c) => {
+    if (!groups.has(c.code)) groups.set(c.code, []);
+    groups.get(c.code).push(c);
+  });
+  return [...groups.values()];
+}
+
+function renderCards(results) {
+  const box = document.getElementById("course-cards");
+  const countEl = document.getElementById("course-count");
+  const groups = groupByCourse(results);
+  countEl.textContent = `${groups.length} course${groups.length === 1 ? "" : "s"} · ${results.length} section${results.length === 1 ? "" : "s"}`
+    + (results.length !== allCourses.length ? ` (of ${allCourses.length} sections in total)` : "");
+  const totalPages = Math.max(1, Math.ceil(groups.length / CARD_PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const page = groups.slice((currentPage - 1) * CARD_PAGE_SIZE, currentPage * CARD_PAGE_SIZE);
+  box.innerHTML = "";
+  if (!page.length) box.innerHTML = '<p class="hint">No courses match these filters.</p>';
+
+  page.forEach((secs) => {
+    const c = secs[0];
+    const inWishlist = currentWishlist.some((w) => w.code === c.code);
+    const mst = c.mine && c.mine.status;
+    const retake = mst === "in_progress" || mst === "completed";
+    const deptVar = deptColorVar(c.department);
+    const dept = c.department ? `<span class="dept-badge" style="background:${cssVarFor(deptVar)}">${escapeHtml(c.department)}</span>` : "";
+    const rows = secs.map((s) => {
+      const seat = s.risk && s.risk !== "unknown"
+        ? `<span class="risk-badge ${riskClass(s.risk)}">${seatsText(s)} · ${s.risk}</span>`
+        : `<span class="hint-inline">No seat data</span>`;
+      return `<li class="cc-sec">
+        <span class="cc-sec-no">Sec ${escapeHtml(String(s.section))}</span>
+        <span class="cc-sec-when">${timeText(s)}</span>
+        <span class="cc-sec-who">${escapeHtml(s.instructor || "—")}</span>
+        <span class="cc-sec-seats">${seat}</span>
+      </li>`;
+    }).join("");
+    const card = document.createElement("article");
+    card.className = "course-card";
+    card.innerHTML = `
+      <header class="cc-head">
+        <div><span class="code-cell">${escapeHtml(c.code)}</span> ${dept}<div class="cc-title">${escapeHtml(c.title)}</div></div>
+        <div class="cc-credits">${escapeHtml(String(c.credits))} cr</div>
+      </header>
+      <div class="cc-meta">${curriculumTag(c.code)}${statusChip(c)}${prereqLine(c)}</div>
+      <ul class="cc-secs" aria-label="Sections of ${escapeHtml(c.code)}">${rows}</ul>
+      <footer class="cc-foot"><span class="cc-demand">${demandBadge(c.demand)}</span><span class="cc-add"></span></footer>`;
+    const btn = document.createElement("button");
+    btn.setAttribute("aria-label", `${inWishlist ? "Already on wishlist:" : "Add to wishlist:"} ${c.code}`);
+    if (inWishlist) {
+      btn.textContent = "✓ Added";
+      btn.className = "secondary";
+      btn.disabled = true;
+    } else {
+      btn.textContent = retake ? "+ Add (retake)" : "+ Add to wishlist";
+      if (retake) btn.title = mst === "completed" ? "You already completed this course: adding it means a retake." : "You are taking this course now: adding it means a retake.";
+      btn.onclick = () => addToWishlist(c.code);
+    }
+    card.querySelector(".cc-add").appendChild(btn);
+    box.appendChild(card);
+  });
+  renderPagination(totalPages);
+}
+
 function renderTable() {
   const tbody = document.getElementById("course-table-body");
   const countEl = document.getElementById("course-count");
+  const tableWrap = document.getElementById("course-table-wrap");
+  const cardsBox = document.getElementById("course-cards");
   tbody.innerHTML = "";
+  [["view-cards", "cards"], ["view-table", "table"]].forEach(([id, mode]) => {
+    const b = document.getElementById(id);
+    b.setAttribute("aria-pressed", String(viewMode === mode));
+    b.classList.toggle("active", viewMode === mode);
+  });
 
   if (!allCourses.length) {
     countEl.textContent = "";
-    tbody.parentElement.hidden = true;
+    tableWrap.hidden = true;
+    cardsBox.hidden = true;
     document.getElementById("course-empty").hidden = false;
     return;
   }
-  tbody.parentElement.hidden = false;
   document.getElementById("course-empty").hidden = true;
+  tableWrap.hidden = viewMode !== "table";
+  cardsBox.hidden = viewMode !== "cards";
 
   const results = filteredCourses();
+  if (viewMode === "cards") { renderCards(results); return; }
   countEl.textContent = results.length === allCourses.length
     ? `${allCourses.length} sections`
     : `${results.length} of ${allCourses.length} sections`;
@@ -296,12 +383,12 @@ function renderPagination(totalPages) {
   document.getElementById("page-prev").onclick = () => {
     currentPage -= 1;
     renderTable();
-    document.getElementById("course-table").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelector(".view-bar").scrollIntoView({ behavior: "smooth", block: "start" });
   };
   document.getElementById("page-next").onclick = () => {
     currentPage += 1;
     renderTable();
-    document.getElementById("course-table").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelector(".view-bar").scrollIntoView({ behavior: "smooth", block: "start" });
   };
 }
 
@@ -360,6 +447,8 @@ function updateFilterBadge() {
   badge.textContent = String(n);
   document.getElementById("filters-toggle").setAttribute("aria-label", `Filters, ${n} active`);
 }
+document.getElementById("view-cards").addEventListener("click", () => setViewMode("cards"));
+document.getElementById("view-table").addEventListener("click", () => setViewMode("table"));
 document.getElementById("filters-toggle").addEventListener("click", () => {
   const panel = document.getElementById("filters-panel");
   const open = panel.classList.toggle("open");

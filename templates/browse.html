@@ -83,12 +83,19 @@
 
   <section class="layout layout-browse">
     <div class="calendar-panel">
-      <p class="hint" id="course-count"></p>
+      <div class="view-bar">
+        <p class="hint" id="course-count"></p>
+        <div class="view-toggle" role="group" aria-label="How to list the courses">
+          <button type="button" id="view-cards" class="secondary" aria-pressed="true">Cards</button>
+          <button type="button" id="view-table" class="secondary" aria-pressed="false">Table</button>
+        </div>
+      </div>
       <div id="course-empty" class="empty-state" hidden>
         <p>No courses loaded yet.</p>
         <p>Head to <a href="/import">Import</a> to bring in this term's offerings.</p>
       </div>
-      <div class="table-wrap"><table class="course-table" id="course-table">
+      <div id="course-cards" class="course-card-grid"></div>
+      <div class="table-wrap" id="course-table-wrap"><table class="course-table" id="course-table">
         <thead>
           <tr>
             <th class="col-add"><span class="sr-only">Add</span></th><th>Course</th><th>Title</th><th>When</th><th class="num">Cr</th><th>Instructor</th><th>Seats</th><th>Wishlisted by</th>
