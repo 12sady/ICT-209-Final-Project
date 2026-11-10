@@ -14,3 +14,6 @@ ai-key.sh
 
 # Real grade reports / transcripts (personal data: ID, date of birth)
 private/
+
+# Demo recording (large; the narration script is kept)
+demo/*.mp4
