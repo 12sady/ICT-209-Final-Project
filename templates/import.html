@@ -35,7 +35,7 @@
   {% if not is_admin %}
   <section class="card">
     <h2>Managed by the admin</h2>
-    <p class="hint">The term's course offerings, the academic calendar (term dates and breaks) and the sample course plans are published by the admin account, so everyone sees the same data. You can pick a sample plan and edit <em>your own</em> curriculum on the <a href="{{ url_for('curriculum') }}">Curriculum</a> page.</p>
+    <p class="hint">The term's course offerings, the academic calendar (term dates and important dates) and the sample course plans are published by the admin account, so everyone sees the same data. You can pick a sample plan and edit <em>your own</em> curriculum on the <a href="{{ url_for('curriculum') }}">Curriculum</a> page.</p>
   </section>
   {% endif %}
 
@@ -79,7 +79,7 @@
 
   <details class="card" id="cal-card">
     <summary class="card-summary"><h2>Academic calendar</h2></summary>
-    <p class="hint" id="cal-hint">When the term starts and ends, plus any breaks. The "Add to calendar" export on the Plan page repeats each class weekly between these dates and skips the breaks. A section's own dates from the Excel file (Start Date / End Date) are used first when they exist.</p>
+    <p class="hint" id="cal-hint">When the term starts and ends, plus the important dates (holidays, breaks, deadlines, exams). The "Add to calendar" export on the Plan page repeats each class weekly between these dates and skips the breaks. A section's own dates from the Excel file (Start Date / End Date) are used first when they exist.</p>
     <div id="cal-readonly" class="banner" hidden>Only the admin account (the first one created) can change the academic calendar. You can see the current dates below.</div>
     <div class="manual-grid">
       <label class="wide">Term name<input type="text" id="cal-term" placeholder="Fall 2026" /></label>
@@ -88,12 +88,8 @@
       <label>Registration opens (optional)<input type="date" id="cal-registration" /></label>
     </div>
     <div id="cal-detected" class="hint" style="margin:var(--sp-2) 0;" hidden></div>
-    <h3 style="margin:var(--sp-3) 0 var(--sp-1);">Breaks &amp; holidays</h3>
-    <p class="hint">No classes on these days (e.g. Pchum Ben, midterm break). For a single day, leave the end date the same.</p>
-    <div id="cal-breaks"></div>
-    <button id="cal-add-break" class="secondary" type="button">+ Add a break</button>
     <h3 style="margin:var(--sp-3) 0 var(--sp-1);">Important dates</h3>
-    <p class="hint">Holidays, add/drop and withdrawal deadlines, exam period, graduation... from the AUPP academic calendar. Students get these as all-day events in their calendar export (deadlines come with reminders).</p>
+    <p class="hint">Everything from the AUPP academic calendar: holidays, breaks, add/drop and withdrawal deadlines, exam period, graduation. <strong>"Campus closed" holidays and breaks mean no classes</strong>: class meetings are skipped on those days in the calendar export. Students get all of these as all-day events (deadlines come with reminders). For a single day, leave "To" empty.</p>
     <div id="cal-events"></div>
     <button id="cal-add-event" class="secondary" type="button">+ Add a date</button>
     <div style="margin-top:var(--sp-3);">

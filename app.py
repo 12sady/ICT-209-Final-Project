@@ -816,7 +816,19 @@ def api_plan_compare():
 
 CALENDAR_PATH = "data/academic_calendar.json"
 EMPTY_CALENDAR = {"term": "", "start": None, "end": None, "breaks": [], "registration_date": None, "events": []}
-CALENDAR_EVENT_KINDS = ("holiday", "deadline", "exam", "term", "other")
+CALENDAR_EVENT_KINDS = ("holiday", "break", "deadline", "exam", "term", "other")
+
+
+def _is_no_class(ev):
+    """A date with no classes: a holiday or break, or anything whose name says "campus closed" / "no class"."""
+    return ev.get("kind") in ("holiday", "break") or bool(re.search(r"campus closed|no class", ev.get("name") or "", re.I))
+
+
+def _no_class_ranges(calendar):
+    """[(first day, last day)] with no classes: the no-class important dates plus any older-style `breaks`."""
+    spans = {(e["start"], e.get("end") or e["start"]) for e in calendar.get("events") or [] if _is_no_class(e)}
+    spans |= {(b["start"], b.get("end") or b["start"]) for b in calendar.get("breaks") or []}
+    return sorted(spans)
 
 
 def _load_calendar():
@@ -841,7 +853,7 @@ def _clean_calendar(raw):
         raise ValueError("The last day of classes is before the first day.")
 
     breaks = []
-    for b in (raw.get("breaks") or [])[:40]:
+    for b in ([] if "events" in raw else (raw.get("breaks") or []))[:40]:      # older callers send `breaks`; the editor sends `events
         name = str(b.get("name") or "").strip()[:60] or "Break"
         b_start = _clean_iso_date(b.get("start"), f"'{name}' start")
         b_end = _clean_iso_date(b.get("end"), f"'{name}' end") or b_start
@@ -854,7 +866,7 @@ def _clean_calendar(raw):
     registration = _clean_iso_date(raw.get("registration_date"), "Registration date")
 
     # Important dates: holidays, deadlines, exam period... Each becomes an all-day event in the calendar export.
-    events = []
+    events = [dict(name=b["name"], start=b["start"], end=b["end"], kind="break") for b in breaks]    # older-style breaks become events
     for e in (raw.get("events") or [])[:80]:
         name = str(e.get("name") or "").strip()[:90] or "Event"
         e_start = _clean_iso_date(e.get("start"), f"'{name}' date")
@@ -866,6 +878,8 @@ def _clean_calendar(raw):
         kind = str(e.get("kind") or "other").strip().lower()
         events.append({"name": name, "start": e_start, "end": e_end, "kind": kind if kind in CALENDAR_EVENT_KINDS else "other"})
     events.sort(key=lambda e: (e["start"], e["name"]))
+    # `breaks` is derived from the important dates (kept for older readers): every date that means no classes.
+    breaks = [{"name": e["name"], "start": e["start"], "end": e["end"]} for e in events if _is_no_class(e)]
     return {"term": term, "start": start, "end": end, "breaks": breaks, "registration_date": registration, "events": events}
 
 
@@ -940,6 +954,9 @@ def _calendar_date_events(calendar):
     the term start/end."""
     events = [dict(e) for e in calendar.get("events") or []]
     if events:
+        listed = {(e["start"], e.get("end") or e["start"]) for e in events}
+        events += [dict(name=b["name"], start=b["start"], end=b["end"], kind="break")
+                   for b in calendar.get("breaks") or [] if (b["start"], b.get("end") or b["start"]) not in listed]
         return events
     out = [dict(name=b["name"], start=b["start"], end=b["end"], kind="holiday") for b in calendar.get("breaks") or []]
     if calendar.get("start"):
@@ -994,10 +1011,8 @@ def _build_plan_ics(plan, calendar=None):
     now = datetime.now()
     stamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
     breaks = []
-    for b in calendar.get("breaks") or []:
-        d0 = datetime.strptime(b["start"], "%Y-%m-%d").date()
-        d1 = datetime.strptime(b["end"], "%Y-%m-%d").date()
-        breaks.append((d0, d1))
+    for b0, b1 in _no_class_ranges(calendar):
+        breaks.append((datetime.strptime(b0, "%Y-%m-%d").date(), datetime.strptime(b1, "%Y-%m-%d").date()))
 
     term = calendar.get("term") or ""
     lines = [

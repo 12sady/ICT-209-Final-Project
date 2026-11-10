@@ -145,6 +145,8 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - Courses page has a Cards / Table toggle (remembered in localStorage `browse-view`, default Cards): a card per course listing all its sections (days, time, instructor, seats) with one wishlist button; the Table is one row per section. Filters apply to sections first, then cards group what is left; cards paginate 12 courses per page.
 
+- Academic calendar (Nov 2026): the Import page has ONE list, "Important dates" (no separate breaks list). A date means NO CLASSES if its type is Holiday or Break, or its name says "campus closed" / "no class" (`_is_no_class`); class meetings are skipped on those days in the .ics (EXDATE). `breaks` in the file is derived from those dates for older readers; older callers that send only `breaks` still work.
+
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.
 

@@ -28,8 +28,8 @@ class CalendarDatesTest(unittest.TestCase):
     def test_classes_stay_one_repeating_series_and_dates_are_all_day_events(self):
         ics, info = self.build({"sections": [SECTION]})
         self.assertEqual(ics.count("RRULE:FREQ=WEEKLY;BYDAY=MO,TH"), 1)               # still ONE series per class
-        self.assertEqual(ics.count("BEGIN:VEVENT"), 1 + 3)
-        self.assertEqual(info["calendar_events"], 3)
+        self.assertEqual(ics.count("BEGIN:VEVENT"), 1 + 4)                              # 3 dates + the older-style break (Lunar New Year)
+        self.assertEqual(info["calendar_events"], 4)
         self.assertIn("DTSTART;VALUE=DATE:20270414", ics)
         self.assertIn("DTEND;VALUE=DATE:20270417", ics)                                # 14-16 April: end date is exclusive
         self.assertIn("DTSTART;VALUE=DATE:20270503", ics)
@@ -44,7 +44,7 @@ class CalendarDatesTest(unittest.TestCase):
     def test_dates_only_and_opt_out(self):
         ics, info = self.build({"sections": [SECTION], "dates_only": True})
         self.assertNotIn("RRULE", ics)
-        self.assertEqual((info["exported"], info["calendar_events"]), (0, 3))
+        self.assertEqual((info["exported"], info["calendar_events"]), (0, 4))
         ics, info = self.build({"sections": [SECTION], "include_calendar": False})
         self.assertEqual((info["exported"], info["calendar_events"]), (1, 0))
         self.assertNotIn("VALUE=DATE", ics)
@@ -71,6 +71,34 @@ class CalendarDatesTest(unittest.TestCase):
             app_module._clean_calendar({"events": [{"name": "No date"}]})
         with self.assertRaises(ValueError):
             app_module._clean_calendar({"events": [{"name": "Backwards", "start": "2027-03-07", "end": "2027-03-01"}]})
+
+
+    def test_campus_closed_means_no_class_whatever_the_type(self):
+        cal = dict(CAL, breaks=[], events=[
+            {"name": "Pchum Ben (campus closed)", "start": "2027-02-04", "end": "2027-02-04", "kind": "other"},     # a Thursday, a class day
+            {"name": "Midterm break", "start": "2027-03-01", "end": "2027-03-01", "kind": "break"},               # a Monday
+            {"name": "Last day to ADD/DROP courses", "start": "2027-01-15", "end": "2027-01-15", "kind": "deadline"},
+        ])
+        ics, info = self.build({"sections": [SECTION]}, cal)
+        ex = [l for l in ics.splitlines() if l.startswith("EXDATE")][0]
+        self.assertIn("20270204T120000", ex)
+        self.assertIn("20270301T120000", ex)
+        self.assertNotIn("20270115", ex)                                                  # a deadline is not a day off
+        self.assertEqual(info["breaks"], 2)
+
+    def test_validation_derives_breaks_from_important_dates(self):
+        out = app_module._clean_calendar({"term": "T", "start": "2027-01-11", "end": "2027-04-30", "events": [
+            {"name": "Khmer New Year (campus closed)", "start": "2027-04-14", "end": "2027-04-16", "kind": "other"},
+            {"name": "Withdraw deadline", "start": "2027-03-07", "kind": "deadline"},
+            {"name": "Midterm break", "start": "2027-03-01", "kind": "break"}]})
+        self.assertEqual([b["name"] for b in out["breaks"]], ["Midterm break", "Khmer New Year (campus closed)"])
+        self.assertEqual(len(out["events"]), 3)
+
+    def test_older_clients_that_send_only_breaks_still_work(self):
+        out = app_module._clean_calendar({"term": "T", "start": "2027-01-11", "end": "2027-04-30",
+                                          "breaks": [{"name": "Pchum Ben", "start": "2027-02-04"}]})
+        self.assertEqual([(e["name"], e["kind"]) for e in out["events"]], [("Pchum Ben", "break")])
+        self.assertEqual(len(out["breaks"]), 1)
 
 
 if __name__ == "__main__":

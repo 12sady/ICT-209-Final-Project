@@ -4,21 +4,52 @@
   "end": "2027-04-30",
   "breaks": [
     {
-      "name": "Lunar New Year",
+      "name": "International New Year Day (campus closed)",
+      "start": "2027-01-01",
+      "end": "2027-01-01"
+    },
+    {
+      "name": "Victory Over Genocide Day (campus closed)",
+      "start": "2027-01-07",
+      "end": "2027-01-07"
+    },
+    {
+      "name": "Lunar New Year (campus closed)",
       "start": "2027-02-05",
       "end": "2027-02-05"
     },
     {
-      "name": "International Women's Day",
+      "name": "International Women's Day (campus closed)",
       "start": "2027-03-08",
       "end": "2027-03-08"
     },
     {
-      "name": "Khmer New Year",
+      "name": "Khmer New Year (campus closed)",
       "start": "2027-04-14",
       "end": "2027-04-16"
+    },
+    {
+      "name": "International Labor Day (campus closed)",
+      "start": "2027-05-01",
+      "end": "2027-05-01"
+    },
+    {
+      "name": "King Norodom Sihamoni's birthday (campus closed)",
+      "start": "2027-05-14",
+      "end": "2027-05-14"
+    },
+    {
+      "name": "Visak Bochea Day (campus closed)",
+      "start": "2027-05-20",
+      "end": "2027-05-20"
+    },
+    {
+      "name": "Royal Plowing Ceremony Day (campus closed)",
+      "start": "2027-05-24",
+      "end": "2027-05-24"
     }
   ],
+  "registration_date": null,
   "events": [
     {
       "name": "International New Year Day (campus closed)",

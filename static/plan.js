@@ -592,7 +592,7 @@ async function loadCalendarNote() {
     const data = await (await fetch("/api/academic-calendar")).json();
     const cal = data.calendar || {};
     if (cal.start && cal.end) {
-      const brk = (cal.breaks || []).length;
+      const brk = (cal.breaks || []).filter((b) => b.start <= cal.end && (b.end || b.start) >= cal.start).length;
       el.innerHTML = `Calendar export repeats each class weekly from <strong>${fmtShortDate(cal.start)}</strong> to <strong>${fmtShortDate(cal.end)}</strong>` +
         `${cal.term ? ` (${escapeHtml(cal.term)})` : ""}${brk ? `, skipping ${brk} break${brk === 1 ? "" : "s"}` : ""}. ` +
         `To import in Google Calendar: Settings → Import &amp; export.`;
