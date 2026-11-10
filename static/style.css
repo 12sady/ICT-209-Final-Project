@@ -1291,6 +1291,7 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
 .view-toggle button:last-child { border-radius: 0 10px 10px 0; border-left: 0; }
 .view-toggle button.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
 .course-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.course-card-grid[hidden], #course-table-wrap[hidden] { display: none; }      /* display:grid above would otherwise override the hidden attribute */
 .course-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04); }
 .cc-head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
 .cc-title { font-weight: 600; margin-top: 2px; }
