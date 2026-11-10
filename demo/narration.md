@@ -1,81 +1,40 @@
-# Demo narration (voice-over script)
+# Demo voice-over script (v2, conversational)
 
-Each scene is on screen while this is read. Record your own voice over the silent video if you prefer.
+Read it like you're showing a friend, not reading a report. Short sentences, smile on the first line, pause where there's a "…".
+Each scene matches a step in `run-sheet.md`. About 2 minutes at a relaxed pace.
 
-
-## 0. AUPP Registration Planner
-*On screen:* Plan your term before you register
-
-This is the AUPP Registration Planner, a free web app that helps a student plan their term before registration opens.
-
+## 0. Intro
+Hi everyone! Ever tried to plan a semester and ended up with ten tabs open, a spreadsheet, and a lot of guessing? That's exactly what our project fixes. This is the AUPP Registration Planner. It helps you plan your term before registration even opens.
 
 ## 1. Dashboard
-*On screen:* Progress, GPA, graduation estimate, and what you can take now
-
-The dashboard shows where you stand: credits completed, your estimated graduation term, your GPA, progress by category, and the required courses you can take right now.
-
+So, here's the dashboard. At a glance: how far along I am, about half the degree here, my GPA, my estimated graduation… and my favourite part, the courses I can actually take right now.
 
 ## 2. Build your curriculum
-*On screen:* Sample plan, SIS degree audit PDF, or grade report PDF
-
-Your curriculum can start from your major's sample plan, or you can import your SIS degree audit or grade report as a PDF. The app reads your courses, semesters and grades, shows a preview, and only saves after you confirm. The PDF itself is never stored.
-
+To get started, you load your curriculum. Pick your major's sample plan, or import your SIS degree audit, or your grade report, as a PDF. The app reads it, shows you a preview, and only saves once you confirm. And the PDF itself is never stored.
 
 ## 3. Courses by category
-*On screen:* Each course has a status; courses in progress count as done for planning
+Everything's grouped by category, with a status on each course. And here's a small thing that really matters: a course you're taking right now counts as done for prerequisites. So you can plan next semester today.
 
-Courses are grouped by category, with a status for each one. Courses you are taking now count as done for prerequisites, so you can plan the next term.
-
-
-## 4. Courses: one card per course
-*On screen:* Recommended filter, prerequisites with marks, all sections in one card
-
-On the Courses page every course is one card with all its sections. The recommended filter shows what to take first, based on your roadmap, and each course shows its prerequisites and whether you can take it.
-
+## 4. Courses page
+On the Courses page, every course is one card, with all its sections inside. Tick "Recommended", and it shows what to take first, based on your roadmap. Prerequisites are marked, so you always know why you can, or can't, take something.
 
 ## 5. Recommended plans
-*On screen:* From every clash-free schedule to the best few
-
-With courses on your wishlist, the planner finds every clash free schedule. A bigger wishlist can give tens of thousands. The recommended plans panel shows the top few, each the best at something different.
-
+Now the fun part. Add courses to your wishlist, and the planner finds every schedule with no clashes. Sometimes that's thousands! So instead of drowning in options, you get a few recommended plans, each one best at something different. Fewest days on campus, or sleeping in, for example.
 
 ## 6. Filters
-*On screen:* Free days, start and end times, days on campus, waiting time
+And if you have opinions, like "Friday free" or "nothing before ten", the filters take care of that.
 
-Filters narrow it further: keep a day free, start no earlier than a time, finish by a time, or limit the days on campus and the waiting between classes.
+## 7. Your week and calendar
+Pick one, and there's your week. Pin plans to compare them, set your favourite as active, and add it straight to your calendar. Each class goes in as one repeating weekly event, so changing it later is easy.
 
+## 8. Important dates
+It also brings in the academic calendar: the holidays, when campus is closed, so no classes get scheduled that day, plus the add-drop and withdrawal deadlines, with reminders. And there are steps for Google Calendar, Outlook, and Apple Calendar.
 
-## 7. Your week
-*On screen:* Pin to compare, make it active, add to your calendar
+## 9. Roadmap and GPA
+The roadmap places every remaining course in a semester, prerequisites first, and estimates when you'll graduate. And the GPA page keeps your grades by semester, with what-if tools for reaching a target.
 
-Pick a plan and see your week. Pin plans to compare them, make one your active plan, and add it to your calendar in one click, as repeating weekly classes.
+## 10. AI advisor
+Finally, the AI advisor. It knows your real data, so you can just ask, "What should I take next term?", and you get an answer in seconds. It can also walk you through things, like how to upload your grade report.
 
-
-## 8. Academic calendar built in
-*On screen:* Holidays mean no classes; deadlines come with reminders
-
-The calendar export also carries the academic calendar: holidays where campus is closed, so no classes are scheduled, the add drop and withdrawal deadlines with reminders, and the exam period. There are steps for Google Calendar, Outlook and Apple Calendar.
-
-
-## 9. Graduation roadmap
-*On screen:* Every remaining course placed so prerequisites come first
-
-The roadmap places every remaining course in a semester, so prerequisites come first, and estimates your graduation term.
-
-
-## 10. GPA
-*On screen:* Grades by semester, with what-if tools
-
-The GPA page tracks your grades by semester, and has what if tools to see what you need to reach a target.
-
-
-## 11. AI advisor
-*On screen:* Answers from your real data, and explains how to do things
-
-And the AI advisor answers from your real data. Here it recommends what to take next term in about four seconds, and it can walk you through steps like uploading a grade report.
-
-
-## 12. Free, simple, yours
-*On screen:* Runs on a laptop. Each student's data stays in their own folder.
-
-Everything runs for free on a laptop, with each student's data kept in their own folder. Thank you.
+## 11. Outro
+It's free, it runs on a laptop, and every student's data stays in their own folder. Thanks for watching!

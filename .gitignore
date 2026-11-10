@@ -17,3 +17,4 @@ private/
 
 # Demo recording (large; the narration script is kept)
 demo/*.mp4
+demo/voice/
