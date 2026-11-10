@@ -815,7 +815,8 @@ def api_plan_compare():
 # ---------------------------------------------------------------------------
 
 CALENDAR_PATH = "data/academic_calendar.json"
-EMPTY_CALENDAR = {"term": "", "start": None, "end": None, "breaks": [], "registration_date": None}
+EMPTY_CALENDAR = {"term": "", "start": None, "end": None, "breaks": [], "registration_date": None, "events": []}
+CALENDAR_EVENT_KINDS = ("holiday", "deadline", "exam", "term", "other")
 
 
 def _load_calendar():
@@ -823,8 +824,10 @@ def _load_calendar():
         with open(CALENDAR_PATH) as f:
             cal = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
-        return dict(EMPTY_CALENDAR, breaks=[])
-    return dict(EMPTY_CALENDAR, **{k: cal.get(k) for k in EMPTY_CALENDAR if k in cal})
+        return dict(EMPTY_CALENDAR, breaks=[], events=[])
+    out = dict(EMPTY_CALENDAR, **{k: cal.get(k) for k in EMPTY_CALENDAR if k in cal})
+    out["events"] = list(out.get("events") or [])
+    return out
 
 
 def _clean_calendar(raw):
@@ -849,7 +852,21 @@ def _clean_calendar(raw):
         breaks.append({"name": name, "start": b_start, "end": b_end})
     breaks.sort(key=lambda b: b["start"])
     registration = _clean_iso_date(raw.get("registration_date"), "Registration date")
-    return {"term": term, "start": start, "end": end, "breaks": breaks, "registration_date": registration}
+
+    # Important dates: holidays, deadlines, exam period... Each becomes an all-day event in the calendar export.
+    events = []
+    for e in (raw.get("events") or [])[:80]:
+        name = str(e.get("name") or "").strip()[:90] or "Event"
+        e_start = _clean_iso_date(e.get("start"), f"'{name}' date")
+        e_end = _clean_iso_date(e.get("end"), f"'{name}' end") or e_start
+        if not e_start:
+            raise ValueError(f"'{name}' needs a date.")
+        if e_end < e_start:
+            raise ValueError(f"'{name}' ends before it starts.")
+        kind = str(e.get("kind") or "other").strip().lower()
+        events.append({"name": name, "start": e_start, "end": e_end, "kind": kind if kind in CALENDAR_EVENT_KINDS else "other"})
+    events.sort(key=lambda e: (e["start"], e["name"]))
+    return {"term": term, "start": start, "end": end, "breaks": breaks, "registration_date": registration, "events": events}
 
 
 def _detected_term_dates(offerings):
@@ -918,6 +935,48 @@ def _parse_hm(t):
     return int(h), int(m)
 
 
+def _calendar_date_events(calendar):
+    """Academic dates as all-day events: the calendar's own `events`, or (older calendars) the breaks plus
+    the term start/end."""
+    events = [dict(e) for e in calendar.get("events") or []]
+    if events:
+        return events
+    out = [dict(name=b["name"], start=b["start"], end=b["end"], kind="holiday") for b in calendar.get("breaks") or []]
+    if calendar.get("start"):
+        out.append({"name": "First day of classes", "start": calendar["start"], "end": calendar["start"], "kind": "term"})
+    if calendar.get("end"):
+        out.append({"name": "Last day of classes", "start": calendar["end"], "end": calendar["end"], "kind": "term"})
+    if calendar.get("registration_date"):
+        out.append({"name": "Registration opens", "start": calendar["registration_date"], "end": calendar["registration_date"], "kind": "deadline"})
+    return out
+
+
+def _ics_all_day_event(ev, stamp):
+    """One all-day VEVENT. Deadlines get two reminders (9:00 the day before, and three days before)."""
+    d0 = datetime.strptime(ev["start"], "%Y-%m-%d").date()
+    d1 = datetime.strptime(ev.get("end") or ev["start"], "%Y-%m-%d").date() + timedelta(days=1)       # DTEND is exclusive
+    kind = ev.get("kind") or "other"
+    name = ev["name"]
+    summary = f"Deadline: {name}" if kind == "deadline" and not name.lower().startswith(("deadline", "last day")) else name
+    slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")[:40]
+    lines = [
+        "BEGIN:VEVENT",
+        f"UID:acal-{slug}-{d0.strftime('%Y%m%d')}@registration-planner",
+        f"DTSTAMP:{stamp}",
+        f"DTSTART;VALUE=DATE:{d0.strftime('%Y%m%d')}",
+        f"DTEND;VALUE=DATE:{d1.strftime('%Y%m%d')}",
+        f"SUMMARY:{_ics_escape(summary)}",
+        f"DESCRIPTION:{_ics_escape('AUPP academic calendar (' + kind + ')')}",
+        f"CATEGORIES:AUPP {kind.title()}",
+        "TRANSP:TRANSPARENT",                      # shows as free time, so it doesn't block your calendar
+    ]
+    if kind == "deadline":
+        for trigger in ("-PT15H", "-P3DT15H"):
+            lines += ["BEGIN:VALARM", "ACTION:DISPLAY", f"DESCRIPTION:{_ics_escape(summary)}", f"TRIGGER:{trigger}", "END:VALARM"]
+    lines.append("END:VEVENT")
+    return lines
+
+
 def _build_plan_ics(plan, calendar=None):
     """One recurring event per section (a weekly series on all its meeting
     days), in Phnom Penh time, with the classroom as the location. Returns
@@ -930,6 +989,8 @@ def _build_plan_ics(plan, calendar=None):
          for 15 weeks (the user can adjust the end in their calendar app).
     Calendar breaks are skipped with EXDATE when they're known."""
     calendar = calendar or EMPTY_CALENDAR
+    dates_only = bool(plan.get("dates_only"))                      # just the academic dates, no classes
+    include_dates = dates_only or plan.get("include_calendar", True) is not False
     now = datetime.now()
     stamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
     breaks = []
@@ -962,7 +1023,7 @@ def _build_plan_ics(plan, calendar=None):
     skipped_online, sources = [], {"section": 0, "calendar": 0, "none": 0}
     exported = 0
 
-    for s in plan.get("sections", []):
+    for s in ([] if dates_only else plan.get("sections", [])):
         label = f"{s.get('code', '')} {s.get('section', '')}".strip()
         days = [d for d in (s.get("days") or []) if d in _WEEKDAY_INDEX]
         if s.get("online") or not s.get("start") or not s.get("end") or not days:
@@ -1051,6 +1112,12 @@ def _build_plan_ics(plan, calendar=None):
         lines += ev
         exported += 1
 
+    n_dates = 0
+    if include_dates:
+        for ev in _calendar_date_events(calendar):
+            lines += _ics_all_day_event(ev, stamp)
+            n_dates += 1
+
     lines.append("END:VCALENDAR")
     ics = "\r\n".join(_ics_fold(l) for l in lines) + "\r\n"
     info = {
@@ -1059,6 +1126,7 @@ def _build_plan_ics(plan, calendar=None):
         "dates_from": {k: v for k, v in sources.items() if v},
         "term": term,
         "breaks": len(breaks),
+        "calendar_events": n_dates,
     }
     return ics, info
 

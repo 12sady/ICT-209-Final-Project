@@ -574,7 +574,8 @@ async function downloadActivePlan() {
   statusEl.textContent = "Preparing download…";
   const plan = planData.plans[activeIndex];
   try {
-    statusEl.textContent = await downloadPlanIcs({ ...plan, program: planData.program }, plan.label);
+    const incl = document.getElementById("ics-include-dates");
+    statusEl.textContent = await downloadPlanIcs({ ...plan, program: planData.program, include_calendar: incl ? incl.checked : true }, plan.label);
   } catch (e) {
     statusEl.textContent = e.message;
   }
@@ -604,6 +605,12 @@ async function loadCalendarNote() {
 
 document.getElementById("export-pdf-btn").addEventListener("click", printActivePlan);
 document.getElementById("export-ics-btn").addEventListener("click", downloadActivePlan);
+document.getElementById("export-dates-btn").addEventListener("click", async () => {
+  const statusEl = document.getElementById("export-status");
+  statusEl.textContent = "Preparing download…";
+  try { statusEl.textContent = await downloadPlanIcs({ dates_only: true, sections: [] }, "academic_dates"); }
+  catch (e) { statusEl.textContent = e.message; }
+});
 document.getElementById("pin-btn").addEventListener("click", togglePin);
 document.getElementById("view-week").addEventListener("click", () => setView("week"));
 document.getElementById("view-list").addEventListener("click", () => setView("list"));

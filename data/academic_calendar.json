@@ -18,5 +18,127 @@
       "start": "2027-04-14",
       "end": "2027-04-16"
     }
+  ],
+  "events": [
+    {
+      "name": "International New Year Day (campus closed)",
+      "start": "2027-01-01",
+      "end": "2027-01-01",
+      "kind": "holiday"
+    },
+    {
+      "name": "Victory Over Genocide Day (campus closed)",
+      "start": "2027-01-07",
+      "end": "2027-01-07",
+      "kind": "holiday"
+    },
+    {
+      "name": "First day of classes",
+      "start": "2027-01-11",
+      "end": "2027-01-11",
+      "kind": "term"
+    },
+    {
+      "name": "Last day to ADD/DROP courses",
+      "start": "2027-01-15",
+      "end": "2027-01-15",
+      "kind": "deadline"
+    },
+    {
+      "name": "Last day for 80% tuition refund",
+      "start": "2027-01-24",
+      "end": "2027-01-24",
+      "kind": "deadline"
+    },
+    {
+      "name": "Lunar New Year (campus closed)",
+      "start": "2027-02-05",
+      "end": "2027-02-05",
+      "kind": "holiday"
+    },
+    {
+      "name": "Last day for 40% tuition refund",
+      "start": "2027-02-07",
+      "end": "2027-02-07",
+      "kind": "deadline"
+    },
+    {
+      "name": "Last day to WITHDRAW from courses with W grade",
+      "start": "2027-03-07",
+      "end": "2027-03-07",
+      "kind": "deadline"
+    },
+    {
+      "name": "International Women's Day (campus closed)",
+      "start": "2027-03-08",
+      "end": "2027-03-08",
+      "kind": "holiday"
+    },
+    {
+      "name": "Course evaluation opens",
+      "start": "2027-04-12",
+      "end": "2027-04-12",
+      "kind": "other"
+    },
+    {
+      "name": "Khmer New Year (campus closed)",
+      "start": "2027-04-14",
+      "end": "2027-04-16",
+      "kind": "holiday"
+    },
+    {
+      "name": "Course evaluation closes",
+      "start": "2027-04-23",
+      "end": "2027-04-23",
+      "kind": "deadline"
+    },
+    {
+      "name": "Last day of classes",
+      "start": "2027-04-30",
+      "end": "2027-04-30",
+      "kind": "term"
+    },
+    {
+      "name": "International Labor Day (campus closed)",
+      "start": "2027-05-01",
+      "end": "2027-05-01",
+      "kind": "holiday"
+    },
+    {
+      "name": "Final exam period",
+      "start": "2027-05-03",
+      "end": "2027-05-07",
+      "kind": "exam"
+    },
+    {
+      "name": "AUPP Graduation Ceremony - Class of 2027",
+      "start": "2027-05-08",
+      "end": "2027-05-08",
+      "kind": "other"
+    },
+    {
+      "name": "Grades posted on transcripts",
+      "start": "2027-05-13",
+      "end": "2027-05-13",
+      "kind": "other"
+    },
+    {
+      "name": "King Norodom Sihamoni's birthday (campus closed)",
+      "start": "2027-05-14",
+      "end": "2027-05-14",
+      "kind": "holiday"
+    },
+    {
+      "name": "Visak Bochea Day (campus closed)",
+      "start": "2027-05-20",
+      "end": "2027-05-20",
+      "kind": "holiday"
+    },
+    {
+      "name": "Royal Plowing Ceremony Day (campus closed)",
+      "start": "2027-05-24",
+      "end": "2027-05-24",
+      "kind": "holiday"
+    }
   ]
 }

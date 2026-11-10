@@ -139,6 +139,8 @@ Solo class project by Bunleng (BSAI student at AUPP). **No budget**: keep everyt
 
 - Courses outside the degree audit (e.g. ICT 340) can still be taken as electives: `/api/courses` marks them `outside_ok` / `outside_blocked` using the registrar sheet's prerequisites (`_sheet_prereqs`, `_sheet_missing`; in-progress counts as done), and the wishlist status uses the same check. The sheet's prerequisites are otherwise display-only.
 
+- Calendar export: one repeating weekly VEVENT per class (RRULE, EXDATE for breaks, stable UIDs so re-importing updates instead of duplicating) plus the academic calendar's `events` (holiday / deadline / exam / term / other, edited in the Import page calendar card, seeded from the Spring 2027 PDF) as all-day free-time events; deadlines get two VALARM reminders. POST body flags: `include_calendar` (default true), `dates_only`. No direct Google/Outlook add (would need OAuth); the Plan page has import instructions.
+
 ## Ideas not done yet
 - Retakes in GPA; real future-term offerings; seat data from the registrar; dark mode; admin-editable grade scale.
 

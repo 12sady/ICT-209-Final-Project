@@ -133,12 +133,15 @@ function timetableHtml(sections, opts) {
 // ---------------------------------------------------------------------------
 function describeIcsExport(info) {
   const n = info.exported || 0;
-  let msg = `Downloaded — ${n} repeating class${n === 1 ? "" : "es"}, one per course (not one event per day).`;
+  let msg = n
+    ? `Downloaded — ${n} repeating class${n === 1 ? "" : "es"}, one per course (not one event per day).`
+    : "Downloaded — academic dates only.";
   const src = info.dates_from || {};
   if (src.none) {
     msg += ` ${src.none} had no known term dates, so ${src.none === 1 ? "it repeats" : "they repeat"} for 15 weeks from the next class day.`;
   }
-  if (info.breaks) msg += ` ${info.breaks} break${info.breaks === 1 ? "" : "s"} skipped.`;
+  if (n && info.breaks) msg += ` ${info.breaks} break${info.breaks === 1 ? "" : "s"} skipped.`;
+  if (info.calendar_events) msg += ` Plus ${info.calendar_events} academic date${info.calendar_events === 1 ? "" : "s"} (holidays, deadlines, exams) as all-day events.`;
   if (info.skipped && info.skipped.length) {
     msg += ` Not included (no fixed meeting time): ${info.skipped.join(", ")}.`;
   }

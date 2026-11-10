@@ -32,10 +32,24 @@
       <div class="plan-export-bar" id="plan-export-bar2" hidden>
         <button id="export-pdf-btn" class="secondary">Export as PDF</button>
         <button id="export-ics-btn" class="secondary">Add to calendar (.ics)</button>
+        <button id="export-dates-btn" class="secondary" type="button">Academic dates only (.ics)</button>
+        <label class="opt-check"><input type="checkbox" id="ics-include-dates" checked /> Include holidays, deadlines and exams</label>
         <a href="{{ url_for('registration_sheet_page') }}" class="compare-link">Registration-day sheet →</a>
       </div>
       <p id="export-status" class="hint" style="margin-top: var(--sp-2);"></p>
       <p id="calendar-note" class="hint"></p>
+      <details class="hint" id="calendar-help">
+        <summary>How to add this to Google Calendar, Outlook or Apple Calendar</summary>
+        <ul>
+          <li>Each class is saved as <strong>one repeating weekly event</strong>, so editing or deleting it asks "this event or all events?", and you can change the whole series at once.</li>
+          <li><strong>Tip:</strong> create a new calendar first (for example "AUPP Spring 2027") and import into it. To undo everything later, delete that one calendar.</li>
+          <li><strong>Google Calendar:</strong> open calendar.google.com on a computer, then Settings (gear) &rarr; Import &amp; export &rarr; Import, choose the .ics file and pick the calendar. (The phone app can't import files; import on the web and it syncs.)</li>
+          <li><strong>Outlook:</strong> Outlook on the web &rarr; Add calendar &rarr; Upload from file. Desktop Outlook: File &rarr; Open &amp; Export &rarr; Import/Export &rarr; Import an iCalendar (.ics) file.</li>
+          <li><strong>Apple Calendar:</strong> double-click the .ics file and choose the calendar (a new one is best).</li>
+          <li>Importing the same file again updates the same events instead of duplicating them.</li>
+          <li>Holidays, the add/drop and withdrawal deadlines, and the exam period come from the academic calendar as all-day events (free time). Deadlines also remind you the day before and three days before.</li>
+        </ul>
+      </details>
     </div>
 
     <aside class="side-panel">

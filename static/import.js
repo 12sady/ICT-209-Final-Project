@@ -596,9 +596,27 @@ function breakRow(b) {
   return row;
 }
 
+function eventRow(e) {
+  const row = document.createElement("div");
+  row.className = "cal-event manual-grid";
+  const kinds = [["holiday", "Holiday (campus closed)"], ["deadline", "Deadline"], ["exam", "Exams"], ["term", "Term start / end"], ["other", "Other"]];
+  row.innerHTML = `
+    <label class="wide">Name<input type="text" class="ce-name" placeholder="Last day to WITHDRAW" /></label>
+    <label>From<input type="date" class="ce-start" /></label>
+    <label>To (optional)<input type="date" class="ce-end" /></label>
+    <label>Type<select class="ce-kind">${kinds.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select></label>
+    <button class="secondary ce-remove" type="button" style="align-self:end;">Remove</button>`;
+  row.querySelector(".ce-name").value = e.name || "";
+  row.querySelector(".ce-start").value = e.start || "";
+  row.querySelector(".ce-end").value = e.end && e.end !== e.start ? e.end : "";
+  row.querySelector(".ce-kind").value = e.kind || "other";
+  row.querySelector(".ce-remove").onclick = () => row.remove();
+  return row;
+}
+
 function setCalendarEditable(can) {
   MS("cal-readonly").hidden = can;
-  document.querySelectorAll("#cal-card input, #cal-card button").forEach((el) => { el.disabled = !can; });
+  document.querySelectorAll("#cal-card input, #cal-card button, #cal-card select").forEach((el) => { el.disabled = !can; });
 }
 
 function fmtDate(iso) {
@@ -616,6 +634,9 @@ async function loadCalendar() {
   const wrap = MS("cal-breaks");
   wrap.innerHTML = "";
   (cal.breaks || []).forEach((b) => wrap.appendChild(breakRow(b)));
+  const evWrap = MS("cal-events");
+  evWrap.innerHTML = "";
+  (cal.events || []).forEach((e) => evWrap.appendChild(eventRow(e)));
 
   calDetected = data.detected;
   const det = MS("cal-detected");
@@ -637,6 +658,7 @@ async function loadCalendar() {
 }
 
 MS("cal-add-break").addEventListener("click", () => MS("cal-breaks").appendChild(breakRow({})));
+MS("cal-add-event").addEventListener("click", () => MS("cal-events").appendChild(eventRow({})));
 
 MS("cal-save-btn").addEventListener("click", async () => {
   const status = MS("cal-status");
@@ -648,10 +670,18 @@ MS("cal-save-btn").addEventListener("click", async () => {
       end: r.querySelector(".cb-end").value,
     }))
     .filter((b) => b.name || b.start || b.end);
+  const events = Array.from(document.querySelectorAll("#cal-events .cal-event"))
+    .map((r) => ({
+      name: r.querySelector(".ce-name").value,
+      start: r.querySelector(".ce-start").value,
+      end: r.querySelector(".ce-end").value,
+      kind: r.querySelector(".ce-kind").value,
+    }))
+    .filter((e) => e.name || e.start);
   const res = await fetch("/api/academic-calendar", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ term: MS("cal-term").value, start: MS("cal-start").value, end: MS("cal-end").value, registration_date: MS("cal-registration").value, breaks }),
+    body: JSON.stringify({ term: MS("cal-term").value, start: MS("cal-start").value, end: MS("cal-end").value, registration_date: MS("cal-registration").value, breaks, events }),
   });
   const data = await res.json();
   status.textContent = res.ok ? "Saved. New calendar exports will use these dates." : (data.error || "Couldn't save.");
