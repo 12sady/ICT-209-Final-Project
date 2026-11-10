@@ -3,6 +3,10 @@ const PALETTE = ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"];
 let planData = null;
 let activeIndex = 0;
 let sortMode = "best";
+const PLAN_DEFAULTS = { free: [], start: "", end: "", maxDays: "", maxGap: "", keepAll: false, limit: "10", picks: "3" };
+let planFilters = { ...PLAN_DEFAULTS };
+try { planFilters = { ...PLAN_DEFAULTS, ...JSON.parse(localStorage.getItem("plan-helper") || "{}") }; } catch (e) { /* storage blocked */ }
+const savePlanFilters = () => { try { localStorage.setItem("plan-helper", JSON.stringify(planFilters)); } catch (e) { /* ignore */ } };
 let alternatesRequest = 0;
 let choices = { pins: [], active: null, max_pins: 3 };
 
@@ -72,7 +76,9 @@ async function loadPlans() {
   planData.plans.forEach((plan, i) => {
     plan.sections = plan.picks.map((idx) => planData.section_pool[idx]);
     plan.rank = i;
+    planMetrics(plan);
   });
+  planData.allPlans = planData.plans.slice();           // everything the planner found; planData.plans = what is shown now
 
   document.getElementById("program-name").textContent = planData.program;
   renderBanners();
@@ -99,8 +105,9 @@ async function loadPlans() {
 
   document.getElementById("plan-export-bar").hidden = false;
   document.getElementById("plan-export-bar2").hidden = false;
-  applySort();
-  // Open on the student's active plan when it's still one of the valid plans.
+  initPlanHelper();
+  refreshView();
+  // Open on the student's active plan when it's still among the plans shown.
   const act = choices.active ? planData.plans.findIndex((p) => planKeyOf(p.sections) === choices.active.key) : -1;
   activeIndex = Math.max(0, act);
   renderTabs();
@@ -150,12 +157,141 @@ const SORTS = {
   days: { label: "Fewest days on campus", cmp: (a, b) => a.days_on_campus - b.days_on_campus || a.gap_minutes - b.gap_minutes || a.rank - b.rank },
   gaps: { label: "Fewest gaps between classes", cmp: (a, b) => a.gap_minutes - b.gap_minutes || a.days_on_campus - b.days_on_campus || a.rank - b.rank },
   late: { label: "Latest start", cmp: (a, b) => (b.earliest_start ?? 0) - (a.earliest_start ?? 0) || a.rank - b.rank },
+  finish: { label: "Earliest finish", cmp: (a, b) => (a.m.latestEnd ?? 0) - (b.m.latestEnd ?? 0) || a.rank - b.rank },
+  short: { label: "Shortest longest day", cmp: (a, b) => a.m.longestDay - b.m.longestDay || a.rank - b.rank },
+  morning: { label: "Fewest classes before 9:00", cmp: (a, b) => a.m.early - b.m.early || a.rank - b.rank },
+  safe: { label: "Fewest crowded sections", cmp: (a, b) => a.m.risky - b.m.risky || a.rank - b.rank },
   credits: { label: "Most credits", cmp: (a, b) => b.total_credits - a.total_credits || a.rank - b.rank },
 };
 
-function applySort() {
-  planData.plans.sort(SORTS[sortMode].cmp);
+// ---- Extra facts about each plan, worked out from its sections (used by the new sorts and filters) ----
+const WORK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+const ALL_DAYS = [...WORK_DAYS, "Sat", "Sun"];
+const hmToMin = (s) => { if (!s) return null; const [h, m] = String(s).split(":").map(Number); return h * 60 + (m || 0); };
+
+function planMetrics(plan) {
+  const byDay = {};
+  let latestEnd = null, early = 0, risky = 0, online = 0;
+  plan.sections.forEach((s) => {
+    const a = hmToMin(s.start), b = hmToMin(s.end);
+    if (s.online || a == null || b == null || !(s.days || []).length) { online += 1; return; }
+    s.days.forEach((d) => { const o = byDay[d] || (byDay[d] = { start: a, end: b }); o.start = Math.min(o.start, a); o.end = Math.max(o.end, b); });
+    if (latestEnd == null || b > latestEnd) latestEnd = b;
+    if (a < 9 * 60) early += 1;
+    if (s.risk === "fills fast" || s.risk === "full") risky += 1;
+  });
+  const days = ALL_DAYS.filter((d) => byDay[d]);
+  plan.m = { days, latestEnd, early, risky, online, longestDay: Math.max(0, ...days.map((d) => byDay[d].end - byDay[d].start)) };
+}
+
+function planMatches(plan, f) {
+  if ((f.free || []).some((d) => plan.m.days.includes(d))) return false;
+  if (f.start && plan.earliest_start != null && plan.earliest_start < Number(f.start)) return false;
+  if (f.end && plan.m.latestEnd != null && plan.m.latestEnd > Number(f.end)) return false;
+  if (f.maxDays && plan.days_on_campus > Number(f.maxDays)) return false;
+  if (f.maxGap !== "" && f.maxGap != null && plan.gap_minutes > Number(f.maxGap)) return false;
+  if (f.keepAll && plan.unmet_wishlist.length) return false;
+  return true;
+}
+
+function activeFilterCount(f) {
+  return (f.free || []).length + [f.start, f.end, f.maxDays, f.maxGap].filter((v) => v !== "" && v != null).length + (f.keepAll ? 1 : 0);
+}
+
+// The top picks: the best plan by each way of choosing, skipping plans already picked, until we have n.
+const PICK_CRITERIA = [
+  ["★ Best fit", "best"], ["Fewest days on campus", "days"], ["Fewest gaps", "gaps"], ["Sleep in (latest start)", "late"],
+  ["Earliest finish", "finish"], ["Shortest days", "short"], ["Most credits", "credits"], ["Fewest crowded sections", "safe"],
+];
+
+function computePicks(list, n) {
+  const picks = [];
+  for (const [label, key] of PICK_CRITERIA) {
+    if (picks.length >= n) break;
+    // Skip plans already picked, and plans that would read exactly like one already picked (same days, times and credits).
+    const top = list.slice().sort(SORTS[key].cmp).slice(0, 12).find((p) => !picks.some((x) => x.plan === p || describePlan(x.plan) === describePlan(p)));
+    if (top) picks.push({ label, plan: top });
+  }
+  return picks;
+}
+
+// Rebuild what is shown: filter, sort, trim to the chosen list size (the recommended picks always stay in).
+function refreshView(keepPlan) {
+  const all = planData.allPlans;
+  let list = all.filter((p) => planMatches(p, planFilters));
+  planData.filterIgnored = false;
+  if (!list.length) { list = all.slice(); planData.filterIgnored = true; }          // nothing matched: show everything rather than a blank page
+  const cmp = SORTS[sortMode].cmp;
+  const sorted = list.slice().sort(cmp);
+  planData.matchCount = list.length;
+  planData.picks = computePicks(list, Number(planFilters.picks));
+  let shown = planFilters.limit === "all" ? sorted : sorted.slice(0, Number(planFilters.limit));
+  planData.picks.forEach((p) => { if (!shown.includes(p.plan)) shown.push(p.plan); });
+  shown = shown.sort(cmp);
+  planData.plans = shown;
   planData.plans.forEach((plan, i) => { plan.label = String(i + 1); });
+  const at = keepPlan ? shown.indexOf(keepPlan) : -1;
+  activeIndex = at >= 0 ? at : 0;
+  renderPicks();
+}
+
+function describePlan(p) {
+  const drops = p.unmet_wishlist.length ? ` · drops ${p.unmet_wishlist.join(", ")}` : "";
+  return `${p.total_credits} cr · ${p.days_on_campus} day${p.days_on_campus === 1 ? "" : "s"} (${p.m.days.join("/") || "none"}) · ${fmtMinutes(p.earliest_start)}–${fmtMinutes(p.m.latestEnd)}`
+    + ` · waiting ${p.gap_minutes ? fmtMinutes(p.gap_minutes) : "none"}${drops}`;
+}
+
+function renderPicks() {
+  const box = document.getElementById("top-picks");
+  if (!box) return;
+  const f = planFilters, n = activeFilterCount(f);
+  const badge = document.getElementById("pf-badge");
+  badge.hidden = n === 0; badge.textContent = String(n);
+  const all = Math.max(planData.allPlans.length, planData.total_found || 0);       // the planner can find more than it sends
+  document.getElementById("ph-note").textContent = planData.filterIgnored
+    ? `No plan matches your filters, so all ${all.toLocaleString()} plans are shown. Loosen a filter or press Reset.`
+    : n ? `${planData.matchCount.toLocaleString()} of the best ${planData.allPlans.length.toLocaleString()} plans match your filters. Picks below come from those.`
+        : `${all.toLocaleString()} possible plan${all === 1 ? "" : "s"}. Here are the best few, each the best at something different.`;
+  box.innerHTML = planData.picks.map((pk, i) => `
+    <article class="top-pick${planData.plans[activeIndex] === pk.plan ? " current" : ""}">
+      <h3>${escapeHtml(pk.label)}</h3>
+      <p>${escapeHtml(describePlan(pk.plan))}</p>
+      <button type="button" class="secondary" data-pick="${i}">${planData.plans[activeIndex] === pk.plan ? "Showing" : "Show this plan"}</button>
+    </article>`).join("");
+  box.querySelectorAll("button[data-pick]").forEach((b) => {
+    b.onclick = () => { const i = planData.plans.indexOf(planData.picks[Number(b.dataset.pick)].plan); if (i >= 0) { selectPlan(i); } };
+  });
+}
+
+function initPlanHelper() {
+  const helper = document.getElementById("plan-helper");
+  helper.hidden = false;
+  const f = planFilters, $ = (id) => document.getElementById(id);
+  document.querySelectorAll(".pf-free").forEach((c) => { c.checked = (f.free || []).includes(c.value); });
+  $("pf-start").value = f.start; $("pf-end").value = f.end; $("pf-days").value = f.maxDays; $("pf-gap").value = f.maxGap;
+  $("pf-all").checked = !!f.keepAll; $("pf-limit").value = f.limit; $("ph-count").value = f.picks;
+  if (activeFilterCount(f)) $("plan-filters").open = true;
+  if (helper.dataset.wired) return;
+  helper.dataset.wired = "1";
+  const apply = () => {
+    planFilters = {
+      free: [...document.querySelectorAll(".pf-free:checked")].map((c) => c.value),
+      start: $("pf-start").value, end: $("pf-end").value, maxDays: $("pf-days").value, maxGap: $("pf-gap").value,
+      keepAll: $("pf-all").checked, limit: $("pf-limit").value, picks: $("ph-count").value,
+    };
+    savePlanFilters();
+    const keep = planData.plans[activeIndex];
+    refreshView(keep);
+    renderTabs();
+    renderPlan(activeIndex);
+  };
+  helper.querySelectorAll("select, input").forEach((el) => el.addEventListener("change", apply));
+  $("pf-reset").onclick = () => {
+    planFilters = { ...PLAN_DEFAULTS, limit: planFilters.limit, picks: planFilters.picks };
+    savePlanFilters();
+    initPlanHelper();
+    apply();
+  };
 }
 
 function fmtMinutes(m) {
@@ -173,6 +309,7 @@ function selectPlan(i) {
   document.getElementById("plan-select").value = String(activeIndex);
   updatePickerButtons();
   renderPlan(activeIndex);
+  if (planData.picks) renderPicks();
 }
 
 function updatePickerButtons() {
@@ -183,10 +320,16 @@ function updatePickerButtons() {
 function renderTabs() {
   const total = planData.plans.length;
   const found = planData.total_found;
-  const more = found > total || !planData.exhausted;
-  const note = more
-    ? `Showing the best ${total.toLocaleString()} of ${found.toLocaleString()}${planData.exhausted ? "" : "+"} possible plans — remove a course or skip early sections to narrow it down.`
-    : total === 1 ? "1 possible plan" : `All ${total.toLocaleString()} possible plans`;
+  const everything = planData.allPlans.length;
+  const more = found > everything || !planData.exhausted;
+  const filtered = activeFilterCount(planFilters) > 0 && !planData.filterIgnored;
+  const note = filtered
+    ? `Showing ${total.toLocaleString()} of the ${planData.matchCount.toLocaleString()} plans that match your filters (${everything.toLocaleString()} found).`
+    : more
+      ? `Showing ${total.toLocaleString()} of ${found.toLocaleString()}${planData.exhausted ? "" : "+"} possible plans. Use the filters above, or remove a course, to narrow it down.`
+      : total === everything
+        ? (total === 1 ? "1 possible plan" : `All ${total.toLocaleString()} possible plans`)
+        : `Showing the best ${total.toLocaleString()} of ${everything.toLocaleString()} possible plans. Change "Plans in the list" in the filters to see more.`;
   const el = document.getElementById("plan-tabs");
   el.innerHTML = `
     <div class="plan-picker">
@@ -209,8 +352,7 @@ function renderTabs() {
   sortSel.value = sortMode;
   sortSel.onchange = () => {
     sortMode = sortSel.value;
-    applySort();
-    activeIndex = 0;
+    refreshView();
     renderTabs();
     renderPlan(0);
   };

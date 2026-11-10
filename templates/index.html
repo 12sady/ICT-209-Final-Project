@@ -11,6 +11,42 @@
 
   <section id="banners"></section>
 
+  <section class="card plan-helper" id="plan-helper" hidden>
+    <div class="ph-head">
+      <h2>Recommended plans</h2>
+      <label class="opt-check">Show the top
+        <select id="ph-count" aria-label="How many recommended plans"><option value="3">3</option><option value="5">5</option></select>
+      </label>
+    </div>
+    <p class="hint" id="ph-note"></p>
+    <div id="top-picks" class="top-picks"></div>
+    <details id="plan-filters" class="ph-filters">
+      <summary>Filter plans <span class="filter-badge" id="pf-badge" hidden>0</span></summary>
+      <div class="filter-grid">
+        <fieldset class="pf-days"><legend>Keep these days free</legend>
+          <label><input type="checkbox" class="pf-free" value="Mon"> Mon</label>
+          <label><input type="checkbox" class="pf-free" value="Tue"> Tue</label>
+          <label><input type="checkbox" class="pf-free" value="Wed"> Wed</label>
+          <label><input type="checkbox" class="pf-free" value="Thu"> Thu</label>
+          <label><input type="checkbox" class="pf-free" value="Fri"> Fri</label>
+          <label><input type="checkbox" class="pf-free" value="Sat"> Sat</label>
+        </fieldset>
+        <div class="field"><label for="pf-start">First class no earlier than</label>
+          <select id="pf-start"><option value="">Any time</option><option value="480">8:00</option><option value="540">9:00</option><option value="600">10:00</option><option value="660">11:00</option><option value="720">12:00</option></select></div>
+        <div class="field"><label for="pf-end">Last class ends by</label>
+          <select id="pf-end"><option value="">Any time</option><option value="900">15:00</option><option value="960">16:00</option><option value="1020">17:00</option><option value="1080">18:00</option><option value="1140">19:00</option></select></div>
+        <div class="field"><label for="pf-days">Days on campus</label>
+          <select id="pf-days"><option value="">Any</option><option value="2">At most 2</option><option value="3">At most 3</option><option value="4">At most 4</option></select></div>
+        <div class="field"><label for="pf-gap">Waiting between classes</label>
+          <select id="pf-gap"><option value="">Any</option><option value="0">None (back to back)</option><option value="60">Up to 1 hour in total</option><option value="120">Up to 2 hours in total</option><option value="240">Up to 4 hours in total</option></select></div>
+        <div class="field field-checkbox"><label for="pf-all"><input type="checkbox" id="pf-all"> Only plans that keep all my wishlist courses</label></div>
+        <div class="field"><label for="pf-limit">Plans in the list</label>
+          <select id="pf-limit"><option value="5">Best 5</option><option value="10">Best 10</option><option value="25">Best 25</option><option value="all">All that match</option></select></div>
+        <div class="field"><button type="button" id="pf-reset" class="secondary">Reset filters</button></div>
+      </div>
+    </details>
+  </section>
+
   <section class="layout">
     <div class="calendar-panel">
       <div class="print-only" id="print-title"></div>

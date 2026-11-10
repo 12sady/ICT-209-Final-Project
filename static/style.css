@@ -1302,3 +1302,19 @@ details.card[open] > summary.card-summary { margin-bottom: var(--sp-3); }
 .cc-sec-who, .cc-sec-seats { color: #4b5563; font-size: 0.85rem; }
 .cc-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: auto; }
 @media (max-width: 480px) { .course-card-grid { grid-template-columns: 1fr; } }
+
+/* Plan page: recommended plans + filters */
+.plan-helper { margin-bottom: 14px; }
+.ph-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ph-head h2 { margin: 0; }
+.top-picks { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 8px 0; }
+.top-pick { border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; background: #fff; }
+.top-pick.current { border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15); }
+.top-pick h3 { margin: 0; font-size: 0.95rem; }
+.top-pick p { margin: 0; font-size: 0.85rem; color: #4b5563; flex: 1; }
+.ph-filters summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+.filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px 14px; margin-top: 8px; align-items: end; }
+.pf-days { border: 1px solid #e5e7eb; border-radius: 10px; padding: 6px 10px; display: flex; flex-wrap: wrap; gap: 4px 12px; grid-column: 1 / -1; }
+.pf-days legend { font-size: 0.8rem; color: #4b5563; padding: 0 4px; }
+.pf-days label { display: inline-flex; align-items: center; gap: 4px; font-size: 0.9rem; }
+.pf-days input { width: auto; }

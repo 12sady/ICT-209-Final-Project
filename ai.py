@@ -104,6 +104,7 @@ SYSTEM_PROMPT = """You are the AI advisor inside the AUPP Registration Planner, 
 What you can do
 - Answer questions about the student's curriculum, completed courses, prerequisites, and this term's course offerings.
 - Turn plain-English requests ("no classes before 10, keep Fridays free, I want ITM 360") into actual settings by calling tools: add_to_wishlist, remove_from_wishlist, set_preferences. Then call get_best_plans and tell the student what the planner found.
+- Choosing between MANY schedules: when the student has many possible plans (valid_plans_found is large), don't list them all. Ask what matters to them if it isn't clear (free day, late start, finish early, fewer days, little waiting), call get_best_plans with the matching filters and sort_by, and recommend 1-3 plans, saying in a line why each fits. Name a plan by its number. These filters only narrow what you show: they don't change the student's saved preferences unless they ask. Tell them the Plan page has a "Recommended plans" panel and filters for the same thing.
 - Explain schedules: why the top plan ranks first, the trade-offs between plans, which courses are risky because seats fill fast or many students want them.
 - Suggest what to take next, using get_curriculum_status (required courses that are available now, blocked by a prerequisite, or not offered this term).
 - The snapshot below already holds the student's progress, courses left, what they can take now, estimated graduation term and GPA. If it answers the question, answer straight from it with no tool call: tools are slow. Call a tool only for details it lacks (search sections, a what-if, a grade target, a roadmap for a different start or credit limit) or to change the wishlist/preferences.
@@ -242,8 +243,17 @@ TOOLS = [
     },
     {
         "name": "get_best_plans",
-        "description": "Run the planner on the current wishlist and preferences and return the best schedules (ranked), with total credits, days on campus, waiting gaps, any wishlist course that didn't fit, and courses that are blocked. Call this after changing the wishlist or preferences.",
-        "input_schema": {"type": "object", "properties": {"limit": {"type": "integer", "description": "How many plans to return (default 3, max 5)."}}},
+        "description": "Run the planner on the current wishlist and preferences and return the best schedules (ranked), with total credits, days on campus, waiting gaps, any wishlist course that didn't fit, and courses that are blocked. Call this after changing the wishlist or preferences. When there are many plans, narrow them with the optional filters (free_days, start_after, end_by, max_days, max_gap_minutes, keep_all) and order them with sort_by, so you return only the few that match what the student asked for.",
+        "input_schema": {"type": "object", "properties": {
+            "limit": {"type": "integer", "description": "How many plans to return (default 3, max 5)."},
+            "free_days": {"type": "array", "items": {"type": "string"}, "description": "Weekdays that must have no classes, e.g. [\"Fri\"]."},
+            "start_after": {"type": "string", "description": "HH:MM. No class may start earlier than this."},
+            "end_by": {"type": "string", "description": "HH:MM. The last class must end by this time."},
+            "max_days": {"type": "integer", "description": "At most this many days on campus."},
+            "max_gap_minutes": {"type": "integer", "description": "At most this many minutes of waiting between classes in total (0 = back to back)."},
+            "keep_all": {"type": "boolean", "description": "Only plans that keep every wishlist course."},
+            "sort_by": {"type": "string", "enum": ["best", "fewest_days", "fewest_gaps", "latest_start", "earliest_finish", "shortest_days", "most_credits", "least_crowded"],
+                        "description": "How to order the plans (default best)."}}},
     },
 ]
 

@@ -1794,6 +1794,76 @@ def _hhmm(minutes):
     return None if minutes is None else f"{int(minutes) // 60:02d}:{int(minutes) % 60:02d}"
 
 
+def _to_minutes(hhmm):
+    """'09:30' -> 570; None / junk -> None."""
+    m = re.match(r"^\s*(\d{1,2}):(\d{2})\s*$", str(hhmm or ""))
+    return int(m.group(1)) * 60 + int(m.group(2)) if m else None
+
+
+_PLAN_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+
+def _plan_metrics(plan):
+    """Facts about a plan worked out from its sections, for choosing between many plans: which days it uses,
+    which weekdays stay free, when its last class ends, its longest day, how many classes start before 9:00,
+    how many sections are crowded. Same numbers as the Plan page's filters."""
+    by_day, latest_end, early, risky = {}, None, 0, 0
+    for s in plan["sections"]:
+        a, b = _to_minutes(s.get("start")), _to_minutes(s.get("end"))
+        if s.get("online") or a is None or b is None or not s.get("days"):
+            continue
+        for d in s["days"]:
+            span = by_day.setdefault(d, [a, b])
+            span[0], span[1] = min(span[0], a), max(span[1], b)
+        latest_end = b if latest_end is None else max(latest_end, b)
+        early += a < 9 * 60
+        risky += s.get("risk") in ("fills fast", "full")
+    days = [d for d in _PLAN_DAYS if d in by_day]
+    return {"days": days, "free_weekdays": [d for d in _PLAN_DAYS[:5] if d not in by_day], "latest_end": latest_end,
+            "longest_day_minutes": max([e - st for st, e in by_day.values()] or [0]), "classes_before_9": int(early),
+            "crowded_sections": int(risky)}
+
+
+_PLAN_SORTS = {
+    "best": lambda p, m, i: i,
+    "fewest_days": lambda p, m, i: (p["days_on_campus"], p["gap_minutes"], i),
+    "fewest_gaps": lambda p, m, i: (p["gap_minutes"], p["days_on_campus"], i),
+    "latest_start": lambda p, m, i: (-(p["earliest_start"] or 0), i),
+    "earliest_finish": lambda p, m, i: (m["latest_end"] if m["latest_end"] is not None else 0, i),
+    "shortest_days": lambda p, m, i: (m["longest_day_minutes"], i),
+    "most_credits": lambda p, m, i: (-p["total_credits"], i),
+    "least_crowded": lambda p, m, i: (m["crowded_sections"], i),
+}
+
+
+def _choose_plans(plans, args):
+    """Filter and sort plans the way the Plan page does. args (all optional): free_days [Mon..Sat], start_after
+    "HH:MM", end_by "HH:MM", max_days int, max_gap_minutes int, keep_all bool, sort_by (see _PLAN_SORTS).
+    Returns (kept [(index, plan, metrics)] sorted, number_matching)."""
+    free = {d[:3].title() for d in (args.get("free_days") or []) if isinstance(d, str)}
+    start_after, end_by = _to_minutes(args.get("start_after")), _to_minutes(args.get("end_by"))
+    max_days, max_gap = args.get("max_days"), args.get("max_gap_minutes")
+    rows = []
+    for i, p in enumerate(plans):
+        m = _plan_metrics(p)
+        if free & set(m["days"]):
+            continue
+        if start_after is not None and p["earliest_start"] is not None and p["earliest_start"] < start_after:
+            continue
+        if end_by is not None and m["latest_end"] is not None and m["latest_end"] > end_by:
+            continue
+        if isinstance(max_days, int) and p["days_on_campus"] > max_days:
+            continue
+        if isinstance(max_gap, int) and p["gap_minutes"] > max_gap:
+            continue
+        if args.get("keep_all") and p["unmet_wishlist"]:
+            continue
+        rows.append((i, p, m))
+    key = _PLAN_SORTS.get(args.get("sort_by") or "best", _PLAN_SORTS["best"])
+    rows.sort(key=lambda r: key(r[1], r[2], r[0]))
+    return rows, len(rows)
+
+
 def _sec_brief(s, demand=None):
     out = {
         "code": s["code"], "section": s["section"], "title": s.get("title"),
@@ -2005,21 +2075,27 @@ def _advisor_tools():
     def best_plans(args):
         req, off = load()
         wl = load_wishlist(wl_path)
-        plans_, blocked_req, blocked_wl, no_sections, total, exhausted = enumerate_plans(req, off, wl, limit=50)
+        plans_, blocked_req, blocked_wl, no_sections, total, exhausted = enumerate_plans(req, off, wl, limit=300)
         n = max(1, min(int(args.get("limit") or 3), 5))
+        chosen, matching = _choose_plans(plans_, args)
         out = []
-        for i, p in enumerate(plans_[:n], 1):
+        for i, p, m in chosen[:n]:
             out.append({
-                "plan": i, "total_credits": p["total_credits"], "meets_min_credits": p["meets_min_credits"],
-                "days_on_campus": p["days_on_campus"], "earliest_start": _hhmm(p["earliest_start"]),
-                "waiting_gap_minutes": round(p["gap_minutes"]),
+                "plan": i + 1, "total_credits": p["total_credits"], "meets_min_credits": p["meets_min_credits"],
+                "days_on_campus": p["days_on_campus"], "days": m["days"], "free_weekdays": m["free_weekdays"],
+                "earliest_start": _hhmm(p["earliest_start"]), "last_class_ends": _hhmm(m["latest_end"]),
+                "longest_day_hours": round(m["longest_day_minutes"] / 60, 1), "classes_before_9": m["classes_before_9"],
+                "crowded_sections": m["crowded_sections"], "waiting_gap_minutes": round(p["gap_minutes"]),
                 "wishlist_not_in_plan": p["unmet_wishlist"],
                 "sections": [_sec_brief(s) for s in p["sections"]],
             })
+        used = {k: args[k] for k in ("free_days", "start_after", "end_by", "max_days", "max_gap_minutes", "keep_all", "sort_by") if args.get(k) not in (None, [], "", False)}
         return {
-            "wishlist_size": len(wl), "valid_plans_found": total, "search_complete": exhausted,
-            "plans": out, "blocked_wishlist": blocked_wl, "wishlist_without_sections": no_sections,
-            "note": "Plans are ranked best first: fewest wishlist courses left out, then credit fit, days on campus, waiting time.",
+            "wishlist_size": len(wl), "valid_plans_found": total, "plans_matching_filters": matching, "filters_used": used,
+            "search_complete": exhausted, "plans": out, "blocked_wishlist": blocked_wl, "wishlist_without_sections": no_sections,
+            "note": ("`plan` is the plan's number in the planner's best-first order (Plan page, best fit). With no filters or sort_by the plans "
+                     "are ranked best first: fewest wishlist courses left out, then credit fit, days on campus, waiting time. "
+                     "If plans_matching_filters is 0, tell the student which filter to loosen."),
         }
 
 
